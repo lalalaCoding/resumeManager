@@ -8,20 +8,31 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 	<style>
 		#wrapper{display: grid; grid-template-columns: 1fr 1280px 1fr;}
-		#indexContainer div{background: blue;}
+		#introduce{border: 2px solid gray; height: 800px;}
+		#menu{border: 2px solid gray; background: beige;}
 	</style>
 </head>
 <body>
+	<!-- Header와 Footer 확인용 버튼 -->
+	<button onclick="location.href='header.test'">Header 확인</button>
+	<br/>
+	<button onclick="location.href='footer.test'">Footer 확인</button>
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>
 		<div id="indexContainer">
-			<div>
+			<div id="introduce">
 				<!-- 사이트 소개용 div -->
+				<h1>사이트 소개가 들어올 자리</h1>
 			</div>
-			<div>
+			<br/>
+			<div id="menu">
 				<!-- 로그인 / 회원가입 -->
-				<div>
-					<button type="button" class="btn btn-outline-warning">Warning</button>
+				<div class="text-center">
+					<button type="button" class="btn btn-outline-dark">로그인</button>
+					<br/><br/>
+					<button type="button" class="btn btn-outline-dark">아이디 찾기</button>
+					<button type="button" class="btn btn-outline-dark">비밀번호 찾기</button>
+					<button type="button" class="btn btn-outline-dark" onclick="location.href='enroll.me'">회원가입</button>
 				</div>
 			</div>
 		</div>
