@@ -3,12 +3,152 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Resume History - 회원가입</title>
+	<link href="css/enroll.css" rel="stylesheet" type="text/css"/>
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
+	<div th:replace="~{common/header.html :: header}"></div> <!-- 조각코드 내에 BootStrap CDN이 포핟뫼어있음. --> 
 	<div id="wrapper">
-	
-	
-	
+		<div><!-- 왼쪽 공백 --></div>
+		<div>
+			<h1>회원 가입</h1>
+			<table class="table table-hover align-middle">
+				<tr>
+					<td>프로필 사진</td>
+					<td>
+						<div id="profileDiv" class="form-text">
+							<img/>
+						</div>
+						<input type="file" id="profile" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
+						<button class="btn btn-primary">제거하기</button>
+					</td>
+				</tr>
+				<tr>
+					<td>아이디</td>
+					<td>
+						<input type="text" class="form-control" size="10" style="width:300px; display:inline-block;"/>
+						<span id="idCheckResult">아이디 중복을 확인합니다.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>비밀번호</td>
+					<td>
+						<input type="password" class="form-control"/>
+						<span>특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>비밀번호 확인</td>
+					<td>
+						<input type="password" class="form-control"/>
+						<span>동일한 비밀번호를 입력해주세요.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>이름</td>
+					<td>
+						<input type="text" class="form-control"/>
+					</td>
+				</tr>
+				<tr>
+					<td>성별</td>
+					<td>
+						<label><input type="radio" class="form-check-input" name="memberGender" value="M"> 남</label>
+						<label><input type="radio" class="form-check-input" name="memberGender" value="F"> 여</label>
+					</td>
+				</tr>
+				<tr>
+					<td>생년월일</td>
+					<td>
+						<input type="number" class="form-control"/>
+					</td>
+				</tr>
+				<tr>
+					<td>주소</td>
+					<td>
+						<input type="text" class="form-control"/>
+						<button class="btn btn-primary">입력</button>
+					</td>
+				</tr>
+				<tr>
+					<td>이메일</td>
+					<td>
+						<input type="text" class="form-control"/>
+						@
+						<select class="form-select">
+							<option>-</option>
+							<option>naver.com</option>
+							<option>google.com</option>
+							<option>hanmail.net</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>휴대전화</td>
+					<td>
+						<input type="number" class="form-control" min="0"/>
+						-
+						<input type="number" class="form-control" min="0"/>
+						-
+						<input type="number" class="form-control" min="0"/>
+						<button>인증하기</button>
+					</td>
+				</tr>
+				<tr>
+					<td>휴대전화 인증</td>
+					<td>
+						<input type="text" class="form-control" disabled/>
+						<button>인증확인</button>
+					</td>
+				</tr>
+				<tr>
+					<td>히스토리 공개</td>
+					<td>
+						<label><input type="radio" class="form-check-input" name="history" value="yes"/> Y</label>
+						<label><input type="radio" class="form-check-input" name="history" value="no"/> N</label>
+					</td>
+				</tr>
+			</table>
+			<div class="text-center">
+				<button class="btn btn-danger" style="width: 600px;">회원가입</button>
+			</div>
+		</div>
+		<div><!-- 오른쪽 공백 --></div>
 	</div>
+	<br/>
+	<div th:replace="~{common/footer :: footer}"></div>
 </body>
+
+<script>
+	window.onload = () => {
+		// 프로필 미리보기 기능 (시작)
+		const file = document.querySelector('#profile'); // 프로필 파일 등록 input 요소
+		const preview = document.querySelector('#profileDiv img'); // 미리보기 img 요소
+		
+		file.addEventListener('change', () => { // 첨부파일 변경에 대한 이벤트
+			console.log('파일 등록');
+			const fileReader = new FileReader(); // FileReader 객체 생성
+			// 사용자 첨부 파일을 base 64 데이터로 변환한다. 
+			// 변환이 완료되면 FileReader객체의 load 이벤트가 동작한다. (load이벤트의 트리거라는 의미)
+			// file.files == 첨부한 파일 리스트
+			fileReader.readAsDataURL(file.files[0]); 
+			
+			fileReader.onload = function(e) {
+				preview.src = this.result; // result == 첨부 이미지를 Base64 암호화된 결과물
+				preview.style.width = '100%';
+				preview.style.width = '100%';
+			}
+		});
+		// 프로필 미리보기 기능(끝)
+		
+	}
+
+
+
+</script>
+
+
+
+
+
 </html>
