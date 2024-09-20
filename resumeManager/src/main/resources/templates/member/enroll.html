@@ -3,8 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Resume History - 회원가입</title>
+	<!-- CSS 파일 -->
 	<link href="css/enroll.css" rel="stylesheet" type="text/css"/>
+	<!-- jQuery CDN -->
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<!-- 다음 우편번호 API -->
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 	<div th:replace="~{common/header.html :: header}"></div> <!-- 조각코드 내에 BootStrap CDN이 포핟뫼어있음. --> 
@@ -63,14 +67,18 @@
 				<tr>
 					<td>생년월일</td>
 					<td>
-						<input type="number" class="form-control"/>
+						<input type="number" id="memberAge" class="form-control"/>
+						<span id="ageCheckResult" class="badge rounded-pill text-bg-light">YYMMdd의 형식으로 입력해주세요.</span>
 					</td>
 				</tr>
 				<tr>
 					<td>주소</td>
 					<td>
-						<input type="text" class="form-control"/>
-						<button class="btn btn-primary">입력</button>
+						<input type="text" class="form-control memberAddress" placeholder="우편번호" readOnly/>
+						<button id="searchAddress" class="btn btn-primary">입력하기</button>
+						<br/>
+						<input type="text" class="form-control memberAddress" placeholder="기본 주소 입력" readOnly/>
+						<input type="text" class="form-control memberAddress" placeholder="상세 주소 입력"/>
 					</td>
 				</tr>
 				<tr>
@@ -254,9 +262,46 @@
 		});
 		// 비밀번호 일치 검사 (끝)
 		
+		// 생년월일 유효성 검사 (시작)
+		const memberAge = document.querySelector('#memberAge');
+		const ageCheckResult = document.querySelector('#ageCheckResult');
+		const ageRegex = /[0-9]{6}/g; // 숫자가 6개인 패턴
 		
+		memberAge.addEventListener('change', function() {
+			if(ageRegex.test(this.value.trim())){
+				lightClass(ageCheckResult);
+			} else{
+				dangerClass(ageCheckResult);
+			}
+		});
+		// 생년월일 유효성 검사 (끝)
 		
+		// 주소 검색 및 입력 (시작)
+		const searchAddress = document.querySelector('#searchAddress');
+		const memberAddress = document.querySelectorAll('.memberAddress');
 		
+		searchAddress.addEventListener('click', () => {
+			new daum.Postcode({
+				oncomplete: function(data) {
+					// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+					// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+					let addr = ''; // 주소 변수
+
+					//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+					if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+						addr = data.roadAddress;
+					} else { // 사용자가 지번 주소를 선택했을 경우(J)
+						addr = data.jibunAddress;
+					}
+					
+					memberAddress[0].value = data.zonecode; // 우편번호 입력
+					memberAddress[1].value = addr; // 기본주소 입력
+					memberAddress[2].focus(); // 상세주소 입력요소로 커서가 이동
+				}
+		    }).open();
+		});
+		// 주소 검색 및 입력 (끝)
 		
 		
 		
