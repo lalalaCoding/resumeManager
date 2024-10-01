@@ -97,19 +97,20 @@
 				<tr>
 					<td>휴대전화</td>
 					<td>
-						<input type="number" class="form-control" min="0"/>
+						<input type="number" class="form-control phoneNumber" min="0"/>
 						-
-						<input type="number" class="form-control" min="0"/>
+						<input type="number" class="form-control phoneNumber" min="0"/>
 						-
-						<input type="number" class="form-control" min="0"/>
-						<button>인증하기</button>
+						<input type="number" class="form-control phoneNumber" min="0"/>
+						<button id="phoneCheck" class="btn btn-primary">인증하기</button>
 					</td>
 				</tr>
 				<tr>
 					<td>휴대전화 인증</td>
 					<td>
-						<input type="text" class="form-control" disabled/>
-						<button>인증확인</button>
+						<input type="text" class="form-control phoneConfirm" disabled/>
+						<button class="btn btn-primary phoneConfirm" disabled>인증확인</button>
+						<span class="badge rounded-pill text-bg-light phoneConfirm">문자 인증이 필요합니다.</span>
 					</td>
 				</tr>
 				<tr>
@@ -130,7 +131,7 @@
 	<div th:replace="~{common/footer :: footer}"></div>
 </body>
 
-<script>
+<script th:inline="javascript">
 	window.onload = () => {
 		// 프로필 미리보기 기능 (시작)
 		const file = document.querySelector('#profile'); // 프로필 파일 등록 input 요소
@@ -303,7 +304,77 @@
 		});
 		// 주소 검색 및 입력 (끝)
 		
+		// 휴대전화 인증 요청 (시작)
+		const phoneCheck = document.querySelector('#phoneCheck');
+		const phoneConfirm = document.querySelectorAll('.phoneConfirm');
+		phoneCheck.addEventListener('click', () => {
+			const phoneNumbers = document.querySelectorAll('.phoneNumber');
+			let phoneNumber = '';
+			for(const n of phoneNumbers){
+				phoneNumber += n.value;
+			}
+			if(phoneNumber.length == 11){ // 전화번호가 11자리로서 정상이라 판단되는 경우
+				$.ajax({
+					url : '/send-one',
+					type : 'post',
+					data : {phoneNumber : phoneNumber},
+					success : data => {
+						console.log(data);
+						if(data.statusCode == '2000'){ // 문자가 정상적으로 전송된 경우 -> 1분간 인증번호를 입력될 수 있게 한다.
+							phoneConfirm[0].disabled = false;
+							phoneConfirm[1].disabled = false;
+							lightClass(phoneConfirm[2]);
+							phoneConfirm[2].textContent = '인증 번호를 1분 내에 확인해주세요.';
+							
+							setTimeout(() => {
+								if(!phoneFlag){ // 인증이 실패한 상태일 때
+									phoneConfirm[0].disabled = true;
+									phoneConfirm[1].disabled = true;
+									dangerClass(phoneConfirm[2]);
+									phoneConfirm[2].textContent = '인증 시간이 만료되었습니다.';
+								}
+							}, 1000*60); // 60초 동안만 인증 번호를 확인할 수 있도록 한다.
+						}
+					},
+					error : data => {
+						console.log(data);
+					}
+				});
+			} else{ // 전화번호가 11자리가 아니어서 비정상이라 판단되는 경우
+				alert('전화번호를 다시 입력해주세요.');
+				phoneNumbers[0].focus(); 
+			}
+			
+		});
+		// 휴대전화 인증 요청 (끝)
 		
+		// 휴대전화 인증 번호 확인 요청 (시작)
+		let phoneFlag = false;
+		phoneConfirm[1].addEventListener('click', () => {
+			$.ajax({
+				url : 'get-code',
+				type: 'post',
+				success : data => {
+					if(phoneConfirm[0].value == data){ // 인증번호를 정상적으로 입력하였을 때
+						infoClass(phoneConfirm[2]);
+						phoneConfirm[2].textContent = '인증이 확인되었습니다.';
+						phoneFlag = true;
+						
+						phoneConfirm[0].disabled = true;
+						phoneConfirm[1].disabled = true;
+						
+					} else{ // 인증번호가 틀렸을 때
+						dangerClass(phoneConfirm[2]);
+						phoneConfirm[2].textContent = '인증 번호가 올바르지 않습니다.';
+						phoneFlag = false;
+					}
+				},
+				error : data => {
+					console.log(data);
+				}
+			});
+		});
+		// 휴대전화 인증 번호 확인 요청 (끝)
 		
 	}
 </script>

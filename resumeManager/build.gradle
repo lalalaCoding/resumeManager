@@ -41,7 +41,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
 	implementation group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '3.2.0'
 	// Cool SMS API -> sdk
-	implementation 'net.nurigo:sdk:4.3.0'
+	implementation 'net.nurigo:sdk:4.3.0' 
+	// https://mvnrepository.com/artifact/org.json/json
+	implementation group: 'org.json', name: 'json', version: '20231013'
 	
 	
 }

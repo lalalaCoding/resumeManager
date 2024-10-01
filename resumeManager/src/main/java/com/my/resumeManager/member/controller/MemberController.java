@@ -36,4 +36,12 @@ public class MemberController {
 		return result == 0 ? "yes" : "no";
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
 }
