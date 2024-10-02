@@ -16,6 +16,7 @@
 		<div><!-- 왼쪽 공백 --></div>
 		<div>
 			<h1>회원 가입</h1>
+			<form id="submit" enctype="multipart/form-data" action="test.me" method="post">
 			<table class="table table-hover align-middle">
 				<tr>
 					<td>프로필 사진</td>
@@ -24,7 +25,7 @@
 							<img src="image/icon/profile_male.png" style="width: 100%; height: 100%;"/>
 						</div>
 						<div id="profileBtns">
-							<input type="file" id="profile" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
+							<input type="file" id="profile" name="file" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
 							<br/>
 							<button id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button>
 						</div>
@@ -33,14 +34,14 @@
 				<tr>
 					<td>아이디</td>
 					<td>
-						<input type="text" id="memberId" class="form-control" size="10" style="width:300px; display:inline-block;"/>
+						<input type="text" id="memberId" name="memberId" class="form-control" size="10" style="width:300px; display:inline-block;"/>
 						<span id="idCheckResult" class="badge rounded-pill text-bg-light">아이디 중복을 확인합니다.</span>
 					</td>
 				</tr>
 				<tr>
 					<td>비밀번호</td>
 					<td>
-						<input type="password" id="memberPwd" class="form-control"/>
+						<input type="password" id="memberPwd" name="memberPwd" class="form-control"/>
 						<span id="pwdCheckResult" class="badge rounded-pill text-bg-light">특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.</span>
 					</td>
 				</tr>
@@ -54,7 +55,7 @@
 				<tr>
 					<td>이름</td>
 					<td>
-						<input type="text" class="form-control"/>
+						<input type="text" name="memberName" class="form-control"/>
 					</td>
 				</tr>
 				<tr>
@@ -116,13 +117,14 @@
 				<tr>
 					<td>히스토리 공개</td>
 					<td>
-						<label><input type="radio" class="form-check-input" name="history" value="yes"/> Y</label>
-						<label><input type="radio" class="form-check-input" name="history" value="no"/> N</label>
+						<label><input type="radio" class="form-check-input" name="memberHistory" value="yes"/> Y</label>
+						<label><input type="radio" class="form-check-input" name="memberHistory" value="no"/> N</label>
 					</td>
 				</tr>
 			</table>
+			</form>
 			<div class="text-center">
-				<button class="btn btn-danger" style="width: 600px;">회원가입</button>
+				<button id="enrollBtn" class="btn btn-danger" style="width: 600px;">회원가입</button>
 			</div>
 		</div>
 		<div><!-- 오른쪽 공백 --></div>
@@ -266,7 +268,7 @@
 		// 생년월일 유효성 검사 (시작)
 		const memberAge = document.querySelector('#memberAge');
 		const ageCheckResult = document.querySelector('#ageCheckResult');
-		const ageRegex = /[0-9]{6}/g; // 숫자가 6개인 패턴
+		const ageRegex = /[0-9]{8}/g; // 숫자가 8개인 패턴
 		
 		memberAge.addEventListener('change', function() {
 			if(ageRegex.test(this.value.trim())){
@@ -375,6 +377,26 @@
 			});
 		});
 		// 휴대전화 인증 번호 확인 요청 (끝)
+		
+		// 회원 가입 요청 (시작)
+		const enrollBtn = document.querySelector('#enrollBtn');
+		const submit = document.querySelector('#submit');
+		enrollBtn.addEventListener('click', () => {
+			console.log(file.value);
+			
+			submit.submit();
+			
+			
+			
+			
+			
+		});
+		
+		
+		
+		
+		// 회원 가입 요청 (끝)
+		
 		
 	}
 </script>

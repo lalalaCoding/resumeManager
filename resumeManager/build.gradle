@@ -44,6 +44,13 @@ dependencies {
 	implementation 'net.nurigo:sdk:4.3.0' 
 	// https://mvnrepository.com/artifact/org.json/json
 	implementation group: 'org.json', name: 'json', version: '20231013'
+	// 구글 클라우드 라이브러리 추가
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+	
+	
+	
+	
 	
 	
 }

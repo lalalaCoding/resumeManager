@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
+@ToString
 public class Member extends ProfileImage{
 	private String memberId;
 	private String memberPwd;
@@ -23,6 +25,7 @@ public class Member extends ProfileImage{
 	private char memberStatus;
 	private String memberToken;
 	private char memberType;
+	private char memberHistory;
 	private Date memberEnroll;
 	private Date memberUpdate;
 	private String memberEmail;
