@@ -16,7 +16,7 @@
 		<div><!-- 왼쪽 공백 --></div>
 		<div>
 			<h1>회원 가입</h1>
-			<form id="submit" enctype="multipart/form-data" action="test.me" method="post">
+			<form id="submit" enctype="multipart/form-data" action="enrollMember.me" method="post">
 			<table class="table table-hover align-middle">
 				<tr>
 					<td>프로필 사진</td>
@@ -76,23 +76,25 @@
 					<td>주소</td>
 					<td>
 						<input type="text" class="form-control memberAddress" placeholder="우편번호" readOnly/>
-						<button id="searchAddress" class="btn btn-primary">입력하기</button>
+						<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
 						<br/>
 						<input type="text" class="form-control memberAddress" placeholder="기본 주소 입력" readOnly/>
 						<input type="text" class="form-control memberAddress" placeholder="상세 주소 입력"/>
+						<input type="hidden" name="memberAddress"/>
 					</td>
 				</tr>
 				<tr>
 					<td>이메일</td>
 					<td>
-						<input type="text" class="form-control"/>
+						<input type="text" class="form-control memberEmail"/>
 						@
-						<select class="form-select">
+						<select class="form-select memberEmail">
 							<option>-</option>
 							<option>naver.com</option>
 							<option>google.com</option>
 							<option>hanmail.net</option>
 						</select>
+						<input type="hidden" name="memberEmail"/>
 					</td>
 				</tr>
 				<tr>
@@ -103,22 +105,23 @@
 						<input type="number" class="form-control phoneNumber" min="0"/>
 						-
 						<input type="number" class="form-control phoneNumber" min="0"/>
-						<button id="phoneCheck" class="btn btn-primary">인증하기</button>
+						<button type="button" id="phoneCheck" class="btn btn-primary">인증하기</button>
+						<input type="hidden" name="memberPhone"/>
 					</td>
 				</tr>
 				<tr>
 					<td>휴대전화 인증</td>
 					<td>
 						<input type="text" class="form-control phoneConfirm" disabled/>
-						<button class="btn btn-primary phoneConfirm" disabled>인증확인</button>
+						<button type="button" class="btn btn-primary phoneConfirm" disabled>인증확인</button>
 						<span class="badge rounded-pill text-bg-light phoneConfirm">문자 인증이 필요합니다.</span>
 					</td>
 				</tr>
 				<tr>
 					<td>히스토리 공개</td>
 					<td>
-						<label><input type="radio" class="form-check-input" name="memberHistory" value="yes"/> Y</label>
-						<label><input type="radio" class="form-check-input" name="memberHistory" value="no"/> N</label>
+						<label><input type="radio" class="form-check-input" name="memberHistory" value="Y"/> Y</label>
+						<label><input type="radio" class="form-check-input" name="memberHistory" value="N"/> N</label>
 					</td>
 				</tr>
 			</table>
@@ -184,11 +187,13 @@
 		
 		const memberId = document.querySelector('#memberId');
 		const idCheckResult = document.querySelector('#idCheckResult');
+		let idFlag = false;
 		memberId.addEventListener('change', () => { // value 값이 변경되었고 초점을 잃었을 때 1번만 발생시키자.
 			
 			if(memberId.value.trim() == ''){ // 아이디 입력 값이 없을 때
 				lightClass(idCheckResult);
 				idCheckResult.textContent = '아이디 중복을 확인합니다.';
+				idFlag = false;
 			} else{ // 아이디 입력 값이 있을 때 -> 중복 확인 & 결과 출력
 				$.ajax({
 					url: 'checkId.me',
@@ -197,9 +202,11 @@
 						if(data == 'yes'){ // 사용가능한 아이디
 							infoClass(idCheckResult);
 							idCheckResult.textContent = '사용 가능 아이디입니다.';
+							idFlag = true;
 						} else{ // 사용불가능한 아이디
 							dangerClass(idCheckResult);
 							idCheckResult.textContent = '사용 불가능 아이디입니다.';
+							idFlag = false;
 						}
 					},
 					error: data => {
@@ -213,6 +220,7 @@
 		// 비밀번호 유효성 검사 (시작)
 		const memberPwd = document.querySelector('#memberPwd');
 		let inputPwd;
+		let pwdFlag = false;
 		const pwdCheckResult = document.querySelector('#pwdCheckResult');
 		const specialRegex = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/g; // 특수문자 정규표현식
 		const normalRegex = /[a-zA-Z가-힣ㄱ-ㅎ]/g; // 일반문자 정규표현식
@@ -223,6 +231,7 @@
 			if(inputPwd == ''){ // 비밀번호 입력값이 없을 때
 				lightClass(pwdCheckResult);
 				pwdCheckResult.textContent = '특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.';
+				pwdFlag = false;
 			} else{ // 비밀번호 입력값이 있을 때
 				// 문자열.match(정규식) -> 정규표현식에 포함된 문자들로 이루어진 배열을 반환해준다. (부합되지 않을 때는 null이 반환됨)
 				let specialArr = inputPwd.match(specialRegex);
@@ -238,6 +247,7 @@
 				if(specialArr == null || normalArr == null || !lengthCheck){
 					// 올바르지 않은 비밀번호 형식
 					dangerClass(pwdCheckResult);
+					pwdFlag = false;
 					pwdCheckResult.textContent = '사용 불가능 비밀번호입니다.';
 				} else{
 					// 특수문자 1개 이상, 일반문자 1개 이상이 포함된 경우 (올바른 비밀번호 형식)
@@ -255,9 +265,11 @@
 		memberPwdConfirm.addEventListener('change', () => {
 			if(inputPwd == memberPwdConfirm.value.trim()){ // 비밀번호가 일치하는 경우
 				infoClass(pwdConfirmResult);
+				pwdFlag = true;	
 				pwdConfirmResult.textContent = '비밀번호가 일치합니다.';
 			} else{ // 비밀번호가 일치하지 않는 경우
 				dangerClass(pwdConfirmResult);
+				pwdFlag = false;
 				pwdConfirmResult.textContent = '비밀번호가 일치하지 않습니다.';
 				memberPwdConfirm.value = '';
 				memberPwdConfirm.focus();
@@ -266,6 +278,7 @@
 		// 비밀번호 일치 검사 (끝)
 		
 		// 생년월일 유효성 검사 (시작)
+		let ageFlag = false;
 		const memberAge = document.querySelector('#memberAge');
 		const ageCheckResult = document.querySelector('#ageCheckResult');
 		const ageRegex = /[0-9]{8}/g; // 숫자가 8개인 패턴
@@ -273,8 +286,10 @@
 		memberAge.addEventListener('change', function() {
 			if(ageRegex.test(this.value.trim())){
 				lightClass(ageCheckResult);
+				ageFlag = true;
 			} else{
 				dangerClass(ageCheckResult);
+				ageFlag = false;
 			}
 		});
 		// 생년월일 유효성 검사 (끝)
@@ -378,23 +393,92 @@
 		});
 		// 휴대전화 인증 번호 확인 요청 (끝)
 		
+		// 유효성 검사 요청 (시작)
+		const checkvalid = () => {
+			// 이름 유효성 검사
+			let nameFlag = false;
+			const memberName = document.getElementsByName('memberName')[0];
+			if(memberName.value.trim().length > 0){
+				nameFlag = true;
+			}
+			
+			// 성별 유효성 검사
+			let genderFlag = false;
+			const memberGender = document.getElementsByName('memberGender');
+			for(const g of memberGender){
+				if(g.checked){
+					genderFlag = true;
+				}
+			}
+			
+			// 주소 유효성 검사 및 합병하기
+			let addressFlag = false;
+			const addressResult = document.getElementsByName('memberAddress')[0];
+			for(let i = 0; i < memberAddress.length; i++){
+				if(i != memberAddress.length - 1){
+					addressResult.value += memberAddress[i].value + '_';
+				} else{
+					addressResult.value += memberAddress[i].value;
+				}
+			}
+			
+			if(memberAddress[0].value.trim().length > 0){
+				addressFlag = true;
+			} else{
+				addressFlag = false;
+			}
+			
+			// 이메일 유효성 검사 및 합병하기
+			let emailFlag = false;
+			const emailResult = document.getElementsByName('memberEmail')[0];
+			const memberEmail = document.querySelectorAll('.memberEmail');
+			
+			if(memberEmail[0].value.trim().length > 0 && memberEmail[1].value != '-'){
+				emailFlag = true;
+				emailResult.value = memberEmail[0].value.trim() + '@' + memberEmail[1].value;
+			}
+			
+			// 휴대폰 번호 합병하기 
+			if(phoneFlag){
+				const phoneResult = document.getElementsByName('memberPhone')[0];
+				const phoneNumbers = document.querySelectorAll('.phoneNumber');
+				for(const n of phoneNumbers){
+					phoneResult.value += n.value;
+				}
+			}
+			
+			// 히스토리 유효성 검사
+			let historyFlag = false;
+			const memberHistory = document.getElementsByName('memberHistory');
+			for(const g of memberHistory){
+				if(g.checked){
+					historyFlag = true;
+				}
+			}
+			
+			if(idFlag && pwdFlag && nameFlag && genderFlag && ageFlag && addressFlag && emailFlag && phoneFlag && historyFlag){
+				return true;
+			} else{
+				return false;
+			}
+		}
+		
+		
+		
+		
+		// 유효성 검사 요청 (끝)
+		
 		// 회원 가입 요청 (시작)
 		const enrollBtn = document.querySelector('#enrollBtn');
 		const submit = document.querySelector('#submit');
 		enrollBtn.addEventListener('click', () => {
-			console.log(file.value);
-			
-			submit.submit();
-			
-			
-			
-			
+			if(checkvalid()){
+				submit.submit();
+			} else{
+				alert('입력 정보가 누락되었습니다. 다시 입력해주세요.');
+			}
 			
 		});
-		
-		
-		
-		
 		// 회원 가입 요청 (끝)
 		
 		

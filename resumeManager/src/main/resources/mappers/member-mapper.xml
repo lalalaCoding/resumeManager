@@ -8,6 +8,19 @@
 	<select id="checkId" resultType="int">
 		SELECT COUNT(*) FROM MEMBER WHERE MEMBER_ID = #{memberId}
 	</select>
-
+	
+	<!-- 회원가입 : MEMBER 테이블에 삽입 -->
+	<insert id="enrollMember" useGeneratedKeys="true">
+		<selectKey resultType="_int" keyProperty="memberNo" order="BEFORE">
+			SELECT SEQ_MEMBER.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO MEMBER VALUES(${memberNo}, #{memberId}, #{memberPwd}, #{memberName}, #{memberAddress}, #{memberPhone}, 
+									#{memberEmail}, #{memberSocial}, #{memberToken}, #{memberHistory}, DEFAULT, DEFAULT, SYSDATE, SYSDATE)
+	</insert>
+	
+	<!-- 회원가입 : PROFILE_IMAGE 테이블에 삽입 -->
+	<insert id="enrollImage">
+		INSERT INTO PROFILE_IMAGE VALUES(${memberNo}, #{profileOrigin}, #{profileRename}, #{profilePath})
+	</insert>
 
 </mapper> 

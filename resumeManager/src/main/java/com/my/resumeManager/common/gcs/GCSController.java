@@ -20,4 +20,13 @@ public class GCSController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+    public void objectDownload() {
+    	// 프로젝트 아이디, 버킷 이름, 객체 이름, 저장할 경로가 필요함
+    	
+    	
+    }
+    
+    
+    
 }

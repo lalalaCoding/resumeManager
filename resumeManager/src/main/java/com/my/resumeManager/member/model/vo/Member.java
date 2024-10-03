@@ -14,11 +14,12 @@ import lombok.ToString;
 @Getter
 @ToString
 public class Member extends ProfileImage{
+	private int memberNo;
 	private String memberId;
 	private String memberPwd;
 	private String memberName;
 	private char memberGender;
-	private int mamgeAge;
+	private int memberAge;
 	private String memberAddress;
 	private String memberPhone;
 	private char memberSocial;
