@@ -18,7 +18,7 @@ import com.my.resumeManager.common.gcs.GCSRequest;
 import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class MemberController {
@@ -55,52 +55,54 @@ public class MemberController {
 	}
 	
 	@PostMapping("enrollMember.me")
-	public String enrollMember(@ModelAttribute Member m, @ModelAttribute GCSRequest profile, HttpSession session) {
+	public String enrollMember(@ModelAttribute Member m, @ModelAttribute GCSRequest profile, HttpServletResponse response) {
 		m.setMemberPwd(bCrypt.encode(m.getMemberPwd())); // 비밀번호 암호화
 		m.setMemberSocial('N'); // 소셜 로그인 유형 -> 임시로 N으로 지정하자. 소셜로그인을 구현할 때 수정해야함
 		int enrollResult = mService.enrollMember(m);
 		
-		if(!profile.getFile().isEmpty()) { // 첨부 파일의 용량이 0이 아닌 경우
-			// GCS의 버킷에 저장할 파일 이름을 지정한다.
-			String rename = getRename(profile.getFile());
-			profile.setName(rename); 
-			
-			// DB에 저장할 이미지 파일 정보를 기록한다.
-			m.setProfileOrigin(profile.getFile().getOriginalFilename()); // 원본 파일명 -> 추후에 다운로드를 제공할 때 이용가능함
-			m.setProfileRename(rename); // 가공 파일명 -> 추후에 조회를 제공할 때 버킷에서 해당 파일을 찾을 수 있는 단서가 됨
-			m.setProfilePath("C:\\resumeManager_downloadFiles"); // GCS -> 로컬에 저장한 파일을 불러올 때 사용한다.
-			
-			try {
+		boolean result = false; // 가입 요청 결과가 성공인지 실패인지를 나타낼 플래그
+		
+		try {
+			if(!profile.getFile().isEmpty()) { // 첨부 파일의 용량이 0이 아닌 경우
+				// GCS의 버킷에 저장할 파일 이름을 지정한다.
+				String rename = getRename(profile.getFile());
+				profile.setName(rename); 
+				
+				// DB에 저장할 이미지 파일 정보를 기록한다.
+				m.setProfileOrigin(profile.getFile().getOriginalFilename()); // 원본 파일명 -> 추후에 다운로드를 제공할 때 이용가능함
+				m.setProfileRename(rename); // 가공 파일명 -> 추후에 조회를 제공할 때 버킷에서 해당 파일을 찾을 수 있는 단서가 됨
+				m.setProfilePath("C:\\resumeManager_downloadFiles"); // GCS -> 로컬에 저장한 파일을 불러올 때 사용한다.
+				
+				
 				gContoller.objectUpload(profile); // GCS의 버킷에 업로드를 요청한다.
 				
 				int imageResult = mService.enrollImage(m);
 				
 				if(imageResult > 0) { // 회원가입 성공
-					
+					result = true;
 				} else { // 회원가입 실패
-					
+					result = false;
 				}
-				
-				
-			} catch (IOException e) {
-				e.printStackTrace();
+			} else {
+				if(enrollResult > 0) { // 회원가입 성공
+					result = true;
+				} else { // 회원가입 실패
+					result = false;
+				}
 			}
-		} else {
-			if(enrollResult > 0) { // 회원가입 성공
-				
-			} else { // 회원가입 실패
-				
+			
+			String msg = null; // 가입 요청 결과에 대한 안내문구를 저장할 문자열 선언 및 초기화
+			response.setContentType("text/html; charset=UTF-8"); // 가입 요청 결과를 출력하기 위한 컨텐츠 타입을 지정함
+			if(result) { // 가입 요청 성공
+				msg = "회원가입이 성공하였습니다.";
+				response.getWriter().write("<script>alert('" + msg + "');</script>");
+			} else {
+				msg = "회원가입이 실패하였습니다.";
+				response.getWriter().write("<script>alert('" + msg + "');</script>");
 			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
-		System.out.println(m);
-		//Member(memberId=test, memberPwd=!@id235689, memberName=테스트, memberGender=M, mamgeAge=19890222, memberAddress=08719_서울 관악구 봉천동 963-8_테스트, memberPhone=01071430231, memberSocial=
-
-		
 		
 		return "index";
 	}
