@@ -24,7 +24,7 @@ public class GCSService {
 
     public void uploadObject(GCSRequest gcsRequest) throws IOException {
 
-        String keyFileName = "resumemanager-437401-3c8b8af994b7.json"; // 나의 json 파일 이름을 지정한다.
+        String keyFileName = "resumemanager-437401-375b06ed51be.json"; // 나의 json 파일 이름을 지정한다.
         InputStream keyFile = ResourceUtils.getURL("classpath:" + keyFileName).openStream();
 
         Storage storage = StorageOptions.newBuilder()
