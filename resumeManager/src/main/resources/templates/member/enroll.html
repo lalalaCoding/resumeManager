@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Resume History - 회원가입</title>
+	<!-- CSS 파일 -->
+	<link href="css/enroll.css" rel="stylesheet" type="text/css"/>
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<!-- 다음 우편번호 API -->
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+<body>
+	<div th:replace="~{common/header.html :: header}"></div> <!-- 조각코드 내에 BootStrap CDN이 포핟뫼어있음. --> 
+	<div id="wrapper">
+		<div><!-- 왼쪽 공백 --></div>
+		<div>
+			<h1>회원 가입</h1>
+			<form id="submit" enctype="multipart/form-data" action="enrollMember.me" method="post">
+			<table class="table table-hover align-middle">
+				<tr>
+					<td>프로필 사진</td>
+					<td>
+						<div id="profileDiv" class="form-text">
+							<img src="image/icon/profile_male.png" style="width: 100%; height: 100%;"/>
+						</div>
+						<div id="profileBtns">
+							<input type="file" id="profile" name="file" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
+							<br/>
+							<button id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>아이디</td>
+					<td>
+						<input type="text" id="memberId" name="memberId" class="form-control" size="10" style="width:300px; display:inline-block;"/>
+						<span id="idCheckResult" class="badge rounded-pill text-bg-light">아이디 중복을 확인합니다.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>비밀번호</td>
+					<td>
+						<input type="password" id="memberPwd" name="memberPwd" class="form-control"/>
+						<span id="pwdCheckResult" class="badge rounded-pill text-bg-light">특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>비밀번호 확인</td>
+					<td>
+						<input type="password" id="memberPwdConfirm" class="form-control"/>
+						<span id="pwdConfirmResult" class="badge rounded-pill text-bg-light">동일한 비밀번호를 입력해주세요.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>이름</td>
+					<td>
+						<input type="text" name="memberName" class="form-control"/>
+					</td>
+				</tr>
+				<tr>
+					<td>성별</td>
+					<td>
+						<label><input type="radio" class="form-check-input" name="memberGender" value="M"> 남</label>
+						<label><input type="radio" class="form-check-input" name="memberGender" value="F"> 여</label>
+					</td>
+				</tr>
+				<tr>
+					<td>생년월일</td>
+					<td>
+						<input type="number" id="memberAge" class="form-control"/>
+						<span id="ageCheckResult" class="badge rounded-pill text-bg-light">YYMMdd의 형식으로 입력해주세요.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>주소</td>
+					<td>
+						<input type="text" class="form-control memberAddress" placeholder="우편번호" readOnly/>
+						<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
+						<br/>
+						<input type="text" class="form-control memberAddress" placeholder="기본 주소 입력" readOnly/>
+						<input type="text" class="form-control memberAddress" placeholder="상세 주소 입력"/>
+						<input type="hidden" name="memberAddress"/>
+					</td>
+				</tr>
+				<tr>
+					<td>이메일</td>
+					<td>
+						<input type="text" class="form-control memberEmail"/>
+						@
+						<select class="form-select memberEmail">
+							<option>-</option>
+							<option>naver.com</option>
+							<option>google.com</option>
+							<option>hanmail.net</option>
+						</select>
+						<input type="hidden" name="memberEmail"/>
+					</td>
+				</tr>
+				<tr>
+					<td>휴대전화</td>
+					<td>
+						<input type="number" class="form-control phoneNumber" min="0"/>
+						-
+						<input type="number" class="form-control phoneNumber" min="0"/>
+						-
+						<input type="number" class="form-control phoneNumber" min="0"/>
+						<button type="button" id="phoneCheck" class="btn btn-primary">인증하기</button>
+						<input type="hidden" name="memberPhone"/>
+					</td>
+				</tr>
+				<tr>
+					<td>휴대전화 인증</td>
+					<td>
+						<input type="text" class="form-control phoneConfirm" disabled/>
+						<button type="button" class="btn btn-primary phoneConfirm" disabled>인증확인</button>
+						<span class="badge rounded-pill text-bg-light phoneConfirm">문자 인증이 필요합니다.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>히스토리 공개</td>
+					<td>
+						<label><input type="radio" class="form-check-input" name="memberHistory" value="Y"/> Y</label>
+						<label><input type="radio" class="form-check-input" name="memberHistory" value="N"/> N</label>
+					</td>
+				</tr>
+			</table>
+			</form>
+			<div class="text-center">
+				<button id="enrollBtn" class="btn btn-danger" style="width: 600px;">회원가입</button>
+			</div>
+		</div>
+		<div><!-- 오른쪽 공백 --></div>
+	</div>
+	<br/>
+	<div th:replace="~{common/footer :: footer}"></div>
+</body>
+
+<script th:inline="javascript">
+	window.onload = () => {
+		// 프로필 미리보기 기능 (시작)
+		const file = document.querySelector('#profile'); // 프로필 파일 등록 input 요소
+		const preview = document.querySelector('#profileDiv img'); // 미리보기 img 요소
+		
+		file.addEventListener('change', () => { // 첨부파일 변경에 대한 이벤트
+			const fileReader = new FileReader(); // FileReader 객체 생성
+			// 사용자 첨부 파일을 base 64 데이터로 변환한다. 
+			// 변환이 완료되면 FileReader객체의 load 이벤트가 동작한다. (load이벤트의 트리거라는 의미)
+			// file.files == 첨부한 파일 리스트
+			if(file.value != ''){
+				fileReader.readAsDataURL(file.files[0]); 
+			}
+			
+			fileReader.onload = function(e) {
+				preview.src = this.result; // result == 첨부 이미지를 Base64 암호화된 결과물
+				preview.style.width = '100%';
+				preview.style.width = '100%';
+			}
+		});
+		// 프로필 미리보기 기능(끝)
+		
+		// 프로필 미리보기 제거 기능(시작)
+		document.querySelector('#removeProfile').addEventListener('click', () => {
+			file.value = ''; // 첨부 파일 입력 요소를 초기화
+			preview.src = 'image/icon/profile_male.png'; // 미리보기 이미지 요소를 임시 이미지로 지정함
+		});
+		// 프로필 미리보기 제거 기능(끝)
+		
+		// 아이디 중복 확인(시작) 
+		const infoClass = (element) => {
+			element.classList.remove('text-bg-light');
+			element.classList.remove('text-bg-danger');
+			element.classList.add('text-bg-info');
+		}
+		
+		const dangerClass = (element) => {
+			element.classList.remove('text-bg-light');
+			element.classList.remove('text-bg-info');
+			element.classList.add('text-bg-danger');
+		}
+		
+		const lightClass = (element) => {
+			element.classList.remove('text-bg-danger');
+			element.classList.remove('text-bg-info');
+			element.classList.add('text-bg-light');
+		}
+		
+		const memberId = document.querySelector('#memberId');
+		const idCheckResult = document.querySelector('#idCheckResult');
+		let idFlag = false;
+		memberId.addEventListener('change', () => { // value 값이 변경되었고 초점을 잃었을 때 1번만 발생시키자.
+			
+			if(memberId.value.trim() == ''){ // 아이디 입력 값이 없을 때
+				lightClass(idCheckResult);
+				idCheckResult.textContent = '아이디 중복을 확인합니다.';
+				idFlag = false;
+			} else{ // 아이디 입력 값이 있을 때 -> 중복 확인 & 결과 출력
+				$.ajax({
+					url: 'checkId.me',
+					data: {memberId : memberId.value},
+					success: data => {
+						if(data == 'yes'){ // 사용가능한 아이디
+							infoClass(idCheckResult);
+							idCheckResult.textContent = '사용 가능 아이디입니다.';
+							idFlag = true;
+						} else{ // 사용불가능한 아이디
+							dangerClass(idCheckResult);
+							idCheckResult.textContent = '사용 불가능 아이디입니다.';
+							idFlag = false;
+						}
+					},
+					error: data => {
+						console.log(data);
+					}
+				});
+			}
+		});
+		// 아이디 중복 확인(끝) 
+		
+		// 비밀번호 유효성 검사 (시작)
+		const memberPwd = document.querySelector('#memberPwd');
+		let inputPwd;
+		let pwdFlag = false;
+		const pwdCheckResult = document.querySelector('#pwdCheckResult');
+		const specialRegex = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/g; // 특수문자 정규표현식
+		const normalRegex = /[a-zA-Z가-힣ㄱ-ㅎ]/g; // 일반문자 정규표현식
+		
+		memberPwd.addEventListener('change', () => {
+			inputPwd = memberPwd.value.trim();
+			
+			if(inputPwd == ''){ // 비밀번호 입력값이 없을 때
+				lightClass(pwdCheckResult);
+				pwdCheckResult.textContent = '특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.';
+				pwdFlag = false;
+			} else{ // 비밀번호 입력값이 있을 때
+				// 문자열.match(정규식) -> 정규표현식에 포함된 문자들로 이루어진 배열을 반환해준다. (부합되지 않을 때는 null이 반환됨)
+				let specialArr = inputPwd.match(specialRegex);
+				let normalArr = inputPwd.match(normalRegex);
+				let lengthCheck;
+				
+				if(inputPwd.length >= 8 && inputPwd.length <=20) {
+					lengthCheck = true;
+				} else{
+					lengthCheck = false;
+				}
+				
+				if(specialArr == null || normalArr == null || !lengthCheck){
+					// 올바르지 않은 비밀번호 형식
+					dangerClass(pwdCheckResult);
+					pwdFlag = false;
+					pwdCheckResult.textContent = '사용 불가능 비밀번호입니다.';
+				} else{
+					// 특수문자 1개 이상, 일반문자 1개 이상이 포함된 경우 (올바른 비밀번호 형식)
+					infoClass(pwdCheckResult);
+					pwdCheckResult.textContent = '사용 가능 비밀번호입니다.';
+				}
+			}
+		})
+		// 비밀번호 유효성 검사 (끝)
+		
+		// 비밀번호 일치 검사 (시작)
+		const memberPwdConfirm = document.querySelector('#memberPwdConfirm');
+		const pwdConfirmResult = document.querySelector('#pwdConfirmResult');
+		
+		memberPwdConfirm.addEventListener('change', () => {
+			if(inputPwd == memberPwdConfirm.value.trim()){ // 비밀번호가 일치하는 경우
+				infoClass(pwdConfirmResult);
+				pwdFlag = true;	
+				pwdConfirmResult.textContent = '비밀번호가 일치합니다.';
+			} else{ // 비밀번호가 일치하지 않는 경우
+				dangerClass(pwdConfirmResult);
+				pwdFlag = false;
+				pwdConfirmResult.textContent = '비밀번호가 일치하지 않습니다.';
+				memberPwdConfirm.value = '';
+				memberPwdConfirm.focus();
+			}
+		});
+		// 비밀번호 일치 검사 (끝)
+		
+		// 생년월일 유효성 검사 (시작)
+		let ageFlag = false;
+		const memberAge = document.querySelector('#memberAge');
+		const ageCheckResult = document.querySelector('#ageCheckResult');
+		const ageRegex = /[0-9]{8}/g; // 숫자가 8개인 패턴
+		
+		memberAge.addEventListener('change', function() {
+			if(ageRegex.test(this.value.trim())){
+				lightClass(ageCheckResult);
+				ageFlag = true;
+			} else{
+				dangerClass(ageCheckResult);
+				ageFlag = false;
+			}
+		});
+		// 생년월일 유효성 검사 (끝)
+		
+		// 주소 검색 및 입력 (시작)
+		const searchAddress = document.querySelector('#searchAddress');
+		const memberAddress = document.querySelectorAll('.memberAddress');
+		
+		searchAddress.addEventListener('click', () => {
+			new daum.Postcode({
+				oncomplete: function(data) {
+					// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+					// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+					let addr = ''; // 주소 변수
+
+					//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+					if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+						addr = data.roadAddress;
+					} else { // 사용자가 지번 주소를 선택했을 경우(J)
+						addr = data.jibunAddress;
+					}
+					
+					memberAddress[0].value = data.zonecode; // 우편번호 입력
+					memberAddress[1].value = addr; // 기본주소 입력
+					memberAddress[2].focus(); // 상세주소 입력요소로 커서가 이동
+				}
+		    }).open();
+		});
+		// 주소 검색 및 입력 (끝)
+		
+		// 휴대전화 인증 요청 (시작)
+		const phoneCheck = document.querySelector('#phoneCheck');
+		const phoneConfirm = document.querySelectorAll('.phoneConfirm');
+		phoneCheck.addEventListener('click', () => {
+			const phoneNumbers = document.querySelectorAll('.phoneNumber');
+			let phoneNumber = '';
+			for(const n of phoneNumbers){
+				phoneNumber += n.value;
+			}
+			if(phoneNumber.length == 11){ // 전화번호가 11자리로서 정상이라 판단되는 경우
+				$.ajax({
+					url : '/send-one',
+					type : 'post',
+					data : {phoneNumber : phoneNumber},
+					success : data => {
+						console.log(data);
+						if(data.statusCode == '2000'){ // 문자가 정상적으로 전송된 경우 -> 1분간 인증번호를 입력될 수 있게 한다.
+							phoneConfirm[0].disabled = false;
+							phoneConfirm[1].disabled = false;
+							lightClass(phoneConfirm[2]);
+							phoneConfirm[2].textContent = '인증 번호를 1분 내에 확인해주세요.';
+							
+							setTimeout(() => {
+								if(!phoneFlag){ // 인증이 실패한 상태일 때
+									phoneConfirm[0].disabled = true;
+									phoneConfirm[1].disabled = true;
+									dangerClass(phoneConfirm[2]);
+									phoneConfirm[2].textContent = '인증 시간이 만료되었습니다.';
+								}
+							}, 1000*60); // 60초 동안만 인증 번호를 확인할 수 있도록 한다.
+						}
+					},
+					error : data => {
+						console.log(data);
+					}
+				});
+			} else{ // 전화번호가 11자리가 아니어서 비정상이라 판단되는 경우
+				alert('전화번호를 다시 입력해주세요.');
+				phoneNumbers[0].focus(); 
+			}
+			
+		});
+		// 휴대전화 인증 요청 (끝)
+		
+		// 휴대전화 인증 번호 확인 요청 (시작)
+		let phoneFlag = false;
+		phoneConfirm[1].addEventListener('click', () => {
+			$.ajax({
+				url : 'get-code',
+				type: 'post',
+				success : data => {
+					if(phoneConfirm[0].value == data){ // 인증번호를 정상적으로 입력하였을 때
+						infoClass(phoneConfirm[2]);
+						phoneConfirm[2].textContent = '인증이 확인되었습니다.';
+						phoneFlag = true;
+						
+						phoneConfirm[0].disabled = true;
+						phoneConfirm[1].disabled = true;
+						
+					} else{ // 인증번호가 틀렸을 때
+						dangerClass(phoneConfirm[2]);
+						phoneConfirm[2].textContent = '인증 번호가 올바르지 않습니다.';
+						phoneFlag = false;
+					}
+				},
+				error : data => {
+					console.log(data);
+				}
+			});
+		});
+		// 휴대전화 인증 번호 확인 요청 (끝)
+		
+		// 유효성 검사 요청 (시작)
+		const checkvalid = () => {
+			// 이름 유효성 검사
+			let nameFlag = false;
+			const memberName = document.getElementsByName('memberName')[0];
+			if(memberName.value.trim().length > 0){
+				nameFlag = true;
+			}
+			
+			// 성별 유효성 검사
+			let genderFlag = false;
+			const memberGender = document.getElementsByName('memberGender');
+			for(const g of memberGender){
+				if(g.checked){
+					genderFlag = true;
+				}
+			}
+			
+			// 주소 유효성 검사 및 합병하기
+			let addressFlag = false;
+			const addressResult = document.getElementsByName('memberAddress')[0];
+			for(let i = 0; i < memberAddress.length; i++){
+				if(i != memberAddress.length - 1){
+					addressResult.value += memberAddress[i].value + '_';
+				} else{
+					addressResult.value += memberAddress[i].value;
+				}
+			}
+			
+			if(memberAddress[0].value.trim().length > 0){
+				addressFlag = true;
+			} else{
+				addressFlag = false;
+			}
+			
+			// 이메일 유효성 검사 및 합병하기
+			let emailFlag = false;
+			const emailResult = document.getElementsByName('memberEmail')[0];
+			const memberEmail = document.querySelectorAll('.memberEmail');
+			
+			if(memberEmail[0].value.trim().length > 0 && memberEmail[1].value != '-'){
+				emailFlag = true;
+				emailResult.value = memberEmail[0].value.trim() + '@' + memberEmail[1].value;
+			}
+			
+			// 휴대폰 번호 합병하기 
+			if(phoneFlag){
+				const phoneResult = document.getElementsByName('memberPhone')[0];
+				const phoneNumbers = document.querySelectorAll('.phoneNumber');
+				for(const n of phoneNumbers){
+					phoneResult.value += n.value;
+				}
+			}
+			
+			// 히스토리 유효성 검사
+			let historyFlag = false;
+			const memberHistory = document.getElementsByName('memberHistory');
+			for(const g of memberHistory){
+				if(g.checked){
+					historyFlag = true;
+				}
+			}
+			
+			if(idFlag && pwdFlag && nameFlag && genderFlag && ageFlag && addressFlag && emailFlag && phoneFlag && historyFlag){
+				return true;
+			} else{
+				return false;
+			}
+		}
+		
+		
+		
+		
+		// 유효성 검사 요청 (끝)
+		
+		// 회원 가입 요청 (시작)
+		const enrollBtn = document.querySelector('#enrollBtn');
+		const submit = document.querySelector('#submit');
+		enrollBtn.addEventListener('click', () => {
+			if(checkvalid()){
+				submit.submit();
+			} else{
+				alert('입력 정보가 누락되었습니다. 다시 입력해주세요.');
+			}
+			
+		});
+		// 회원 가입 요청 (끝)
+		
+		
+	}
+</script>
+</html>
