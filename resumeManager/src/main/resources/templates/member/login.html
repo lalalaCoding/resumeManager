@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Resume History - 로그인</title>
+	<!-- CSS 파일 -->
+	<link href="css/login.css" rel="stylesheet" type="text/css"/>
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div th:replace="~{common/header :: header}"></div>
+	<div id="wrapper">
+		<div><!-- 왼쪽 공백 --></div>
+		<div >
+			<div>
+				<form method="post" action="login.me">
+					<table>
+						<tr>
+							<td>아이디</td>
+							<td>
+								<input type="text" name="memberId" class="form-control"/>
+							</td>
+						</tr>
+						<tr>
+							<td>비밀번호</td>
+							<td>
+								<input type="password" name="memberPwd" class="form-control"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<button type="button" class="btn btn-primary">로그인</button>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			
+			<br/><br/>
+			
+			<div>
+				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+					<ol class="breadcrumb">
+				    	<li class="breadcrumb-item"><a href="#">아이디 찾기</a></li>
+				    	<li class="breadcrumb-item"><a href="#">비밀번호 찾기</a></li>
+				    	<li class="breadcrumb-item"><a href="enrollPage.me">회원 가입</a></li>
+				  	</ol>
+				</nav>
+			</div>
+			
+			<br/><br/>
+			
+			<div>
+				간편 로그인
+				<br/>
+				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+					<ol class="breadcrumb">
+				    	<li class="breadcrumb-item"><a href="#">카카오</a></li>
+				    	<li class="breadcrumb-item"><a href="#">네이버</a></li>
+				    	<li class="breadcrumb-item"><a href="#">구글</a></li>
+				  	</ol>
+				</nav>
+			</div>
+		</div>
+		<div><!-- 오른쪽 공백 --></div>
+	</div>
+	
+	
+	
+	
+	
+	<div th:replace="~{common/footer :: footer}"></div>
+</body>
+</html>

@@ -42,7 +42,7 @@ public class MemberController {
 		return "common/footer";
 	}
 	
-	@GetMapping("enroll.me") // 회원가입 페이지로 이동
+	@GetMapping("enrollPage.me") // 회원가입 페이지로 이동
 	public String enrollPage() {
 		return "member/enroll";
 	}
@@ -72,14 +72,12 @@ public class MemberController {
 				m.setProfileOrigin(profile.getFile().getOriginalFilename()); // 원본 파일명 -> 추후에 다운로드를 제공할 때 이용가능함
 				m.setProfileRename(rename); // 가공 파일명 -> 추후에 조회를 제공할 때 버킷에서 해당 파일을 찾을 수 있는 단서가 됨
 				m.setProfilePath("C:\\resumeManager_downloadFiles"); // GCS -> 로컬에 저장한 파일을 불러올 때 사용한다.
-				 
-				
-				gContoller.objectUpload(profile); // GCS의 버킷에 업로드를 요청한다.
 				
 				int imageResult = mService.enrollImage(m);
 				
 				if(imageResult > 0) { // 회원가입 성공
 					result = true;
+					gContoller.objectUpload(profile); // DB에 회원 정보 삽입이 성공했을 때만, GCS의 버킷에 업로드를 요청한다.
 				} else { // 회원가입 실패
 					result = false;
 				}
@@ -121,6 +119,12 @@ public class MemberController {
 		String fileType = originalName.substring(dotIndex); // ".jpg"와 같은 형태
 		return millisecond + "_" + random + fileType; // "현재시각에 대한 밀리초_랜덤숫자.확장자"
 	}
+	
+	@GetMapping("loginPage.me")
+	public String loginPage() {
+		return "member/login";
+	}
+	
 	
 	
 	
