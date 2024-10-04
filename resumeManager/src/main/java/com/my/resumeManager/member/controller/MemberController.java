@@ -72,7 +72,7 @@ public class MemberController {
 				m.setProfileOrigin(profile.getFile().getOriginalFilename()); // 원본 파일명 -> 추후에 다운로드를 제공할 때 이용가능함
 				m.setProfileRename(rename); // 가공 파일명 -> 추후에 조회를 제공할 때 버킷에서 해당 파일을 찾을 수 있는 단서가 됨
 				m.setProfilePath("C:\\resumeManager_downloadFiles"); // GCS -> 로컬에 저장한 파일을 불러올 때 사용한다.
-				
+				 
 				
 				gContoller.objectUpload(profile); // GCS의 버킷에 업로드를 요청한다.
 				
