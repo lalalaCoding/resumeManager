@@ -1,11 +1,35 @@
 @charset "UTF-8";
 
+/* 전체 컨테이너 레이아웃 설정 */
 #wrapper{display:grid; grid-template-columns: 1fr 1280px 1fr;}
 
+/* 아이디, 비밀번호 입력 요소의 너비 조정 */
+.form-control{width: 300px !important; }
 
+/* 비밀번호 요소와 눈알 아이콘의 위치 조정 */
+.pwdDiv{
+    position: relative;
+    padding: 20px;
+}
+.pdwDiv input{
+    width: 300px;
+    height: 30px;
+    background-color: black;
+    border: 0;
+    color: white;
+    text-indent: 10px;
+}
+.pwdDiv i{
+    position: absolute;
+    left: 85%;
+    top: 27px;
+    color: orange;
+}
 
-
-
+/* 눈알 아이콘에 대한 호버 효과 지정 */
+i:hover {
+	cursor: pointer;
+}
 
 
 

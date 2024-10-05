@@ -3,10 +3,14 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Resume History - 로그인</title>
+	<!-- 페이지명 왼쪽에 아이콘 삽입 -->
+	<link rel="shortcut icon" href="image/icon/logo.png">
 	<!-- CSS 파일 -->
-	<link href="css/login.css" rel="stylesheet" type="text/css"/>
+	<link href="css/login.css?after" rel="stylesheet" type="text/css"/>
 	<!-- jQuery CDN -->
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<!-- Bootstrap icon -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
 	<div th:replace="~{common/header :: header}"></div>
@@ -14,23 +18,27 @@
 		<div><!-- 왼쪽 공백 --></div>
 		<div >
 			<div>
-				<form method="post" action="login.me">
+				<form method="post" action="login.me" id="loginForm">
 					<table>
 						<tr>
 							<td>아이디</td>
 							<td>
-								<input type="text" name="memberId" class="form-control"/>
+								<input type="text" name="memberId" class="form-control" placeholder="아이디를 입력해주세요"/>
 							</td>
 						</tr>
 						<tr>
 							<td>비밀번호</td>
 							<td>
-								<input type="password" name="memberPwd" class="form-control"/>
+								<div class="pwdDiv">
+									<!-- active 클래스가 있을 때는 type이 password이고, 없을 때는 type이 text여야 한다. -->
+									<input type="password" name="memberPwd" class="form-control active" placeholder="비밀번호를 입력해주세요"/>
+									<i class="bi bi-eye-slash"></i> <!-- <i class="bi bi-eye"></i> -->
+								</div>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<button type="button" class="btn btn-primary">로그인</button>
+								<button type="button" id="loginBtn" class="btn btn-primary">로그인</button>
 							</td>
 						</tr>
 					</table>
@@ -67,9 +75,50 @@
 	</div>
 	
 	
-	
-	
-	
 	<div th:replace="~{common/footer :: footer}"></div>
+	
+	<script>
+		window.onload = () => {
+			// 비밀번호 보이기와 감추기 토글 기능(시작)
+			const iTag = document.querySelector('.bi'); // 요소의 갯수가 하나뿐이기 때문에 querySelectorAll을 사용하진 않았음.		
+			const memberPwd = document.getElementsByName('memberPwd')[0];
+			iTag.addEventListener('click', () => {
+				memberPwd.classList.toggle('active');
+				if(memberPwd.className.includes('active')){ // 비밀번호 감추기
+					iTag.classList.remove('bi-eye');
+					iTag.classList.add('bi-eye-slash');
+					memberPwd.setAttribute('type', 'password');
+				} else{ // 비밀번호 보이기
+					iTag.classList.remove('bi-eye-slash');
+					iTag.classList.add('bi-eye');
+					memberPwd.setAttribute('type', 'text');
+				}
+			});
+			// 비밀번호 보이기와 감추기 토글 기능(끝)
+			
+			// 로그인 요청 (시작)
+			const loginForm = document.querySelector('#loginForm');
+			const loginBtn = document.querySelector('#loginBtn');
+			const memberId = document.getElementsByName('memberId')[0];
+			loginBtn.addEventListener('click', () => {
+				
+				const inputId = memberId.value.trim();
+				const inputPwd = memberPwd.value.trim();
+				
+				if(inputId.length > 0 && inputPwd > 0){ // 아이디와 비밀번호에 실제 입력값이 존재하는 경우
+					loginForm.submit();
+				} else if(inputId.length == 0){ // 아이디가 공백인 경우
+					alert('아이디를 입력해주세요.');
+					memberId.value = '';
+					memberId.focus();
+				} else{ // 비밀번호가 공백인 경우
+					alert('비밀번호를 입력해주세요.');
+					memberPwd.value = '';
+					memberPwd.focus();
+				}
+			});
+			// 로그인 요청(끝)
+		}
+	</script>
 </body>
 </html>

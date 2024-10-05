@@ -25,6 +25,11 @@ public class MemberServiceImpl implements MemberService{
 	public int enrollImage(Member m) {
 		return mMapper.enrollImage(m);
 	}
+
+	@Override
+	public Member login(Member m) {
+		return mMapper.login(m);
+	}
 	
 	
 	

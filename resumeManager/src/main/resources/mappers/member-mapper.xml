@@ -23,4 +23,10 @@
 		INSERT INTO PROFILE_IMAGE VALUES(${memberNo}, #{profileOrigin}, #{profileRename}, #{profilePath})
 	</insert>
 
+	<!-- 로그인 : 아이디가 일치하는 회원조회 -->
+	<select id="login" resultType="Member">
+		SELECT * FROM MEMBER WHERE MEMBER_ID = #{memberId}
+	</select>
+	
+	
 </mapper> 

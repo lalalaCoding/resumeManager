@@ -1,6 +1,5 @@
 package com.my.resumeManager.member.controller;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MemberController {
@@ -125,8 +125,33 @@ public class MemberController {
 		return "member/login";
 	}
 	
-	
-	
+	@PostMapping("login.me")
+	public String login(@ModelAttribute Member m, HttpSession session, HttpServletResponse response) {
+		// id가 일치하는 회원을 조회
+		Member loginMember = mService.login(m);
+		String msg = null;
+		response.setContentType("text/html; charset=UTF-8");
+		
+		try {
+			if(loginMember != null) {
+				if(bCrypt.matches(m.getMemberPwd(), loginMember.getMemberPwd())) { // 비밀번호 일치
+					msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
+					session.setAttribute("loginMember", loginMember);
+					response.getWriter().write("<script>alert('" + msg +"');</script>");
+				} else {
+					msg = "회원 정보가 일치하지 않습니다.";
+					response.getWriter().write("<script>alert('" + msg +"');</script>");
+				}
+			} else {
+				msg = "회원 정보가 일치하지 않습니다.";
+				response.getWriter().write("<script>alert('" + msg +"');</script>");
+				return "redirect:loginPage.me";
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return "index";
+	}
 	
 	
 }

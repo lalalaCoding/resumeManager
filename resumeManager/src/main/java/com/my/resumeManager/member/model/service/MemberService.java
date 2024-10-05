@@ -10,4 +10,6 @@ public interface MemberService {
 
 	int enrollImage(Member m);
 
+	Member login(Member m);
+
 }
