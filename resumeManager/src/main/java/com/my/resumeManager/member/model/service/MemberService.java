@@ -12,4 +12,6 @@ public interface MemberService {
 
 	Member login(Member m);
 
+	Member checkNamePhone(Member m);
+
 }

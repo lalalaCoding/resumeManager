@@ -1,0 +1,20 @@
+@charset "UTF-8";
+/* 전체 컨테이너 레이아웃 설정 */
+#wrapper{display:grid; grid-template-columns: 1fr 1280px 1fr;}
+
+.form-control{display:inline-block !important; width:300px !important;}
+
+.phoneNumber{width: 100px !important;}
+
+/*input type="number"의 화살표 제거하기*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox  */
+input[type='number'] {
+  -moz-appearance: textfield;
+}

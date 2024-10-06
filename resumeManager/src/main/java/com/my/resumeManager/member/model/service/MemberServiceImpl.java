@@ -30,6 +30,11 @@ public class MemberServiceImpl implements MemberService{
 	public Member login(Member m) {
 		return mMapper.login(m);
 	}
+
+	@Override
+	public Member checkNamePhone(Member m) {
+		return mMapper.checkNamePhone(m);
+	}
 	
 	
 	

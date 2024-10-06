@@ -380,6 +380,19 @@
 						phoneConfirm[0].disabled = true;
 						phoneConfirm[1].disabled = true;
 						
+						// 인증을 완료했으므로 세션에서 해당 정보를 제거한다.
+						$.ajax({
+							url : 'sessionRemoveAttribute.cm',
+							type : 'post',
+							data : {name : data},
+							success: data => {
+								console.log('세션에서 인증번호 삭제함');
+							},
+							error : data => {
+								console.log('세션에서 인증번호 삭제 실패함');
+							}
+						});
+						
 					} else{ // 인증번호가 틀렸을 때
 						dangerClass(phoneConfirm[2]);
 						phoneConfirm[2].textContent = '인증 번호가 올바르지 않습니다.';
@@ -462,10 +475,6 @@
 				return false;
 			}
 		}
-		
-		
-		
-		
 		// 유효성 검사 요청 (끝)
 		
 		// 회원 가입 요청 (시작)

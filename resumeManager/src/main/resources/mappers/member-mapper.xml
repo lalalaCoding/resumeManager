@@ -28,5 +28,16 @@
 		SELECT * FROM MEMBER WHERE MEMBER_ID = #{memberId}
 	</select>
 	
+	<!-- 아이디 찾기 : 이름을 기준으로 이름과 전화번호 조회 -->
+	<select id="checkNamePhone" resultType="Member">
+	
+	
+	</select>
+	
+	
+	
+	
+	
+	
 	
 </mapper> 

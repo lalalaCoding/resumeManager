@@ -14,5 +14,7 @@ public interface MemberMapper {
 	int enrollImage(Member m);
 
 	Member login(Member m);
+
+	Member checkNamePhone(Member m);
 	
 }

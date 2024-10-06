@@ -1,5 +1,6 @@
 package com.my.resumeManager.member.controller;
 
+import java.io.IOException;
 import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.my.resumeManager.common.gcs.GCSController;
 import com.my.resumeManager.common.gcs.GCSRequest;
 import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
+import com.my.resumeManager.member.model.vo.MemberException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -55,13 +58,14 @@ public class MemberController {
 	}
 	
 	@PostMapping("enrollMember.me")
-	public String enrollMember(@ModelAttribute Member m, @ModelAttribute GCSRequest profile, HttpServletResponse response) {
+	public void enrollMember(@ModelAttribute Member m, @ModelAttribute GCSRequest profile, HttpServletResponse response) {
 		m.setMemberPwd(bCrypt.encode(m.getMemberPwd())); // 비밀번호 암호화
 		m.setMemberSocial('N'); // 소셜 로그인 유형 -> 임시로 N으로 지정하자. 소셜로그인을 구현할 때 수정해야함
+		
 		int enrollResult = mService.enrollMember(m);
 		
 		boolean result = false; // 가입 요청 결과가 성공인지 실패인지를 나타낼 플래그
-		
+		String msg = null; // 가입 요청 결과에 대한 안내문구를 저장할 문자열 선언 및 초기화
 		try {
 			if(!profile.getFile().isEmpty()) { // 첨부 파일의 용량이 0이 아닌 경우
 				// GCS의 버킷에 저장할 파일 이름을 지정한다.
@@ -88,21 +92,18 @@ public class MemberController {
 					result = false;
 				}
 			}
-			  
-			String msg = null; // 가입 요청 결과에 대한 안내문구를 저장할 문자열 선언 및 초기화
-			response.setContentType("text/html; charset=UTF-8"); // 가입 요청 결과를 출력하기 위한 컨텐츠 타입을 지정함
+			
 			if(result) { // 가입 요청 성공
 				msg = "회원가입이 성공하였습니다.";
-				response.getWriter().write("<script>alert('" + msg + "');</script>");
 			} else {
 				msg = "회원가입이 실패하였습니다.";
-				response.getWriter().write("<script>alert('" + msg + "');</script>");
 			}
+			response.setContentType("text/html; charset=UTF-8");
+			response.getWriter().write("<script>alert('" + msg +"'); location.href='/';</script>");
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		return "index";
 	}
 	
 	public String getRename(MultipartFile file) {
@@ -121,37 +122,77 @@ public class MemberController {
 	}
 	
 	@GetMapping("loginPage.me")
-	public String loginPage() {
+	public String loginPage(@RequestParam(value="msg", required=false) String msg, HttpServletResponse response) {
+		if(msg != null) {
+			try {
+				response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
+				response.getWriter().write("<script>alert('" + msg +"');</script>");
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		return "member/login";
 	}
 	
 	@PostMapping("login.me")
-	public String login(@ModelAttribute Member m, HttpSession session, HttpServletResponse response) {
+	public String login(@ModelAttribute Member m, HttpSession session, RedirectAttributes ra, HttpServletResponse response) {
 		// id가 일치하는 회원을 조회
 		Member loginMember = mService.login(m);
 		String msg = null;
-		response.setContentType("text/html; charset=UTF-8");
 		
-		try {
-			if(loginMember != null) {
-				if(bCrypt.matches(m.getMemberPwd(), loginMember.getMemberPwd())) { // 비밀번호 일치
-					msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
-					session.setAttribute("loginMember", loginMember);
-					response.getWriter().write("<script>alert('" + msg +"');</script>");
-				} else {
-					msg = "회원 정보가 일치하지 않습니다.";
-					response.getWriter().write("<script>alert('" + msg +"');</script>");
+		if(loginMember != null) {
+			if(bCrypt.matches(m.getMemberPwd(), loginMember.getMemberPwd())) { // 비밀번호 일치
+				msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
+				session.setAttribute("loginMember", loginMember);
+				try {
+					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
+					response.getWriter().write("<script>alert('" + msg +"'); location.href='/';</script>");// URL이 'http://localhost:8080/' 표현되기 위함
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			} else {
 				msg = "회원 정보가 일치하지 않습니다.";
-				response.getWriter().write("<script>alert('" + msg +"');</script>");
+				ra.addAttribute("msg", msg);
 				return "redirect:loginPage.me";
 			}
-		} catch(Exception e) {
-			e.printStackTrace();
+		} else {
+			msg = "회원 정보가 일치하지 않습니다.";
+			ra.addAttribute("msg", msg);
+			return "redirect:loginPage.me";
 		}
+		
 		return "index";
 	}
+	
+	@GetMapping("findPage.me")
+	public String findPage(@RequestParam("find") String find, HttpSession session) {
+		if(find != null) {
+			if(find.equals("id") || find.equals("pwd")) {
+				session.setAttribute("find", find); // 정보를 찾는 대상이 아이디인지, 비밀번호인지를 구분하는 플래그를 세션에 저장한다. 
+			} else {
+				new MemberException("잘못된 요청입니다");
+			}
+		} else {
+			new MemberException("잘못된 요청입니다.");
+		}
+		return "member/find";
+	}
+	
+	@PostMapping("check-name-phone.me")
+	@ResponseBody
+	public String checkNamePhone(@ModelAttribute Member m) {
+		// 이름은 2글자 이상이지만 보통 3글자 이므로 9바이트의 크기를 갖는다.
+		// 전화번호는 보통 11개의 숫자이므로 11바이트의 크기를 갖는다. 따라서 이름으로 조회한 이후에 전화번호를 컨트롤로에서 비교하는 것이 경제적이다.
+		Member searchMember = mService.checkNamePhone(m);
+		
+		
+		
+		
+		
+		return "success";
+	}
+	
 	
 	
 }

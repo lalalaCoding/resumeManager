@@ -16,7 +16,7 @@
 	<div th:replace="~{common/header :: header}"></div>
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>
-		<div >
+		<div>
 			<div>
 				<form method="post" action="login.me" id="loginForm">
 					<table>
@@ -105,7 +105,7 @@
 				const inputId = memberId.value.trim();
 				const inputPwd = memberPwd.value.trim();
 				
-				if(inputId.length > 0 && inputPwd > 0){ // 아이디와 비밀번호에 실제 입력값이 존재하는 경우
+				if(inputId.length > 0 && inputPwd.length > 0){ // 아이디와 비밀번호에 실제 입력값이 존재하는 경우
 					loginForm.submit();
 				} else if(inputId.length == 0){ // 아이디가 공백인 경우
 					alert('아이디를 입력해주세요.');
