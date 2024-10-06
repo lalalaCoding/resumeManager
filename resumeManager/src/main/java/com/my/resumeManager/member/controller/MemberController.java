@@ -162,7 +162,7 @@ public class MemberController {
 			return "redirect:loginPage.me";
 		}
 		
-		return "index";
+		return "home.do";
 	}
 	
 	@GetMapping("findPage.me")
