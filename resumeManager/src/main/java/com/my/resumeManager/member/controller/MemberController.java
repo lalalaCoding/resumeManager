@@ -1,6 +1,7 @@
 package com.my.resumeManager.member.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,16 +182,23 @@ public class MemberController {
 	
 	@PostMapping("check-name-phone.me")
 	@ResponseBody
-	public String checkNamePhone(@ModelAttribute Member m) {
+	public Member checkNamePhone(@ModelAttribute Member m) {
 		// 이름은 2글자 이상이지만 보통 3글자 이므로 9바이트의 크기를 갖는다.
 		// 전화번호는 보통 11개의 숫자이므로 11바이트의 크기를 갖는다. 따라서 이름으로 조회한 이후에 전화번호를 컨트롤로에서 비교하는 것이 경제적이다.
-		Member searchMember = mService.checkNamePhone(m);
+		// Non Unique INDEX 사용 -> 회원 이름, 전화번호, 회원 번호를 조회한다.
+		ArrayList<Member> searchMember = mService.checkNamePhone(m);
 		
+		boolean result = false;
+		Member findMember = null;
+		for(Member mem : searchMember) { // 동일 이름을 갖는 회원 중 전화번호가 일치하는 회원이 존재하는지 확인
+			if(mem.getMemberPhone().equals(m.getMemberPhone())) {
+				result = true;
+				findMember = mem;
+				break;
+			}
+		}
 		
-		
-		
-		
-		return "success";
+		return findMember;
 	}
 	
 	

@@ -1,5 +1,7 @@
 package com.my.resumeManager.member.model.dao;
 
+import java.util.ArrayList;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.my.resumeManager.member.model.vo.Member;
@@ -15,6 +17,6 @@ public interface MemberMapper {
 
 	Member login(Member m);
 
-	Member checkNamePhone(Member m);
+	ArrayList<Member> checkNamePhone(Member m);
 	
 }

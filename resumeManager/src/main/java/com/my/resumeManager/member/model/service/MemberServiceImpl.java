@@ -1,5 +1,7 @@
 package com.my.resumeManager.member.model.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,7 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public Member checkNamePhone(Member m) {
+	public ArrayList<Member> checkNamePhone(Member m) {
 		return mMapper.checkNamePhone(m);
 	}
 	

@@ -28,10 +28,11 @@
 		SELECT * FROM MEMBER WHERE MEMBER_ID = #{memberId}
 	</select>
 	
-	<!-- 아이디 찾기 : 이름을 기준으로 이름과 전화번호 조회 -->
+	<!-- 아이디 찾기 : 이름을 기준으로 이름과 전화번호, 회원번호 조회 -->
 	<select id="checkNamePhone" resultType="Member">
-	
-	
+		SELECT /*+ INDEX_ASC(MEMBER IDX_MEMBER_NAME)*/MEMBER_NAME, MEMBER_PHONE, MEMBER_NO
+		FROM MEMBER
+		WHERE MEMBER_NAME = #{memberName}
 	</select>
 	
 	

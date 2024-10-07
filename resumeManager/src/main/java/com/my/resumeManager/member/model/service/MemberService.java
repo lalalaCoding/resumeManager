@@ -1,5 +1,7 @@
 package com.my.resumeManager.member.model.service;
 
+import java.util.ArrayList;
+
 import com.my.resumeManager.member.model.vo.Member;
 
 public interface MemberService {
@@ -12,6 +14,6 @@ public interface MemberService {
 
 	Member login(Member m);
 
-	Member checkNamePhone(Member m);
+	ArrayList<Member> checkNamePhone(Member m);
 
 }
