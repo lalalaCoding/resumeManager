@@ -35,6 +35,24 @@
 		WHERE MEMBER_NAME = #{memberName}
 	</select>
 	
+	<!-- 회원 번호가 일치하는 회원 정보 조회 -->
+	<select id="selectMemberNo" resultType="Member">
+		SELECT * FROM MEMBER WHERE MEMBER_NO = ${memberNo}
+	</select>
+	
+	<!-- 비밀번호 찾기 : 아이디를 기준으로 아이디와 전화번호, 회원번호 조회 -->
+	<select id="checkIdPhone" resultType="Member">
+		SELECT MEMBER_ID, MEMBER_PHONE, MEMBER_NO
+		FROM MEMBER
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+	
+	<!-- 비밀번호 수정 -->
+	<update id="pwdModify">
+		UPDATE MEMBER
+		SET MEMBER_PWD = #{memberPwd}
+		WHERE MEMBER_NO = ${memberNo}
+	</update>
 	
 	
 	

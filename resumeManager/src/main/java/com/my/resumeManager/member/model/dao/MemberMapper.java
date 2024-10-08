@@ -18,5 +18,11 @@ public interface MemberMapper {
 	Member login(Member m);
 
 	ArrayList<Member> checkNamePhone(Member m);
+
+	Member selectMemberNo(int memberNo);
+
+	ArrayList<Member> checkIdPhone(Member m);
+
+	int pwdModify(Member m);
 	
 }

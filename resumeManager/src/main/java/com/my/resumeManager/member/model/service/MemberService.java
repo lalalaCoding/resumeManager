@@ -16,4 +16,10 @@ public interface MemberService {
 
 	ArrayList<Member> checkNamePhone(Member m);
 
+	Member selectMemberNo(int memberNo);
+
+	ArrayList<Member> checkIdPhone(Member m);
+
+	int pwdModify(Member m);
+
 }

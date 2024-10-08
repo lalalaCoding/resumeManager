@@ -17,10 +17,7 @@
 	</style>
 </head>
 <body>
-	<!-- Header와 Footer 확인용 버튼 -->
-	<button onclick="location.href='header.test'">Header 확인</button>
-	<br/>
-	<button onclick="location.href='footer.test'">Footer 확인</button>
+	<div th:replace="~{common/header :: header}"></div>
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>
 		<div id="indexContainer">
@@ -43,6 +40,7 @@
 		<div><!-- 오른쪽 공백 --></div>
 	</div>
 	
+	<div th:replace="~{common/footer :: footer}"></div>
 	<script th:inline="javascript">
 		
 	</script>

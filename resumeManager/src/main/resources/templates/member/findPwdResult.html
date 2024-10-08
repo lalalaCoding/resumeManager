@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>아이디 찾기 결과 페이지</title>
+</head>
+<body>
+	<div th:replace="~{common/header :: header}"></div>
+	<div id="wrapper">
+		<div><!-- 왼쪽 공백 --></div>
+		<div>
+			<form id="pwdModifyForm" method="post" action="pwdModify.me">
+				<table class="table">
+					<tr>
+						<td>비밀번호 재설정</td>
+					</tr>
+					<tr>
+						<td>비밀번호</td>
+						<td>
+							<input type="hidden" name="memberNo" th:value="${findMember.memberNo}"/>
+							<input type="password" id="memberPwd" name="memberPwd" class="form-control"/>
+							<span id="pwdCheckResult" class="badge rounded-pill text-bg-light">특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>비밀번호 확인</td>
+						<td>
+							<input type="password" id="memberPwdConfirm" class="form-control"/>
+							<span id="pwdConfirmResult" class="badge rounded-pill text-bg-light">동일한 비밀번호를 입력해주세요.</span>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<br/>
+			
+			<div class="text-center">
+				<button id="pwdModifyBtn" class="btn btn-danger" style="width: 600px;" disabled>비밀번호 수정</button>
+			</div>
+			
+			<br/><br/>
+			
+			<div>
+				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+					<ol class="breadcrumb">
+				    	<li class="breadcrumb-item active" aria-current="page">비밀번호 찾기</li>
+				    	<li class="breadcrumb-item"><a href="loginPage.me">로그인</a></li>
+				  	</ol>
+				</nav>
+			</div>
+			
+		</div>
+		<div><!-- 오른쪽 공백 --></div>
+	</div>
+	
+	<div th:replace="~{common/footer :: footer}"></div>
+	
+	<script>
+		window.onload = () => {
+			const infoClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-danger');
+				element.classList.add('text-bg-info');
+			}
+			
+			const dangerClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-danger');
+			}
+			
+			const lightClass = (element) => {
+				element.classList.remove('text-bg-danger');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-light');
+			}
+			
+			
+			// 비밀번호 유효성 검사 (시작)
+			const memberPwd = document.querySelector('#memberPwd');
+			let inputPwd;
+			let pwdFlag = false;
+			const pwdCheckResult = document.querySelector('#pwdCheckResult');
+			const specialRegex = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/g; // 특수문자 정규표현식
+			const normalRegex = /[a-zA-Z가-힣ㄱ-ㅎ]/g; // 일반문자 정규표현식
+			
+			memberPwd.addEventListener('change', () => {
+				inputPwd = memberPwd.value.trim();
+				
+				if(inputPwd == ''){ // 비밀번호 입력값이 없을 때
+					lightClass(pwdCheckResult);
+					pwdCheckResult.textContent = '특수문자, 문자를 포함한 8 ~ 20자의 비밀번호를 입력해주세요.';
+					pwdFlag = false;
+				} else{ // 비밀번호 입력값이 있을 때
+					// 문자열.match(정규식) -> 정규표현식에 포함된 문자들로 이루어진 배열을 반환해준다. (부합되지 않을 때는 null이 반환됨)
+					let specialArr = inputPwd.match(specialRegex);
+					let normalArr = inputPwd.match(normalRegex);
+					let lengthCheck;
+					
+					if(inputPwd.length >= 8 && inputPwd.length <=20) {
+						lengthCheck = true;
+					} else{
+						lengthCheck = false;
+					}
+					
+					if(specialArr == null || normalArr == null || !lengthCheck){
+						// 올바르지 않은 비밀번호 형식
+						dangerClass(pwdCheckResult);
+						pwdFlag = false;
+						pwdCheckResult.textContent = '사용 불가능 비밀번호입니다.';
+					} else{
+						// 특수문자 1개 이상, 일반문자 1개 이상이 포함된 경우 (올바른 비밀번호 형식)
+						infoClass(pwdCheckResult);
+						pwdFlag = true;
+						pwdCheckResult.textContent = '사용 가능 비밀번호입니다.';
+					}
+				}
+			})
+			// 비밀번호 유효성 검사 (끝)
+			
+			// 비밀번호 일치 검사 (시작)
+			const memberPwdConfirm = document.querySelector('#memberPwdConfirm');
+			const pwdConfirmResult = document.querySelector('#pwdConfirmResult');
+			
+			memberPwdConfirm.addEventListener('change', () => {
+				if(inputPwd == memberPwdConfirm.value.trim() && pwdFlag){ //비밀번호 일치 & 사용가능 비밀번호
+					infoClass(pwdConfirmResult);
+					pwdFlag = true;	
+					pwdConfirmResult.textContent = '비밀번호가 일치합니다.';
+					pwdModifyBtn.disabled = false;
+				} else if(inputPwd != memberPwdConfirm.value.trim()){ // 비밀번호가 일치하지 않는 경우
+					dangerClass(pwdConfirmResult);
+					pwdFlag = false;
+					pwdConfirmResult.textContent = '비밀번호가 일치하지 않습니다.';
+					pwdModifyBtn.disabled = true;
+					memberPwdConfirm.value = '';
+					memberPwdConfirm.focus();
+				} else{ //사용 불가한 비밀번호
+					dangerClass(pwdConfirmResult);
+					pwdFlag = false;
+					pwdConfirmResult.textContent = '사용이 불가능한 비밀번호 입니다.';
+					pwdModifyBtn.disabled = true;
+					memberPwdConfirm.value = '';
+					memberPwd.focus();
+				}
+			});
+			// 비밀번호 일치 검사 (끝)
+			
+			// 비밀번호 수정 요청(시작)
+			const pwdModifyBtn = document.querySelector('#pwdModifyBtn');
+			const pwdModifyForm = document.querySelector('#pwdModifyForm');
+			pwdModifyBtn.addEventListener('click', () => {
+				pwdModifyForm.submit();				
+			});
+			// 비밀번호 수정 요청(끝)
+		}
+	</script>
+</body>	
+</html>

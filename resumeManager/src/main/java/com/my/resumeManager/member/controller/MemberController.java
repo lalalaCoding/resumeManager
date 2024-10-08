@@ -7,6 +7,7 @@ import java.util.Calendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,17 +35,6 @@ public class MemberController {
 	
 	@Autowired
 	private BCryptPasswordEncoder bCrypt;
-	
-	
-	@GetMapping("header.test")
-	public String headerTest() {
-		return "common/header";
-	}
-	
-	@GetMapping("footer.test")
-	public String footerTest() {
-		return "common/footer";
-	}
 	
 	@GetMapping("enrollPage.me") // 회원가입 페이지로 이동
 	public String enrollPage() {
@@ -163,7 +153,7 @@ public class MemberController {
 			return "redirect:loginPage.me";
 		}
 		
-		return "home.do";
+		return "redirect:home.do";
 	}
 	
 	@GetMapping("findPage.me")
@@ -180,13 +170,21 @@ public class MemberController {
 		return "member/find";
 	}
 	
-	@PostMapping("check-name-phone.me")
+	@PostMapping("check-phone.me")
 	@ResponseBody
-	public Member checkNamePhone(@ModelAttribute Member m) {
+	public Member checkPhone(@ModelAttribute Member m) {
 		// 이름은 2글자 이상이지만 보통 3글자 이므로 9바이트의 크기를 갖는다.
 		// 전화번호는 보통 11개의 숫자이므로 11바이트의 크기를 갖는다. 따라서 이름으로 조회한 이후에 전화번호를 컨트롤로에서 비교하는 것이 경제적이다.
 		// Non Unique INDEX 사용 -> 회원 이름, 전화번호, 회원 번호를 조회한다.
-		ArrayList<Member> searchMember = mService.checkNamePhone(m);
+		
+		ArrayList<Member> searchMember = null;
+		if(m.getMemberName() != null) {
+			searchMember = mService.checkNamePhone(m);
+		} else if(m.getMemberId() != null){
+			searchMember= mService.checkIdPhone(m);
+		} else {
+			throw new MemberException("잘못된 요청입니다");
+		}
 		
 		boolean result = false;
 		Member findMember = null;
@@ -200,6 +198,35 @@ public class MemberController {
 		
 		return findMember;
 	}
+	
+	@PostMapping("find.me")
+	public String findResult(@RequestParam("memberNo") int memberNo, @RequestParam("findInput") String find, Model model) {
+		Member findMember = mService.selectMemberNo(memberNo);
+		model.addAttribute("findMember", findMember);
+		
+		if(find.equals("id")) { // 아이디 찾기 결과 요청
+			return "member/findIdResult";
+		} else if(find.equals("pwd")) { // 비밀번호 찾기 결과 요청
+			return "member/findPwdResult";
+		} else {
+			throw new MemberException("잘못된 요청입니다.");
+		}
+	}
+	
+	@PostMapping("pwdModify.me")
+	public String pwdModify(@ModelAttribute Member m) {
+		String newPwd = bCrypt.encode(m.getMemberPwd());
+		m.setMemberPwd(newPwd);
+		
+		int result = mService.pwdModify(m);
+		
+		if(result == 1) {
+			return "redirect:loginPage.me";
+		} else {
+			throw new MemberException("서비스 요청 장애가 발생하였습니다.");
+		}
+	}
+	
 	
 	
 	

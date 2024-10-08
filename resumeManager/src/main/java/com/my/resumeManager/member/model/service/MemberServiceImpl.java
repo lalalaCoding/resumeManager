@@ -37,6 +37,21 @@ public class MemberServiceImpl implements MemberService{
 	public ArrayList<Member> checkNamePhone(Member m) {
 		return mMapper.checkNamePhone(m);
 	}
+
+	@Override
+	public Member selectMemberNo(int memberNo) {
+		return mMapper.selectMemberNo(memberNo);
+	}
+
+	@Override
+	public ArrayList<Member> checkIdPhone(Member m) {
+		return mMapper.checkIdPhone(m);
+	}
+
+	@Override
+	public int pwdModify(Member m) {
+		return mMapper.pwdModify(m);
+	}
 	
 	
 	

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>아이디 찾기 결과 페이지</title>
+</head>
+<body>
+	<div th:replace="~{common/header :: header}"></div>
+	<div id="wrapper">
+		<div><!-- 왼쪽 공백 --></div>
+		<div>
+			<table class="table">
+				<tr>
+					<td>아이디 찾기 결과</td>
+				</tr>
+				<tr>
+					<td>[[${findMember.memberId}]]</td>
+				</tr>
+			</table>
+			
+			<br/><br/>
+			
+			<div>
+				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+					<ol class="breadcrumb">
+				    	<li class="breadcrumb-item active" aria-current="page">아이디 찾기</li>
+				    	<li class="breadcrumb-item"><a href="findPage.me?find=pwd">비밀번호 찾기</a></li>
+				    	<li class="breadcrumb-item"><a href="loginPage.me">로그인</a></li>
+				  	</ol>
+				</nav>
+			</div>
+			
+		</div>
+		<div><!-- 오른쪽 공백 --></div>
+	</div>
+	
+	<div th:replace="~{common/footer :: footer}"></div>
+	
+	
+	
+	
+</body>	
+</html>

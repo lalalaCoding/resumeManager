@@ -50,6 +50,7 @@
 						<tr>
 							<td>
 								<input type="hidden" name="memberNo"/>
+								<input type="hidden" name="findInput"/> <!-- 아이디찾기인지 비밀번호 찾기인지 구분 -->
 								<button type="button" id="findBtn" class="btn btn-primary" th:text="${session.find == 'id' ? '아이디 찾기' : '비밀번호 찾기'}"></button>
 							</td>
 						</tr>
@@ -61,9 +62,14 @@
 			
 			<div>
 				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-					<ol class="breadcrumb">
-				    	<li class="breadcrumb-item"><a href="#">아이디 찾기</a></li>
-				    	<li class="breadcrumb-item"><a href="#">비밀번호 찾기</a></li>
+					<ol class="breadcrumb" th:if="${session.find == 'id'}">
+				    	<li class="breadcrumb-item active" aria-current="page">아이디 찾기</li>
+				    	<li class="breadcrumb-item"><a href="findPage.me?find=pwd">비밀번호 찾기</a></li>
+				    	<li class="breadcrumb-item"><a href="enrollPage.me">회원 가입</a></li>
+				  	</ol>
+				  	<ol class="breadcrumb" th:unless="${session.find == 'id'}">
+				    	<li class="breadcrumb-item"><a href="findPage.me?find=id">아이디 찾기</a></li>
+				    	<li class="breadcrumb-item active" aria-current="page">비밀번호 찾기</li>
 				    	<li class="breadcrumb-item"><a href="enrollPage.me">회원 가입</a></li>
 				  	</ol>
 				</nav>
@@ -120,9 +126,10 @@
 			const phoneConfirms = document.querySelectorAll('.phoneConfirm'); // 휴대전화 인증 요소'들'
 			let findMember = ''; // 찾은 회원 정보를 저장할 변수 선언
 			const memberNo = document.getElementsByName('memberNo')[0]; // 결과를 출력할 회원 번호를 저장할 입력 요소
+			const findInput = document.getElementsByName('findInput')[0]; // 찾는 대상이 아이디인지, 비밀번호인지 저장
 			const findForm = document.querySelector('#findForm');
 			
-			if(find == 'id'){
+			if(find == 'id'){ // 아이디 찾기일 때의 입력 요소 체크
 				const memberName = document.getElementsByName('memberName')[0]; // 이름 입력 요소
 				
 				let inputName = '';
@@ -141,7 +148,7 @@
 					// 이름과 휴대전화 번호가 일치하는지를 검사
 					if(inputName.length > 0 && inputPhone.length > 0){
 						$.ajax({
-							url : 'check-name-phone.me',
+							url : 'check-phone.me',
 							type : 'post',
 							data : {memberName : inputName, memberPhone : inputPhone},
 							success : data => { // 이름과 전화번호가 일치하는 회원이 존재하는 경우
@@ -185,10 +192,81 @@
 						});
 											
 					} else if(inputName.length == 0){
-						
 						alert('이름을 입력해주세요.');
+						memberName.focus();
 					}
 				});
+				// 본인 인증 요청 (끝) : 1) 세션에 저장된 find 속성을 제거 2) 결과 페이지로 이동
+				
+			} else {//비밀번호 찾기일 떄의 입력 요소 체크
+				const memberId = document.getElementsByName('memberId')[0];
+				
+				let inputId = '';
+				let inputPhone = '';
+				
+				// 본인 인증 요청 (시작) : 1) 이름과 휴대전화번호가 일치하는가? 2) 인증번호 발송 후 인증번호 입력이 제대로 이루어졌는가?
+				
+				phoneCheck.addEventListener('click', () => {
+					console.log('본인 인증 요청 시작');
+					
+					inputId = memberId.value.trim();
+					for(const p of phoneNumbers){
+						inputPhone += p.value.trim();
+					}		
+					
+					// 유효성 검사
+					// 이름과 휴대전화 번호가 일치하는지를 검사
+					if(inputId.length > 0 && inputPhone.length > 0){
+						$.ajax({
+							url : 'check-phone.me',
+							type : 'post',
+							data : {memberId : inputId, memberPhone : inputPhone},
+							success : data => { // 이름과 전화번호가 일치하는 회원이 존재하는 경우
+								console.log('일치한다.');
+								console.log(data);
+								
+								//인증번호 발송
+								if(data != ''){
+									findMember = data; // 이름과 전화번호가 일치하는 회원 정보를 전역변수 findMember에 저장한다.
+									
+									$.ajax({
+										url : '/send-one',
+										type : 'post',
+										data : {phoneNumber : inputPhone},
+										success : data => {
+											if(data.statusCode == '2000'){ // 문자가 정상적으로 전송된 경우 -> 1분간 인증번호를 입력될 수 있게 한다.
+												phoneConfirms[0].disabled = false;
+												phoneConfirms[1].disabled = false;
+												lightClass(phoneConfirms[2]);
+												phoneConfirms[2].textContent = '인증 번호를 1분 내에 확인해주세요.';
+												
+												setTimeout(() => {
+													if(!phoneFlag){ // 인증이 실패한 상태일 때
+														phoneConfirms[0].disabled = true;
+														phoneConfirms[1].disabled = true;
+														dangerClass(phoneConfirms[2]);
+														phoneConfirms[2].textContent = '인증 시간이 만료되었습니다.';
+													}
+												}, 1000*60); // 60초 동안만 인증 번호를 확인할 수 있도록 한다.
+											}
+										},
+										error : data => console.log(data)
+									});
+								} else{
+									alert('회원 정보가 일치하지 않습니다.');
+								}
+							},
+							error : data => {
+								console.log('불일치한다.');
+							}
+						});
+											
+					} else if(inputId.length == 0){
+						alert('아이디를 입력해주세요.');
+						memberId.focus();
+					}
+				});
+				// 본인 인증 요청 (끝) : 1) 세션에 저장된 find 속성을 제거 2) 결과 페이지로 이동
 			}
 			
 			// 휴대전화 인증 번호 확인 요청 (시작)
@@ -233,8 +311,6 @@
 			});
 			// 휴대전화 인증 번호 확인 요청 (끝)
 			
-			// 본인 인증 요청 (끝) : 1) 세션에 저장된 find 속성을 제거 2) 결과 페이지로 이동
-			
 			//XXX 찾기 버튼 클릭
 			const findBtn = document.querySelector('#findBtn');
 			findBtn.addEventListener('click', () => {
@@ -254,17 +330,12 @@
 					
 					// 결과 페이지로 이동
 					memberNo.value = findMember.memberNo;
+					findInput.value = find;
 					findForm.submit();
 				} else{
 					alert('본인 인증이 필요합니다.');
 				}
 			});
-			
-			
-			
-			
-			
-			
 		}
 	</script>
 </body>
