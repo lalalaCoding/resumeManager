@@ -138,7 +138,7 @@ public class MemberController {
 				session.setAttribute("loginMember", loginMember);
 				try {
 					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
-					response.getWriter().write("<script>alert('" + msg +"'); location.href='/';</script>");// URL이 'http://localhost:8080/' 표현되기 위함
+					response.getWriter().write("<script>alert('" + msg +"'); location.href='resumeHistoryPage.rh';</script>");// URL이 'http://localhost:8080/' 표현되기 위함
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -153,7 +153,7 @@ public class MemberController {
 			return "redirect:loginPage.me";
 		}
 		
-		return "redirect:home.do";
+		return "resume/resumeHistory";
 	}
 	
 	@GetMapping("findPage.me")

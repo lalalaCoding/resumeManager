@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>입사 지원 이력 페이지</title>
+	<!-- charJS CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+	<div th:replace="~{common/header :: header}"></div>
+	
+	<div id="wrapper">
+		<div><!-- 왼쪽 공백 --></div>
+		
+		<div>
+			<div> <!-- 지원 이력 시각화 div -->
+				<div> <!-- 시각화 기준 지정 -->
+					<h1>나의 목표</h1>
+					<form>
+						<label>기준</label>
+						<select name="term" disabled>
+							<option value="year">Year</option>
+							<option value="month">Month</option>
+							<option value="week">Week</option>
+						</select>
+						<input type="text" value="0/150" readOnly/>
+						<button type="button" id="modifyBtn" class="btn btn-primary">수정하기</button>
+						<button type="button" id="submitBtn" class="btn btn-primary" disabled>설정하기</button>
+					</form>
+				</div>
+				
+				<div> <!-- 데이터 시각화 -->
+					<canvas id="piChart"><!-- 지원 직군에 대한 원형 그래프 --></canvas>
+					
+					<canvas id="barChart"><!-- 지원 추이에 대한 막대 그래프 --></canvas>
+				</div>
+			</div>		
+		
+			<div> <!-- 지원 이력 출력 div -->
+				<form>
+					<input type="text" placeHolder/>
+				
+				
+				</form>
+			
+			
+			
+			
+			
+			</div>
+		</div>
+	
+		<div><!-- 오른쪽 공백 --></div>
+	</div>
+	
+	<div th:replace="~{common/footer :: footer}"></div>	
+	<script>
+		window.onload = () => {
+			// 지원 직군에 대한 원형 그래프
+			const ctx = document.getElementById('piChart');
+			
+			new Chart(ctx, {
+			  type: 'pie',
+			  data: {
+				  labels: [
+			  	    'SI',
+				    'SM',
+				    'SOLUTION'
+				  ],
+				  datasets: [{
+			    	label: 'My First Dataset',
+				    data: [300, 50, 100],
+				    backgroundColor: [
+				      'rgb(255, 99, 132)',
+				      'rgb(54, 162, 235)',
+				      'rgb(255, 205, 86)'
+				    ],
+				    hoverOffset: 4
+			  }]
+				}
+			});
+			
+			//지원 추이에 대한 막대 그래프
+			const ctx2 = document.getElementById('barChart');
+			
+			const mixedChart = new Chart(ctx2, {
+				   type: 'bar',
+				   data: {
+				       datasets: [{
+				           label: 'Bar Dataset',
+				           data: [10, 20, 30, 40],
+				           // this dataset is drawn below
+				           order: 2
+				       }, {
+				           label: 'Line Dataset',
+				           data: [10, 10, 10, 10],
+				           type: 'line',
+				           // this dataset is drawn on top
+				           order: 1
+				       }],
+				       labels: ['January', 'February', 'March', 'April']
+				   }
+				   
+				});
+			
+			
+			
+			
+			
+		}	
+	</script>
+</body>
+</html>
