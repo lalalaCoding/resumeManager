@@ -9,6 +9,9 @@
 <body>
 	<div th:replace="~{common/header :: header}"></div>
 	
+	<div style="background: black; width: 75px; height: 75px; position: fixed; left: 95%; top: 90%;"></div>
+	
+	
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>
 		
@@ -30,22 +33,70 @@
 				</div>
 				
 				<div> <!-- 데이터 시각화 -->
-					<canvas id="piChart"><!-- 지원 직군에 대한 원형 그래프 --></canvas>
-					
-					<canvas id="barChart"><!-- 지원 추이에 대한 막대 그래프 --></canvas>
+					<div style="width: 300px; height: 300px;">
+						<canvas id="piChart"><!-- 지원 직군에 대한 원형 그래프 --></canvas>
+					</div>
+					<div style="width: 300px; height: 300px;">
+						<canvas id="barChart"><!-- 지원 추이에 대한 막대 그래프 --></canvas>
+					</div>
 				</div>
 			</div>		
 		
 			<div> <!-- 지원 이력 출력 div -->
 				<form>
-					<input type="text" placeHolder/>
-				
-				
+					<span>회사명</span>
+					<input type="text" placeHolder="회사명"/>
+					<span>지원기간</span>
+					<input type="date"/> - <input type="date"/>
+					<span>직무 정보</span>
+					<input type="text" placeHolder="스킬명 또는 경험"/>
+					<button type="button" class="btn btn-light" id="searchBtn">검색하기</button>
+					<button type="button" class="btn btn-light" id="selectAllBtn">전체보기</button>
+					<button type="button" class="btn btn-light" id="insertBtn" onclick="location.href='insertResumeHistory.rh'">등록하기</button>
 				</form>
+							
+				<button type="button" class="btn btn-danger">삭제</button>
 			
-			
-			
-			
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>선택</th>
+							<th>날짜</th>
+							<th>회사명</th>
+							<th>진행상태</th>
+							<th>업종</th>
+							<th>직무기술</th>
+							<th>지원플랫폼</th>
+							<th>기타</th>
+						</tr>
+					</thead>
+						
+					<tbody>
+						<tr>
+							<td>
+								<input type="hidden" name="resumeNo"/>
+								<input type="checkbox"/>
+							</td>
+							<td>24-01-01</td>
+							<td>KH정보교육원</td>
+							<td>진행중</td>
+							<td>SI</td>
+							<td>JAVA, Spring</td>
+							<td>사람인</td>
+							<td>자동화 배포 경험</td>
+						</tr>
+						<tr>
+							<td><input type="checkbox"/></td>
+							<td>24-01-01</td>
+							<td>KH정보교육원</td>
+							<td>진행중</td>
+							<td>SI</td>
+							<td>JAVA, Spring</td>
+							<td>사람인</td>
+							<td>자동화 배포 경험</td>
+						</tr>
+					</tbody>
+				</table>
 			
 			</div>
 		</div>
@@ -56,7 +107,7 @@
 	<div th:replace="~{common/footer :: footer}"></div>	
 	<script>
 		window.onload = () => {
-			// 지원 직군에 대한 원형 그래프
+			// 지원 직군에 대한 원형 그래프 (시작)
 			const ctx = document.getElementById('piChart');
 			
 			new Chart(ctx, {
@@ -75,12 +126,17 @@
 				      'rgb(54, 162, 235)',
 				      'rgb(255, 205, 86)'
 				    ],
-				    hoverOffset: 4
+				    hoverOffset: 4,
+				    options: {
+				    	responsive: false, // 동적으로 사이즈 변경 X
+				    	maintainAspectRatio : false // 차트 비율 유지 X
+				    }
 			  }]
 				}
 			});
+			// 지원 직군에 대한 원형 그래프 (끝)
 			
-			//지원 추이에 대한 막대 그래프
+			//지원 추이에 대한 막대 그래프 (시작)
 			const ctx2 = document.getElementById('barChart');
 			
 			const mixedChart = new Chart(ctx2, {
@@ -102,10 +158,9 @@
 				   }
 				   
 				});
+			//지원 추이에 대한 막대 그래프 (끝)
 			
-			
-			
-			
+		
 			
 		}	
 	</script>

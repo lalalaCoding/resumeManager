@@ -16,8 +16,10 @@ public class ResumeHistoryController {
 		return "resume/resumeHistory";
 	}
 	
-	
-	
+	@GetMapping("insertResumeHistory.rh")
+	public String insertResumeHistoryPage() {
+		return "resume/insertResumeHistory";
+	}
 	
 	
 	
