@@ -11,52 +11,171 @@
 		<div><!-- 왼쪽 공백 --></div>
 	
 		<div>
-			<table class="table table-hover">
-				<tr>
-					<td>지원 일자(필수)</td>
-					<td><input type="date"/></td>
-				</tr>
-				<tr>
-					<td>회사명(필수)</td>
-					<td><input type="text" placeHolder="회사 명을 입력해주세요"/></td>
-				</tr>
-				<tr>
-					<td>급여 수준</td>
-					<td><input type="number"/></td>
-				</tr>				
-				<tr>
-					<td>지원상태(필수)</td>
-					<td>
-						<label><input type="radio" name="resumeState"/>지원 중</label>					
-						<label><input type="radio" name="resumeState"/>서류 합격</label>
-						<label><input type="radio" name="resumeState"/>면접 합격</label>
-						<label><input type="radio" name="resumeState"/>최종 합격</label>
-					</td>
-				</tr>
-				<tr>
-					<td>경력(필수)</td>
-					<td>
-						<label><input type="radio" name="resumeCareer"/>신입</label>					
-						<label><input type="radio" name="resumeCareer"/>1년차 이상</label>
-						<label><input type="radio" name="resumeCareer"/>3년차 이상</label>
-						<label><input type="radio" name="resumeCareer"/>5년차 이상</label>
-					</td>
-				</tr>
-				<tr>
-					<td>지원마감일</td>
-					<td><input type="date"/></td>
-				</tr>
-				<tr>
-					<td>지원 플랫폼(필수)</td>
-					<td>
-						
+			<form method="get" action="insertResumeHistory.rh">
+				<table class="table table-hover">
+					<tr>
+						<td>지원 일자(필수)</td>
+						<td>
+							<input type="date" name="resumeDate"/>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>회사명(필수)</td>
+						<td>
+							<input type="text" placeHolder="회사 명을 입력해주세요" name="companyName"/>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>급여 수준</td>
+						<td><input type="number" name="companySalary"/></td>
+					</tr>				
+					<tr>
+						<td>지원상태(필수)</td>
+						<td>
+							<label><input type="radio" name="resumeState"/>지원 중</label>					
+							<label><input type="radio" name="resumeState"/>서류 합격</label>
+							<label><input type="radio" name="resumeState"/>면접 합격</label>
+							<label><input type="radio" name="resumeState"/>최종 합격</label>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>경력(필수)</td>
+						<td>
+							<label><input type="radio" name="resumeCareer"/>신입</label>					
+							<label><input type="radio" name="resumeCareer"/>1년차 이상</label>
+							<label><input type="radio" name="resumeCareer"/>3년차 이상</label>
+							<label><input type="radio" name="resumeCareer"/>5년차 이상</label>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>지원마감일</td>
+						<td><input type="date" name="resumeDeadline"/></td>
+					</tr>
+					<tr>
+						<td>지원 플랫폼(필수)</td>
+						<td>
+							<!-- 플랫폼이 추가될 수 있기 때문에 select로 구현 -->
+							<select name="platformName">
+								<option value="none">-</option>
+								<option value="jobKorea">잡코리아</option>
+								<option value="incrute">인크루트</option>
+								<option value="peopleIn">사람인</option>
+								<option value="jumpIt">점핏</option>
+								<option value="personal">지인</option>
+							</select>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>필수 자격 조건</td>
+						<td>
+							<select name="essential_language" class="essential" multiple>
+								<option disabled>언어 선택</option>
+								<option value="java">자바</option>
+								<option value="javaScript">자바 스크립트</option>
+								<option value="html/css">HTML / CSS</option>
+							</select>
+							
+							<select name="essential_library" class="essential" multiple>
+								<option disabled>라이브러리</option>
+								<option value="jQuery">jQuery</option>
+							</select>
+							
+							<select name="essential_framwork" class="essential" multiple>
+								<option disabled>프레임워크</option>
+								<option value="spring">스프링</option>
+								<option value="springBoot">스프링 부트</option>
+								<option value="react">React</option>
+								<option value="vue.js">Vue.js</option>
+							</select>
+							
+							<select name="essential_database" class="essential" multiple>
+								<option disabled>데이터베이스</option>
+								<option value="Oracle">오라클</option>
+								<option value="MySQL">마이 SQL</option>
+								<option value="MsSQL">MS SQL</option>
+								<option value="MariaDB">마리아</option>
+							</select>
+							
+							<select name="essential_knowledge" class="essential" multiple>
+								<option disabled>지식</option>
+								<option value="RESTful">RESTful</option>
+								<option value="Linux">Linux</option>
+							</select>
+							
+							<select name="essential_experience" class="essential" multiple>
+								<option disabled>경험</option>
+								<option value="CI/CD">CI/CD</option>
+							</select>
+							
+							<select name="essential_tool" class="essential" multiple>
+								<option disabled>툴</option>
+								<option value="git">Git</option>
+								<option value="github">Github</option>
+							</select>
+						</td>
+					</tr>
 					
-					</td>
-				</tr>
-			</table>
-			
-		
-		
+					<tr>
+						<td>우대 자격 조건</td>
+						<td>
+							<select name="preferential_language" class="preferential" multiple>
+								<option disabled>언어 선택</option>
+								<option value="java">자바</option>
+								<option value="javaScript">자바 스크립트</option>
+								<option value="html/css">HTML / CSS</option>
+							</select>
+							
+							<select name="preferential_library" class="preferential" multiple>
+								<option disabled>라이브러리</option>
+								<option value="jQuery">jQuery</option>
+							</select>
+							
+							<select name="preferential_framwork" class="preferential" multiple>
+								<option disabled>프레임워크</option>
+								<option value="spring">스프링</option>
+								<option value="springBoot">스프링 부트</option>
+								<option value="react">React</option>
+								<option value="vue.js">Vue.js</option>
+							</select>
+							
+							<select name="preferential_database" class="preferential" multiple>
+								<option disabled>데이터베이스</option>
+								<option value="Oracle">오라클</option>
+								<option value="MySQL">마이 SQL</option>
+								<option value="MsSQL">MS SQL</option>
+								<option value="MariaDB">마리아</option>
+							</select>
+							
+							<select name="preferential_knowledge" class="preferential" multiple>
+								<option disabled>지식</option>
+								<option value="RESTful">RESTful</option>
+								<option value="Linux">Linux</option>
+							</select>
+							
+							<select name="preferential_experience" class="preferential" multiple>
+								<option disabled>경험</option>
+								<option value="CI/CD">CI/CD</option>
+							</select>
+							
+							<select name="preferential_tool" class="preferential" multiple>
+								<option disabled>툴</option>
+								<option value="git">Git</option>
+								<option value="github">Github</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<button type="button" class="btn btn-danger">등록하기</button>
+				<button type="button" class="btn btn-danger" onclick="history.back()">돌아가기</button>
+			</form>
 		</div>
 		
 		<div><!-- 오른쪽 공백 --></div>
@@ -70,7 +189,93 @@
 	<div th:replace="~{common/footer :: footer}"></div>
 	<script>
 		window.onload = () => {
-						
+			const resumeDate = document.getElementsByName('resumeDate')[0]; // 지원 일자 요소 -> 필수
+			const companyName = document.getElementsByName('companyName')[0]; // 회사 이름 요소 -> 필수
+			const companySalary = document.getElementsByName('companySalary')[0]; // 급여 요소 
+			const resumeStates = document.getElementsByName('resumeState'); // 지원 상태 요소 배열 -> 필수
+			const resumeCareer = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
+			const resumeDeadline = document.getElementsByName('resumeDeadline'); // 지원 마감 요소
+			const platformName = document.getElementsByName('platformName')[0]; // 플랫폼 요소 -> 필수
+			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 배열 -> 필수
+			const preferentials = document.querySelectorAll('.preferential'); // 우대 자격 조건 배열
+			
+			
+			const infoClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-danger');
+				element.classList.add('text-bg-info');
+			}
+			
+			const dangerClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-danger');
+			}
+			
+			const lightClass = (element) => {
+				element.classList.remove('text-bg-danger');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-light');
+			}
+			
+			// 지원 일자 유효성 검사 (시작)
+			let resumeDateFlag = false;
+			resumeDate.addEventListener('change', function() {
+				if(resumeDate.value.length == 0) {
+					dangerClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '지원 일자를 선택해주세요!';
+					resumeDateFlag = false;
+				} else{
+					infoClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '지원 일자가 선택되었습니다.';
+					resumeDateFlag = true;
+				}
+			});
+			// 지원 일자 유효성 검사 함수(끝)
+			
+			//회사명 유효성 검사 (시작)
+			let companyNameFlag = false;
+			companyName.addEventListener('change', function() {
+				if(companyName.value.trim().length == 0) {
+					dangerClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '회사명을 입력해주세요!';
+					companyNameFlag = false;
+				} else{
+					infoClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '회사명이 입력되었습니다.';
+					companyNameFlag = true;
+				}
+			});
+			//회사명 유효성 검사 (끝)
+			
+			//지원 상태 유효성 검사 (시작)
+			let resumeStateFlag = false;
+			for(const s of resumeStates){
+				s.addEventListener('click', function() {
+					const span = this.parentElement.parentElement.querySelector('span');
+					infoClass(span);
+					span.textContent = '지원 상태를 선택하셨습니다.';
+					resumeStateFlag = true;
+				});
+			}
+			//지원 상태 유효성 검사 (끝)
+			
+			
+			//경력 상태 유효성 검사 (시작)
+			
+			
+			
+			
+			
+			
+			// 입력 요소 유효성 검사 함수 (시작)
+			const checkVaild = () => {
+				
+				
+				
+			}
+			// 입력 요소 유효성 검사 함수 (끝)
+			
 			
 			
 			
