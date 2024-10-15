@@ -1,6 +1,7 @@
 package com.my.resumeManager.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,13 +17,18 @@ import net.nurigo.sdk.message.service.DefaultMessageService;
 public class SMSController {
 	// 필드
 	final DefaultMessageService messageService;
+	//@Value("${apikey.API_KEY}")
+	//private final String API_KEY;
+	//@Value("${apikey.API_SECRET_KEY}")
+	//private final String API_SECRET_KEY;
 	@Autowired
 	private CompanyInfo companyInfo;
 	
 	// 생성자
-	public SMSController() {
+	public SMSController(@Value("${sms.API_KEY}") String API_KEY, @Value("${sms.API_SECRET_KEY}") String API_SECRET_KEY) {
 		//this.messageService = NurigoApp.INSTANCE.initialize("INSERT_API_KEY", "INSERT_API_SECRET_KEY", "https://api.coolsms.co.kr");
-		this.messageService = NurigoApp.INSTANCE.initialize("NCSQT3RFQTKQ71BH", "UW0EFHNCDP7BNMQRCIH0YYHWX1BQ9NJW", "https://api.coolsms.co.kr");
+		//this.messageService = NurigoApp.INSTANCE.initialize("NCSQT3RFQTKQ71BH", "UW0EFHNCDP7BNMQRCIH0YYHWX1BQ9NJW", "https://api.coolsms.co.kr");
+		this.messageService = NurigoApp.INSTANCE.initialize(API_KEY, API_SECRET_KEY, "https://api.coolsms.co.kr");
 	}
 	
 	

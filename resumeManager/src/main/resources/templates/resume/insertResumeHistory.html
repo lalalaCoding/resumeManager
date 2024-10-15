@@ -3,6 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>입사 지원 이력 작성</title>
+	<!-- 다음 우편번호 API -->
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 	<div th:replace="~{common/header :: header}"></div>
@@ -11,7 +13,7 @@
 		<div><!-- 왼쪽 공백 --></div>
 	
 		<div>
-			<form method="get" action="insertResumeHistory.rh">
+			<form method="get" action="insertResumeHistory.rh" id="insertForm">
 				<table class="table table-hover">
 					<tr>
 						<td>지원 일자(필수)</td>
@@ -28,26 +30,37 @@
 						</td>
 					</tr>
 					<tr>
+						<td>회사위치</td>
+						<td>
+							<input type="text" class="form-control companyAddress" placeholder="우편번호" readOnly/>
+							<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
+							<br/>
+							<input type="text" class="form-control companyAddress" placeholder="기본 주소 입력" readOnly/>
+							<input type="text" class="form-control companyAddress" placeholder="상세 주소 입력"/>
+							<input type="hidden" name="companyRegion"/>
+						</td>
+					</tr>
+					<tr>
 						<td>급여 수준</td>
 						<td><input type="number" name="companySalary"/></td>
 					</tr>				
 					<tr>
 						<td>지원상태(필수)</td>
 						<td>
-							<label><input type="radio" name="resumeState"/>지원 중</label>					
-							<label><input type="radio" name="resumeState"/>서류 합격</label>
-							<label><input type="radio" name="resumeState"/>면접 합격</label>
-							<label><input type="radio" name="resumeState"/>최종 합격</label>
+							<label><input type="radio" name="resumeState" value="0"/>지원 중</label>					
+							<label><input type="radio" name="resumeState" value="1"/>서류 합격</label>
+							<label><input type="radio" name="resumeState" value="2"/>면접 합격</label>
+							<label><input type="radio" name="resumeState" value="3"/>최종 합격</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
 					<tr>
 						<td>경력(필수)</td>
 						<td>
-							<label><input type="radio" name="resumeCareer"/>신입</label>					
-							<label><input type="radio" name="resumeCareer"/>1년차 이상</label>
-							<label><input type="radio" name="resumeCareer"/>3년차 이상</label>
-							<label><input type="radio" name="resumeCareer"/>5년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="0"/>신입</label>					
+							<label><input type="radio" name="resumeCareer" value="1"/>1년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="3"/>3년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="5"/>5년차 이상</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
@@ -173,28 +186,25 @@
 				
 				<br/>
 				
-				<button type="button" class="btn btn-danger">등록하기</button>
+				<button type="button" class="btn btn-danger" id="insertBtn">등록하기</button>
 				<button type="button" class="btn btn-danger" onclick="history.back()">돌아가기</button>
 			</form>
 		</div>
 		
 		<div><!-- 오른쪽 공백 --></div>
 	</div>	
-		
-	
-	
-	
-	
 	
 	<div th:replace="~{common/footer :: footer}"></div>
+	
 	<script>
 		window.onload = () => {
 			const resumeDate = document.getElementsByName('resumeDate')[0]; // 지원 일자 요소 -> 필수
 			const companyName = document.getElementsByName('companyName')[0]; // 회사 이름 요소 -> 필수
+			const companyRegion = document.getElementsByName('companyRegion')[0]; //회사 주소
 			const companySalary = document.getElementsByName('companySalary')[0]; // 급여 요소 
 			const resumeStates = document.getElementsByName('resumeState'); // 지원 상태 요소 배열 -> 필수
-			const resumeCareer = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
-			const resumeDeadline = document.getElementsByName('resumeDeadline'); // 지원 마감 요소
+			const resumeCareers = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
+			const resumeDeadline = document.getElementsByName('resumeDeadline')[0]; // 지원 마감 요소
 			const platformName = document.getElementsByName('platformName')[0]; // 플랫폼 요소 -> 필수
 			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 배열 -> 필수
 			const preferentials = document.querySelectorAll('.preferential'); // 우대 자격 조건 배열
@@ -248,6 +258,33 @@
 			});
 			//회사명 유효성 검사 (끝)
 			
+			// 주소 검색 및 입력 (시작)
+			const searchAddress = document.querySelector('#searchAddress');
+			const companyAddress = document.querySelectorAll('.companyAddress');
+			
+			searchAddress.addEventListener('click', () => {
+				new daum.Postcode({
+					oncomplete: function(data) {
+						// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+	
+						// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+						let addr = ''; // 주소 변수
+	
+						//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+						if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+							addr = data.roadAddress;
+						} else { // 사용자가 지번 주소를 선택했을 경우(J)
+							addr = data.jibunAddress;
+						}
+						
+						companyAddress[0].value = data.zonecode; // 우편번호 입력
+						companyAddress[1].value = addr; // 기본주소 입력
+						companyAddress[2].focus(); // 상세주소 입력요소로 커서가 이동
+					}
+			    }).open();
+			});
+			// 주소 검색 및 입력 (끝)
+			
 			//지원 상태 유효성 검사 (시작)
 			let resumeStateFlag = false;
 			for(const s of resumeStates){
@@ -262,25 +299,62 @@
 			
 			
 			//경력 상태 유효성 검사 (시작)
+			let resumeCareerFlag = false;
+			for(const s of resumeCareers){
+				s.addEventListener('click', function() {
+					const span = this.parentElement.parentElement.querySelector('span');
+					infoClass(span);
+					span.textContent = '경력을 선택하셨습니다.';
+					resumeCareerFlag = true;
+				});
+			}
+			//경력 상태 유효성 검사 (끝)
 			
-			
-			
-			
-			
+			//플랫폼 유효성 검사 (시작)
+			let platformFlag = false;
+			platformName.addEventListener('change', function() {
+				const span = this.nextElementSibling;
+				if(this.value == 'none') {
+					dangerClass(span);
+					span.textContent = '플랫폼을 선택해주세요!';
+					platformFlag = false;
+				}
+				else {
+					infoClass(span);
+					span.textContent = '플랫폼을 선택하셨습니다.';
+					platformFlag = true;
+				}
+			});
+			//플랫폼 유효성 검사 (끝)
 			
 			// 입력 요소 유효성 검사 함수 (시작)
 			const checkVaild = () => {
-				
-				
-				
+				if(resumeDateFlag && companyNameFlag && resumeStateFlag && resumeCareerFlag && platformFlag){
+					return true;
+				} else{
+					return false;
+				}
 			}
 			// 입력 요소 유효성 검사 함수 (끝)
 			
-			
-			
-			
-			
-			
+			// 등록하기 요청 (시작)
+			const insertBtn = document.querySelector('#insertBtn');
+			insertBtn.addEventListener('click', () => {
+				if(checkVaild()){
+					for(let i = 0; i < companyAddress.length; i++){
+						// 수정하기
+						if(i != companyAddress.length - 1){
+							companyRegion.value += address.value + '_';
+						}else{
+							companyRegion.value += address.value;
+						}
+					}
+					document.querySelector('#insertForm').submit();
+				}else{
+					console.log('유효성 검사 통과못함');
+				}
+			});
+			// 등록하기 요청 (끝)
 		}
 	</script>
 </body>
