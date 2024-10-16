@@ -1,8 +1,17 @@
 package com.my.resumeManager.resumeHistory.model.dao;
 
+import java.util.ArrayList;
+
 import org.apache.ibatis.annotations.Mapper;
+
+import com.my.resumeManager.resumeHistory.model.vo.ConditionInfo;
+import com.my.resumeManager.resumeHistory.model.vo.PlatformType;
 
 @Mapper
 public interface ResumeHistoryMapper {
+
+	ArrayList<PlatformType> selectAllPlatformType();
+
+	ArrayList<ConditionInfo> selectAllConditionInfo();
 
 }

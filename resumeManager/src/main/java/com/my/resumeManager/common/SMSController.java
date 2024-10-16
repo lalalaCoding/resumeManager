@@ -17,10 +17,6 @@ import net.nurigo.sdk.message.service.DefaultMessageService;
 public class SMSController {
 	// 필드
 	final DefaultMessageService messageService;
-	//@Value("${apikey.API_KEY}")
-	//private final String API_KEY;
-	//@Value("${apikey.API_SECRET_KEY}")
-	//private final String API_SECRET_KEY;
 	@Autowired
 	private CompanyInfo companyInfo;
 	

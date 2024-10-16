@@ -66,7 +66,10 @@
 					</tr>
 					<tr>
 						<td>지원마감일</td>
-						<td><input type="date" name="resumeDeadline"/></td>
+						<td>
+							<!-- <input type="date" name="resumeDeadline"/> -->
+							<input type="date" name="deadline"/>
+						</td>
 					</tr>
 					<tr>
 						<td>지원 플랫폼(필수)</td>
@@ -130,6 +133,8 @@
 								<option value="git">Git</option>
 								<option value="github">Github</option>
 							</select>
+							
+							<input type="hidden" name="essential"/>
 						</td>
 					</tr>
 					
@@ -139,8 +144,8 @@
 							<select name="preferential_language" class="preferential" multiple>
 								<option disabled>언어 선택</option>
 								<option value="java">자바</option>
-								<option value="javaScript">자바 스크립트</option>
-								<option value="html/css">HTML / CSS</option>
+								<option value="javaScript">자바스크립트</option>
+								<option value="html/css">HTML/CSS</option>
 							</select>
 							
 							<select name="preferential_library" class="preferential" multiple>
@@ -151,7 +156,7 @@
 							<select name="preferential_framwork" class="preferential" multiple>
 								<option disabled>프레임워크</option>
 								<option value="spring">스프링</option>
-								<option value="springBoot">스프링 부트</option>
+								<option value="spring_boot">스프링 부트</option>
 								<option value="react">React</option>
 								<option value="vue.js">Vue.js</option>
 							</select>
@@ -180,6 +185,8 @@
 								<option value="git">Git</option>
 								<option value="github">Github</option>
 							</select>
+							
+							<input type="hidden" name="preferential"/>
 						</td>
 					</tr>
 				</table>
@@ -204,9 +211,9 @@
 			const companySalary = document.getElementsByName('companySalary')[0]; // 급여 요소 
 			const resumeStates = document.getElementsByName('resumeState'); // 지원 상태 요소 배열 -> 필수
 			const resumeCareers = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
-			const resumeDeadline = document.getElementsByName('resumeDeadline')[0]; // 지원 마감 요소
+			const deadline = document.getElementsByName('deadline')[0]; // 지원 마감 요소
 			const platformName = document.getElementsByName('platformName')[0]; // 플랫폼 요소 -> 필수
-			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 배열 -> 필수
+			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 배열 
 			const preferentials = document.querySelectorAll('.preferential'); // 우대 자격 조건 배열
 			
 			
@@ -327,6 +334,34 @@
 			});
 			//플랫폼 유효성 검사 (끝)
 			
+			//자격 조건 가공 (시작)
+			//선택 항목 -> 객체 -> JSON.stringify -> 히든 요소에 주입 -> 파라미터 전달 -> 결과 확인
+			let essential_array = {}; // 객체
+			let preferential_array = {};
+			
+			const setEssential = () => {
+				essential_array.language = essentials[0].value;
+				essential_array.library = essentials[1].value;
+				essential_array.framework = essentials[2].value;
+				essential_array.database = essentials[3].value;
+				essential_array.knowledge = essentials[4].value;
+				essential_array.experience = essentials[5].value;
+				essential_array.tool = essentials[6].value;
+				document.getElementsByName('essential')[0].value = JSON.stringify(essential_array);
+			}
+			
+			const setpreferential = () => {
+				preferential_array.language = preferentials[0].value;
+				preferential_array.library = preferentials[1].value;
+				preferential_array.framework = preferentials[2].value;
+				preferential_array.database = preferentials[3].value;
+				preferential_array.knowledge = preferentials[4].value;
+				preferential_array.experience = preferentials[5].value;
+				preferential_array.tool = preferentials[6].value;
+				document.getElementsByName('preferential')[0].value = JSON.stringify(preferential_array);
+			}
+			//자격 조건 가공 (끝)
+			
 			// 입력 요소 유효성 검사 함수 (시작)
 			const checkVaild = () => {
 				if(resumeDateFlag && companyNameFlag && resumeStateFlag && resumeCareerFlag && platformFlag){
@@ -341,14 +376,19 @@
 			const insertBtn = document.querySelector('#insertBtn');
 			insertBtn.addEventListener('click', () => {
 				if(checkVaild()){
+					//주소 입력 값 병합
 					for(let i = 0; i < companyAddress.length; i++){
-						// 수정하기
 						if(i != companyAddress.length - 1){
-							companyRegion.value += address.value + '_';
+							companyRegion.value += companyAddress[i].value + '_';
 						}else{
-							companyRegion.value += address.value;
+							companyRegion.value += companyAddress[i].value;
 						}
 					}
+					
+					//테스트
+					setEssential();
+					setpreferential();
+					
 					document.querySelector('#insertForm').submit();
 				}else{
 					console.log('유효성 검사 통과못함');
