@@ -5,14 +5,36 @@
   
  <mapper namespace="com.my.resumeManager.resumeHistory.model.dao.ResumeHistoryMapper">
  	<select id="selectAllPlatformType" resultType="PlatformType">
- 		select * from platform_type
+ 		select * from platform_type <!-- 데이터의 갯수가 적기 때문에 인덱스 사용하지 않음 -->
  	</select>
  	
  	<select id="selectAllConditionInfo" resultType="ConditionInfo">
- 		select * from condition_info
+ 		select * from condition_info <!-- 데이터의 갯수가 적기 때문에 인덱스 사용하지 않음 -->
+ 	</select>
+ 	
+ 	<select id="selectAllCompanyType" resultType="CompanyType">
+ 		select * from company_type <!-- 데이터의 갯수가 적기 때문에 인덱스를 사용하지 않음 -->
  	</select>
  	
  	
+ 	<insert id="insertResumeHistory">
+ 		insert into RESUME_HISTORY
+ 		values(seq_history.nextval, #{resumeWriter}, #{resumeDate}, #{companyName},
+				#{companySalary}, #{companyRegion}, #{resumeState}, #{resumeCareer}, #{resumeDeadline},
+				#{companyType.typeNo}, #{platformType.platformNo})
+ 	</insert>
+ 	
+ 	
+ 	
+ 	
+ 	<!-- 지원 조건 삽입 : 동적 SQL -->
+ 	<insert id="insertResumeCondition">
+ 		insert all
+ 		<foreach collection="list" item="item" separator=" ">
+ 			into resume_history values(fn_condition, #{resumeNo}, #{conditionType}, #{infoNo})
+ 		</foreach>
+ 		select * from dual
+ 	</insert>
  	
  	
  </mapper>

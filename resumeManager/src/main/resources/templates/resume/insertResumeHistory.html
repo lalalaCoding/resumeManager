@@ -72,6 +72,17 @@
 						</td>
 					</tr>
 					<tr>
+						<td>회사 유형</td>
+						<td>
+							<label><input type="radio" name="companyTypeName" value="SI"/>SI</label>
+							<label><input type="radio" name="companyTypeName" value="SM"/>SM</label>
+							<label><input type="radio" name="companyTypeName" value="SOLUTION"/>SOLUTION</label>
+							<label><input type="radio" name="companyTypeName" value="SERVICE"/>SERVICE</label>
+							<label><input type="radio" name="companyTypeName" value="START UP"/>START UP</label>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
 						<td>지원 플랫폼(필수)</td>
 						<td>
 							<!-- 플랫폼이 추가될 수 있기 때문에 select로 구현 -->
@@ -89,104 +100,76 @@
 					<tr>
 						<td>필수 자격 조건</td>
 						<td>
-							<select name="essential_language" class="essential" multiple>
-								<option disabled>언어 선택</option>
-								<option value="java">자바</option>
-								<option value="javaScript">자바 스크립트</option>
-								<option value="html/css">HTML / CSS</option>
-							</select>
-							
-							<select name="essential_library" class="essential" multiple>
-								<option disabled>라이브러리</option>
-								<option value="jQuery">jQuery</option>
-							</select>
-							
-							<select name="essential_framwork" class="essential" multiple>
-								<option disabled>프레임워크</option>
-								<option value="spring">스프링</option>
-								<option value="springBoot">스프링 부트</option>
-								<option value="react">React</option>
-								<option value="vue.js">Vue.js</option>
-							</select>
-							
-							<select name="essential_database" class="essential" multiple>
-								<option disabled>데이터베이스</option>
-								<option value="Oracle">오라클</option>
-								<option value="MySQL">마이 SQL</option>
-								<option value="MsSQL">MS SQL</option>
-								<option value="MariaDB">마리아</option>
-							</select>
-							
-							<select name="essential_knowledge" class="essential" multiple>
-								<option disabled>지식</option>
-								<option value="RESTful">RESTful</option>
-								<option value="Linux">Linux</option>
-							</select>
-							
-							<select name="essential_experience" class="essential" multiple>
-								<option disabled>경험</option>
-								<option value="CI/CD">CI/CD</option>
-							</select>
-							
-							<select name="essential_tool" class="essential" multiple>
-								<option disabled>툴</option>
-								<option value="git">Git</option>
-								<option value="github">Github</option>
-							</select>
-							
 							<input type="hidden" name="essential"/>
+							
+							<span>언어</span>
+							<button type="button" class="btn btn-light essential">JAVA</button>
+							<button type="button" class="btn btn-light essential">JAVASCRIPT</button>
+							<button type="button" class="btn btn-light essential">HTML/CSS</button>
+							<br/>
+							
+							<span>라이브러리</span>
+							<button type="button" class="btn btn-light essential">jQuery</button>
+							<br/>
+							
+							<span>프레임워크</span>
+							<button type="button" class="btn btn-light essential">Spring</button>
+							<button type="button" class="btn btn-light essential">Spring Boot</button>
+							<button type="button" class="btn btn-light essential">React</button>
+							<button type="button" class="btn btn-light essential">Vue.js</button>
+							<br/>
+						
+							<span>데이터베이스</span>
+							<button type="button" class="btn btn-light essential">Oracle</button>
+							<button type="button" class="btn btn-light essential">MySQL</button>
+							<button type="button" class="btn btn-light essential">MsSQL</button>
+							<button type="button" class="btn btn-light essential">MariaDB</button>
+							<br/>
+							
+							<span>지식</span>
+							<button type="button" class="btn btn-light essential">Linux</button>
+							<button type="button" class="btn btn-light essential">RESTful</button>
+							<button type="button" class="btn btn-light essential">CI/CD</button>
+							<button type="button" class="btn btn-light essential">Github</button>
+							<button type="button" class="btn btn-light essential">Git</button>
 						</td>
 					</tr>
 					
 					<tr>
 						<td>우대 자격 조건</td>
 						<td>
-							<select name="preferential_language" class="preferential" multiple>
-								<option disabled>언어 선택</option>
-								<option value="java">자바</option>
-								<option value="javaScript">자바스크립트</option>
-								<option value="html/css">HTML/CSS</option>
-							</select>
-							
-							<select name="preferential_library" class="preferential" multiple>
-								<option disabled>라이브러리</option>
-								<option value="jQuery">jQuery</option>
-							</select>
-							
-							<select name="preferential_framwork" class="preferential" multiple>
-								<option disabled>프레임워크</option>
-								<option value="spring">스프링</option>
-								<option value="spring_boot">스프링 부트</option>
-								<option value="react">React</option>
-								<option value="vue.js">Vue.js</option>
-							</select>
-							
-							<select name="preferential_database" class="preferential" multiple>
-								<option disabled>데이터베이스</option>
-								<option value="Oracle">오라클</option>
-								<option value="MySQL">마이 SQL</option>
-								<option value="MsSQL">MS SQL</option>
-								<option value="MariaDB">마리아</option>
-							</select>
-							
-							<select name="preferential_knowledge" class="preferential" multiple>
-								<option disabled>지식</option>
-								<option value="RESTful">RESTful</option>
-								<option value="Linux">Linux</option>
-							</select>
-							
-							<select name="preferential_experience" class="preferential" multiple>
-								<option disabled>경험</option>
-								<option value="CI/CD">CI/CD</option>
-							</select>
-							
-							<select name="preferential_tool" class="preferential" multiple>
-								<option disabled>툴</option>
-								<option value="git">Git</option>
-								<option value="github">Github</option>
-							</select>
-							
 							<input type="hidden" name="preferential"/>
+							
+							<span>언어</span>
+							<button type="button" class="btn btn-light preferential">JAVA</button>
+							<button type="button" class="btn btn-light preferential">JAVASCRIPT</button>
+							<button type="button" class="btn btn-light preferential">HTML/CSS</button>
+							<br/>
+							
+							<span>라이브러리</span>
+							<button type="button" class="btn btn-light preferential">jQuery</button>
+							<br/>
+							
+							<span>프레임워크</span>
+							<button type="button" class="btn btn-light preferential">Spring</button>
+							<button type="button" class="btn btn-light preferential">Spring Boot</button>
+							<button type="button" class="btn btn-light preferential">React</button>
+							<button type="button" class="btn btn-light preferential">Vue.js</button>
+							<br/>
+						
+							<span>데이터베이스</span>
+							<button type="button" class="btn btn-light preferential">Oracle</button>
+							<button type="button" class="btn btn-light preferential">MySQL</button>
+							<button type="button" class="btn btn-light preferential">MsSQL</button>
+							<button type="button" class="btn btn-light preferential">MariaDB</button>
+							<br/>
+							
+							<span>지식</span>
+							<button type="button" class="btn btn-light preferential">Linux</button>
+							<button type="button" class="btn btn-light preferential">RESTful</button>
+							<button type="button" class="btn btn-light preferential">CI/CD</button>
+							<button type="button" class="btn btn-light preferential">Github</button>
+							<button type="button" class="btn btn-light preferential">Git</button>
 						</td>
 					</tr>
 				</table>
@@ -212,8 +195,9 @@
 			const resumeStates = document.getElementsByName('resumeState'); // 지원 상태 요소 배열 -> 필수
 			const resumeCareers = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
 			const deadline = document.getElementsByName('deadline')[0]; // 지원 마감 요소
+			const companyTypeNames = document.getElementsByName('companyTypeName');//회사 유형 라디오 요소 배열
 			const platformName = document.getElementsByName('platformName')[0]; // 플랫폼 요소 -> 필수
-			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 배열 
+			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 버튼 배열 
 			const preferentials = document.querySelectorAll('.preferential'); // 우대 자격 조건 배열
 			
 			
@@ -304,7 +288,6 @@
 			}
 			//지원 상태 유효성 검사 (끝)
 			
-			
 			//경력 상태 유효성 검사 (시작)
 			let resumeCareerFlag = false;
 			for(const s of resumeCareers){
@@ -316,6 +299,18 @@
 				});
 			}
 			//경력 상태 유효성 검사 (끝)
+			
+			//회사 유형 유효성 검사 (시작)
+			let companyTypeFlag = false;
+			for(const s of companyTypeNames){
+				s.addEventListener('click', function() {
+					const span = this.parentElement.parentElement.querySelector('span');
+					infoClass(span);
+					span.textContent = '회사 유형을 선택하셨습니다.';
+					companyTypeFlag = true;
+				});
+			}
+			//회사 유형 유효성 검사 (끝)
 			
 			//플랫폼 유효성 검사 (시작)
 			let platformFlag = false;
@@ -334,37 +329,42 @@
 			});
 			//플랫폼 유효성 검사 (끝)
 			
+			//자격 조건 클릭 이벤트 (시작)
+			for(const e of essentials){
+				e.addEventListener('click', function(){
+					this.classList.toggle('btn-light');
+					this.classList.toggle('btn-info');
+				});
+			}
+			//자격 조건 클릭 이벤트 (끝)
+			
 			//자격 조건 가공 (시작)
-			//선택 항목 -> 객체 -> JSON.stringify -> 히든 요소에 주입 -> 파라미터 전달 -> 결과 확인
-			let essential_array = {}; // 객체
+			//선택 항목 -> 배열 -> JSON.stringify -> 히든 요소에 주입 -> 파라미터 전달 -> 결과 확인
+			let essential_array = []; // 배열
 			let preferential_array = {};
 			
 			const setEssential = () => {
-				essential_array.language = essentials[0].value;
-				essential_array.library = essentials[1].value;
-				essential_array.framework = essentials[2].value;
-				essential_array.database = essentials[3].value;
-				essential_array.knowledge = essentials[4].value;
-				essential_array.experience = essentials[5].value;
-				essential_array.tool = essentials[6].value;
+				for(const e of essentials){
+					if(e.className.includes('btn-info')){//버튼을 선택했다면
+						essential_array.push(e.innerText);
+					}
+				}
 				document.getElementsByName('essential')[0].value = JSON.stringify(essential_array);
 			}
 			
 			const setpreferential = () => {
-				preferential_array.language = preferentials[0].value;
-				preferential_array.library = preferentials[1].value;
-				preferential_array.framework = preferentials[2].value;
-				preferential_array.database = preferentials[3].value;
-				preferential_array.knowledge = preferentials[4].value;
-				preferential_array.experience = preferentials[5].value;
-				preferential_array.tool = preferentials[6].value;
+				for(const p of preferentials){
+					if(p.className.includes('btn-info')){//버튼을 선택했다면
+						preferential_array.push(e.innerText);
+					}
+				}
 				document.getElementsByName('preferential')[0].value = JSON.stringify(preferential_array);
 			}
 			//자격 조건 가공 (끝)
 			
 			// 입력 요소 유효성 검사 함수 (시작)
 			const checkVaild = () => {
-				if(resumeDateFlag && companyNameFlag && resumeStateFlag && resumeCareerFlag && platformFlag){
+				if(resumeDateFlag && companyNameFlag && resumeStateFlag && resumeCareerFlag && platformFlag && companyTypeFlag){
 					return true;
 				} else{
 					return false;
@@ -378,14 +378,16 @@
 				if(checkVaild()){
 					//주소 입력 값 병합
 					for(let i = 0; i < companyAddress.length; i++){
-						if(i != companyAddress.length - 1){
-							companyRegion.value += companyAddress[i].value + '_';
-						}else{
-							companyRegion.value += companyAddress[i].value;
+						if(companyAddress[i].value.length != 0){
+							if(i != companyAddress.length - 1){
+								companyRegion.value += companyAddress[i].value + '_';
+							}else{
+								companyRegion.value += companyAddress[i].value;
+							}
 						}
 					}
 					
-					//테스트
+					//자격 조건 가공
 					setEssential();
 					setpreferential();
 					
