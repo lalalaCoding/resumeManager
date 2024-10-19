@@ -42,6 +42,11 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 	public int insertResumeHistory(ResumeHistory resumeHistory) {
 		return rMapper.insertResumeHistory(resumeHistory);
 	}
+
+	@Override
+	public void deleteResumeHistory(int resumeNo) {
+		rMapper.deleteResumeHistory(resumeNo);
+	}
 	
 	
 }

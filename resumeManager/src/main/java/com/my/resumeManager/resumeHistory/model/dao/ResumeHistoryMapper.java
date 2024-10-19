@@ -23,4 +23,6 @@ public interface ResumeHistoryMapper {
 
 	int insertResumeHistory(ResumeHistory resumeHistory);
 
+	void deleteResumeHistory(int resumeNo);
+
 }

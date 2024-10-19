@@ -17,24 +17,29 @@
  	</select>
  	
  	
- 	<insert id="insertResumeHistory">
+ 	<insert id="insertResumeHistory" useGeneratedKeys="true">
+ 		<selectKey resultType="_int" keyProperty="resumeNo" order="BEFORE">
+ 			select seq_history.nextval from dual
+ 		</selectKey>
  		insert into RESUME_HISTORY
- 		values(seq_history.nextval, #{resumeWriter}, #{resumeDate}, #{companyName},
+ 		values(${resumeNo}, #{resumeWriter}, #{resumeDate}, #{companyName},
 				#{companySalary}, #{companyRegion}, #{resumeState}, #{resumeCareer}, #{resumeDeadline},
-				#{companyType.typeNo}, #{platformType.platformNo})
+				#{companyType.typeNo}, #{platformType.platformNo}, DEFAULT)
  	</insert>
- 	
- 	
- 	
  	
  	<!-- 지원 조건 삽입 : 동적 SQL -->
  	<insert id="insertResumeCondition">
  		insert all
  		<foreach collection="list" item="item" separator=" ">
- 			into resume_history values(fn_condition, #{resumeNo}, #{conditionType}, #{infoNo})
+ 			into resume_condition values(fn_condition, #{item.resumeNo}, #{item.conditionType}, #{item.infoNo})
  		</foreach>
  		select * from dual
  	</insert>
+ 	
+ 	<!-- 지원 이력 삭제 -->
+ 	<delete id="deleteResumeHistory">
+ 		delete from resume_history where resume_no = ${resumeNo}
+ 	</delete>
  	
  	
  </mapper>

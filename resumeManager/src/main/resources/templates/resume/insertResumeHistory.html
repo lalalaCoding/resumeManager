@@ -42,7 +42,10 @@
 					</tr>
 					<tr>
 						<td>급여 수준</td>
-						<td><input type="number" name="companySalary"/></td>
+						<td>
+							<input type="number" name="companySalary"/>
+							<span class="badge text-bg-light">미입력 시 최저시급으로 입력됩니다.</span>
+						</td>
 					</tr>				
 					<tr>
 						<td>지원상태(필수)</td>
@@ -336,12 +339,18 @@
 					this.classList.toggle('btn-info');
 				});
 			}
+			for(const e of preferentials){
+				e.addEventListener('click', function(){
+					this.classList.toggle('btn-light');
+					this.classList.toggle('btn-info');
+				});
+			}
 			//자격 조건 클릭 이벤트 (끝)
 			
 			//자격 조건 가공 (시작)
 			//선택 항목 -> 배열 -> JSON.stringify -> 히든 요소에 주입 -> 파라미터 전달 -> 결과 확인
 			let essential_array = []; // 배열
-			let preferential_array = {};
+			let preferential_array = [];
 			
 			const setEssential = () => {
 				for(const e of essentials){
@@ -355,7 +364,7 @@
 			const setpreferential = () => {
 				for(const p of preferentials){
 					if(p.className.includes('btn-info')){//버튼을 선택했다면
-						preferential_array.push(e.innerText);
+						preferential_array.push(p.innerText);
 					}
 				}
 				document.getElementsByName('preferential')[0].value = JSON.stringify(preferential_array);
@@ -385,6 +394,19 @@
 								companyRegion.value += companyAddress[i].value;
 							}
 						}
+					}
+					
+					//최저 시급 검사
+					const minSalary = 2496; // 2025년 기준 최저 연봉
+					if(companySalary.value. < minSalary){
+						companySalary.value = minSalary;
+					}
+					
+					
+					if(companySalary.value.trim().length != 0) {
+						
+					} else {
+						companySalary.value = minSalary;
 					}
 					
 					//자격 조건 가공

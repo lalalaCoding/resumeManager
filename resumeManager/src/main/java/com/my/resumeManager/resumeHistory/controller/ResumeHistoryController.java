@@ -37,6 +37,12 @@ public class ResumeHistoryController {
 	
 	@GetMapping("insertResumeHistoryPage.rh")
 	public String insertResumeHistoryPage() {
+		// 최저 시급 계산하여 전달
+		
+		
+		
+		
+		
 		return "resume/insertResumeHistory";
 	}
 	
@@ -53,6 +59,8 @@ public class ResumeHistoryController {
 		
 		//작성자 지정
 		Member loginMember = (Member)session.getAttribute("loginMember");
+		System.out.println("로그인 회원 확인");
+		System.out.println(loginMember);
 		if(loginMember != null) {
 			resumeHistory.setResumeWriter(loginMember.getMemberNo());
 		}
@@ -83,21 +91,17 @@ public class ResumeHistoryController {
 		}
 		
 		//지원 이력 삽입
-		System.out.println("지원 이력 삽입 전 확인");
-		System.out.println(resumeHistory);
 		int insertHistoryResult = rService.insertResumeHistory(resumeHistory);
-		//자격 조건 삽입
-		String insertConditionResult = insertResumeCondition(essential, preferential, resumeHistory.getResumeNo());
 		
-		
-		if(insertHistoryResult == 1 && insertConditionResult.equals("success")) {//삽입 성공
-			System.out.println("***** 삽입 성공 *****");
-			
-			
-		} else if(insertHistoryResult == 0) {//지원 이력 삽입 실패
-			// 지원 이력 삭제 추가
-			System.out.println("***** 지원 이력 삭제 로직 실행 *****");
-		} else {//자격 조건 삽입 실패
+		if(insertHistoryResult > 0) { //지원 이력 삽입 성공
+			//자격 조건 삽입
+			String insertConditionResult = insertResumeCondition(essential, preferential, resumeHistory.getResumeNo());
+			if(insertConditionResult.equals("success")) { //자격 조건 삽입 성공
+				//지원 이력 조회 페이지로 이동
+			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
+				rService.deleteResumeHistory(resumeHistory.getResumeNo());
+			}
+		} else { //지원 이력 삽입 실패
 			throw new ResumeHistoryException("서비스 요청 실패");
 		}
 		
@@ -151,12 +155,12 @@ public class ResumeHistoryController {
 			for(ConditionInfo c : infoList) {
 				for(String e : essentialList) {
 					if(c.getInfoName().equalsIgnoreCase(e)) {
-						insertList.add(new ResumeCondition(0, 1, c.getInfoNo(), resumeHistoryNo));
+						insertList.add(new ResumeCondition(0, resumeHistoryNo, 1, c.getInfoNo()));
 					}
 				}
 				for(String e : preferentialList) {
 					if(c.getInfoName().equalsIgnoreCase(e)) {
-						insertList.add(new ResumeCondition(0, 0, c.getInfoNo(), resumeHistoryNo));
+						insertList.add(new ResumeCondition(0, resumeHistoryNo, 0, c.getInfoNo()));
 					}
 				}
 			}
@@ -168,10 +172,9 @@ public class ResumeHistoryController {
 		}
 		
 		if(result == insertList.size()) {
-			return "success";
+			return "fail";
+			//return "success";
 		} else {
-			// 삭제 로직 추가해야함
-			// rService.deleteResumeCondition(insertList); -> 프로시저 활용
 			return "fail";
 		}
 	}

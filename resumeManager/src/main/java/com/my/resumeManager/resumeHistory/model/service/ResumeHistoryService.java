@@ -20,4 +20,6 @@ public interface ResumeHistoryService {
 
 	int insertResumeHistory(ResumeHistory resumeHistory);
 
+	void deleteResumeHistory(int resumeNo);
+
 }
