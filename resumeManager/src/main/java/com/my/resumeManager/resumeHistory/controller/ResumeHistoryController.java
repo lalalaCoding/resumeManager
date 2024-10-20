@@ -8,12 +8,14 @@ import java.util.StringTokenizer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.my.resumeManager.common.openAPI.OpenAPIController;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.resumeHistory.model.service.ResumeHistoryService;
 import com.my.resumeManager.resumeHistory.model.vo.CompanyType;
@@ -30,18 +32,24 @@ public class ResumeHistoryController {
 	@Autowired
 	private ResumeHistoryService rService;
 	
+	@Autowired
+	private OpenAPIController oController;
+	
 	@GetMapping("resumeHistoryPage.rh")
 	public String resumeHistoryPage() {
 		return "resume/resumeHistory";
 	}
 	
 	@GetMapping("insertResumeHistoryPage.rh")
-	public String insertResumeHistoryPage() {
+	public String insertResumeHistoryPage(Model model) {
 		// 최저 시급 계산하여 전달
-		
-		
-		
-		
+		int hourSalary = oController.getHourSalary();
+		double monthAvgWeek = (double)365/12/7; //월별 평균 주차 -> 4.35주
+		int weekWorkTime = 8*5 + 8; //주별 평균 근로 시간
+		int monthWorkTime =  (int)Math.ceil(weekWorkTime * monthAvgWeek); //월별 평균 근로 시간, 약 209시간
+		int monthSalary = monthWorkTime * hourSalary; //월별 최저 임금
+		int yearSalary = monthSalary * 12; //최저 연봉 24,728,880
+		model.addAttribute("yearSalary", yearSalary);
 		
 		return "resume/insertResumeHistory";
 	}

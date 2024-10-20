@@ -1,4 +1,4 @@
-package com.my.resumeManager.common;
+package com.my.resumeManager.common.sms;
 
 // 임의의 인증번호 또는 비밀번호 생성해주는 메소드를 갖는 클래스 작성
 public class RandomCreater {

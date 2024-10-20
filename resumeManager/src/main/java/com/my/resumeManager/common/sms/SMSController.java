@@ -1,10 +1,12 @@
-package com.my.resumeManager.common;
+package com.my.resumeManager.common.sms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.my.resumeManager.common.CompanyInfo;
 
 import jakarta.servlet.http.HttpSession;
 import net.nurigo.sdk.NurigoApp;
@@ -17,6 +19,7 @@ import net.nurigo.sdk.message.service.DefaultMessageService;
 public class SMSController {
 	// 필드
 	final DefaultMessageService messageService;
+	
 	@Autowired
 	private CompanyInfo companyInfo;
 	
