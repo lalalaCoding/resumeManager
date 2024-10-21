@@ -63,8 +63,6 @@ public class ResumeHistoryController {
 										@RequestParam("essential") String essential,
 										@RequestParam("preferential") String preferential
 										) {
-		System.out.println(resumeHistory);
-		
 		//작성자 지정
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		System.out.println("로그인 회원 확인");
@@ -108,6 +106,7 @@ public class ResumeHistoryController {
 				//지원 이력 조회 페이지로 이동
 			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
 				rService.deleteResumeHistory(resumeHistory.getResumeNo());
+				throw new ResumeHistoryException("서비스 요청 실패");
 			}
 		} else { //지원 이력 삽입 실패
 			throw new ResumeHistoryException("서비스 요청 실패");
@@ -180,8 +179,7 @@ public class ResumeHistoryController {
 		}
 		
 		if(result == insertList.size()) {
-			return "fail";
-			//return "success";
+			return "success";
 		} else {
 			return "fail";
 		}

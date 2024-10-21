@@ -44,6 +44,7 @@
 						<td>급여 수준</td>
 						<td>
 							<input type="number" name="companySalary"/>
+							<i>(만원)</i>
 							<span class="badge text-bg-light">미입력 시 최저시급으로 입력됩니다.</span>
 						</td>
 					</tr>				
@@ -189,8 +190,12 @@
 	
 	<div th:replace="~{common/footer :: footer}"></div>
 	
-	<script>
+	<script th:inline="javascript">
 		window.onload = () => {
+			/*<![CDATA[*/
+			const yearSalary = /*[[${yearSalary}]]*/'최저연봉';
+			/*]]>*/
+			
 			const resumeDate = document.getElementsByName('resumeDate')[0]; // 지원 일자 요소 -> 필수
 			const companyName = document.getElementsByName('companyName')[0]; // 회사 이름 요소 -> 필수
 			const companyRegion = document.getElementsByName('companyRegion')[0]; //회사 주소
@@ -397,16 +402,13 @@
 					}
 					
 					//최저 시급 검사
-					const minSalary = 2496; // 2025년 기준 최저 연봉
-					if(companySalary.value. < minSalary){
-						companySalary.value = minSalary;
-					}
+					let modifySalary = companySalary.value * 10000; // 원 단위로 교정
 					
 					
-					if(companySalary.value.trim().length != 0) {
-						
-					} else {
-						companySalary.value = minSalary;
+					if(modifySalary < yearSalary){
+						companySalary.value = yearSalary;
+					} else{
+						companySalary.value = modifySalary;
 					}
 					
 					//자격 조건 가공
@@ -419,6 +421,8 @@
 				}
 			});
 			// 등록하기 요청 (끝)
+			
+			console.log(yearSalary); //24728880
 		}
 	</script>
 </body>
