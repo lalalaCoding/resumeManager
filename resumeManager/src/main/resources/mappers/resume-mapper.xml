@@ -41,5 +41,48 @@
  		delete from resume_history where resume_no = ${resumeNo}
  	</delete>
  	
+ 	<!-- 지원 이력 개수 조회 -->
+ 	<select id="getCountResumeHistory" resultType="_int">
+ 		select count(*) 
+ 		from resume_history 
+ 		where RESUME_WRITER = ${memberNo} AND RESUME_VAILD = 'Y'
+ 	</select>
+ 	
+ 	<!-- 페이지 처리된 지원 이력 조회 -->
+ 	<select id="selectAllResumeHistory" resultType="ResumeHistory">
+ 		select * 
+ 		from resume_history 
+ 		where RESUME_WRITER = ${memberNo} AND RESUME_VAILD = 'Y'
+ 		order by resume_date
+ 	</select>
+ 	
+ 	<!-- 지원 이력에 대한 지원 조건 조회 -->
+ 	<select id="selectAllResumeCondition" resultType="ResumeCondition">
+ 		select *
+ 		from resume_condition
+ 				join condition_info using(info_no)
+		where resume_no in 
+		<foreach collection="list" item="item" open="(" close=")" separator=", ">
+			${item.resumeNo}		
+		</foreach>
+ 	</select>
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
  	
  </mapper>

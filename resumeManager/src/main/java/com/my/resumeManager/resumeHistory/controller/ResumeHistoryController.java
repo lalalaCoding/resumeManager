@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.resumeManager.common.openAPI.OpenAPIController;
+import com.my.resumeManager.common.page.PageInfo;
+import com.my.resumeManager.common.page.Pagination;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.resumeHistory.model.service.ResumeHistoryService;
 import com.my.resumeManager.resumeHistory.model.vo.CompanyType;
@@ -36,7 +38,38 @@ public class ResumeHistoryController {
 	private OpenAPIController oController;
 	
 	@GetMapping("resumeHistoryPage.rh")
-	public String resumeHistoryPage() {
+	public String resumeHistoryPage(HttpSession session, 
+			@RequestParam(value = "page", defaultValue = "1") int currentPage) {
+		
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		int memberNo = 0;
+		if(loginMember != null) {
+			memberNo = loginMember.getMemberNo();
+			//페이지 계산
+			int listCount = rService.getCountResumeHistory(memberNo);
+			PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 10);
+			
+			//페이지 처리된 '지원 이력' 조회
+			ArrayList<ResumeHistory> rhList = rService.selectAllResumeHistory(memberNo, pi);
+			
+			//지원 이력 -> '지원 조건' 조회			
+			ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
+			
+			
+			
+			
+			
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		return "resume/resumeHistory";
 	}
 	
@@ -162,12 +195,12 @@ public class ResumeHistoryController {
 			for(ConditionInfo c : infoList) {
 				for(String e : essentialList) {
 					if(c.getInfoName().equalsIgnoreCase(e)) {
-						insertList.add(new ResumeCondition(0, resumeHistoryNo, 1, c.getInfoNo()));
+						insertList.add(new ResumeCondition(0, resumeHistoryNo, 1, c.getInfoNo(), null));
 					}
 				}
 				for(String e : preferentialList) {
 					if(c.getInfoName().equalsIgnoreCase(e)) {
-						insertList.add(new ResumeCondition(0, resumeHistoryNo, 0, c.getInfoNo()));
+						insertList.add(new ResumeCondition(0, resumeHistoryNo, 0, c.getInfoNo(), null));
 					}
 				}
 			}

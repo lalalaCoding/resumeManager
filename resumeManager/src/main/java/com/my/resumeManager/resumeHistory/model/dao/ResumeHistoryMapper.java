@@ -3,6 +3,7 @@ package com.my.resumeManager.resumeHistory.model.dao;
 import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.session.RowBounds;
 
 import com.my.resumeManager.resumeHistory.model.vo.CompanyType;
 import com.my.resumeManager.resumeHistory.model.vo.ConditionInfo;
@@ -24,5 +25,11 @@ public interface ResumeHistoryMapper {
 	int insertResumeHistory(ResumeHistory resumeHistory);
 
 	void deleteResumeHistory(int resumeNo);
+
+	int getCountResumeHistory(int memberNo);
+
+	ArrayList<ResumeHistory> selectAllResumeHistory(int memberNo, RowBounds rowBounds);
+
+	ArrayList<ResumeCondition> selectAllResumeCondition(ArrayList<ResumeHistory> rhList);
 
 }
