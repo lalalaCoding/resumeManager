@@ -65,39 +65,81 @@
 							<th>회사명</th>
 							<th>진행상태</th>
 							<th>업종</th>
-							<th>직무기술</th>
+							<th>필수 직무 기술</th><!-- 인포타입 : 101, 102, 103, 104 -->
+							<th>우대 직무 기술</th><!-- 인포타입 : 101, 102, 103, 104 -->
 							<th>지원플랫폼</th>
-							<th>기타</th>
+							<th>지식</th><!-- 인포타입 : 201, 203, 203 -->
 						</tr>
 					</thead>
 						
 					<tbody>
-						<tr>
+						<tr th:each="rh : ${rhList}">
 							<td>
-								<input type="hidden" name="resumeNo"/>
+								<input type="hidden" name="resumeNo" th:value="${rh.resumeNo}"/>
 								<input type="checkbox"/>
 							</td>
-							<td>24-01-01</td>
-							<td>KH정보교육원</td>
-							<td>진행중</td>
-							<td>SI</td>
-							<td>JAVA, Spring</td>
-							<td>사람인</td>
-							<td>자동화 배포 경험</td>
-						</tr>
-						<tr>
-							<td><input type="checkbox"/></td>
-							<td>24-01-01</td>
-							<td>KH정보교육원</td>
-							<td>진행중</td>
-							<td>SI</td>
-							<td>JAVA, Spring</td>
-							<td>사람인</td>
-							<td>자동화 배포 경험</td>
+							<td th:text="${#strings.substring(rh.resumeDate, 2)}"></td>
+							<td th:text="${rh.companyName}"></td>
+							<td>				
+								<span th:if="${rh.resumeState == 0}">지원</span>
+								<span th:if="${rh.resumeState == 1}">서류합격</span>
+								<span th:if="${rh.resumeState == 2}">면접합격</span>
+								<span th:if="${rh.resumeState == 3}">최종합격</span>
+							</td>
+							<td th:text="${rh.companyType.typeName}"></td>
+							<td>
+								<th:block th:each="con : ${conList}" th:if="${rh.resumeNo == con.resumeNo && con.conditionType == 1}">
+									<th:block th:if="${con.infoType < 200}">
+										[[${con.infoName}]]
+									</th:block>
+								</th:block>
+							</td>
+							<td>
+								<th:block th:each="con : ${conList}" th:if="${rh.resumeNo == con.resumeNo && con.conditionType == 0}">
+									<th:block th:if="${con.infoType < 200}">
+										[[${con.infoName}]]
+									</th:block>
+								</th:block>
+							</td>
+							<td th:text=${rh.platformType.platformName}></td>
+							<td>
+								<th:block th:each="con : ${conList}" th:if="${rh.resumeNo == con.resumeNo && con.conditionType == 0}">
+									<th:block th:if="${con.infoType > 200}">
+										[[${con.infoName}]]
+									</th:block>
+								</th:block>
+							</td>
 						</tr>
 					</tbody>
 				</table>
-			
+				
+				<!-- pi
+					PageInfo(currentPage=1, listCount=6, pageLimit=5, boardLimit=10, maxPage=1, startPage=1, endPage=1
+				 -->
+				[[${pi}]]
+				
+				<nav aria-label="Page navigation" th:with="loc=${loc}"> <!-- loc = 요청url -->
+				    <ul class="pagination">
+					    <li class="page-item">
+					      	<a class="page-link" href="#" aria-label="Previous" >
+					        	<span aria-hidden="true">&laquo;</span>
+					        </a>
+					    </li>
+					    <li class="page-item"><a class="page-link" href="#">1</a></li>
+					    <li class="page-item"><a class="page-link" href="#">2</a></li>
+					    <li class="page-item"><a class="page-link" href="#">3</a></li>
+					    <li class="page-item"><a class="page-link" href="#">4</a></li>
+					    <li class="page-item"><a class="page-link" href="#">5</a></li>
+					    <li class="page-item">
+					        <a class="page-link" href="#" aria-label="Next">
+					        	<span aria-hidden="true">&raquo;</span>
+					        </a>
+					    </li>
+				    </ul>
+				</nav>
+				
+				
+				
 			</div>
 		</div>
 	
