@@ -44,6 +44,8 @@ public class ResumeHistoryController {
 			Model model, HttpServletRequest request) {
 		
 		Member loginMember = (Member)session.getAttribute("loginMember");
+		System.out.println("로그인 체크 : " + loginMember);
+		
 		int memberNo = 0;
 		if(loginMember != null) {
 			memberNo = loginMember.getMemberNo();
@@ -53,11 +55,9 @@ public class ResumeHistoryController {
 			
 			//페이지 처리된 '지원 이력' 조회
 			ArrayList<ResumeHistory> rhList = rService.selectAllResumeHistory(memberNo, pi);
-			System.out.println(rhList.get(0));
 			
 			//지원 이력 -> '지원 조건' 조회			
 			ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
-			System.out.println(conList.get(0));
 			//데이터 전달
 			model.addAttribute("pi", pi);
 			model.addAttribute("loc", request.getRequestURI());

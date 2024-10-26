@@ -153,7 +153,7 @@ public class MemberController {
 			return "redirect:loginPage.me";
 		}
 		
-		return "resume/resumeHistory";
+		return "redirect:resumeHistoryPage.rh";
 	}
 	
 	@GetMapping("findPage.me")

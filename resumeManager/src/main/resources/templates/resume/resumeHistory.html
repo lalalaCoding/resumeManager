@@ -69,6 +69,7 @@
 							<th>우대 직무 기술</th><!-- 인포타입 : 101, 102, 103, 104 -->
 							<th>지원플랫폼</th>
 							<th>지식</th><!-- 인포타입 : 201, 203, 203 -->
+							<th></th>
 						</tr>
 					</thead>
 						
@@ -109,6 +110,9 @@
 									</th:block>
 								</th:block>
 							</td>
+							<td>
+								<button type="button" class="btn btn-light">Modify</button>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -116,30 +120,30 @@
 				<!-- pi
 					PageInfo(currentPage=1, listCount=6, pageLimit=5, boardLimit=10, maxPage=1, startPage=1, endPage=1
 				 -->
-				[[${pi}]]
-				
 				<nav aria-label="Page navigation" th:with="loc=${loc}"> <!-- loc = 요청url -->
 				    <ul class="pagination">
 					    <li class="page-item">
-					      	<a class="page-link" href="#" aria-label="Previous" >
-					        	<span aria-hidden="true">&laquo;</span>
+					    	<a class="page-link" th:if="${pi.currentPage > 1}" th:href="@{${loc}(page=${pi.currentPage - 1})}" aria-label="Previous">
+					        	<span aria-hidden="true">&lt;</span>
+					        </a>
+					      	<a class="page-link disabled" th:unless="${pi.currentPage > 1}" href="#" aria-label="Previous">
+					        	<span aria-hidden="true">&lt;</span>
 					        </a>
 					    </li>
-					    <li class="page-item"><a class="page-link" href="#">1</a></li>
-					    <li class="page-item"><a class="page-link" href="#">2</a></li>
-					    <li class="page-item"><a class="page-link" href="#">3</a></li>
-					    <li class="page-item"><a class="page-link" href="#">4</a></li>
-					    <li class="page-item"><a class="page-link" href="#">5</a></li>
+					    <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+					    	<a class="page-link" th:if="${pi.currentPage != p}" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
+					    	<a class="page-link disabled" th:unless="${pi.currentPage != p}" href="#">[[${p}]]</a>
+				    	</li>
 					    <li class="page-item">
-					        <a class="page-link" href="#" aria-label="Next">
-					        	<span aria-hidden="true">&raquo;</span>
+					        <a class="page-link" th:if="${pi.currentPage < pi.maxPage}" th:href="@{${loc}(page=${pi.currentPage + 1})}" aria-label="Next">
+					        	<span aria-hidden="true">&gt;</span>
+					        </a>
+					    	<a class="page-link disabled" th:unless="${pi.currentPage < pi.maxPage}" href="#" aria-label="Next">
+					        	<span aria-hidden="true">&gt;</span>
 					        </a>
 					    </li>
 				    </ul>
 				</nav>
-				
-				
-				
 			</div>
 		</div>
 	
