@@ -71,12 +71,12 @@
  	</resultMap>
  	
  	<select id="selectAllResumeHistory" resultMap="resumeHistoryMap">
- 		select * 
+ 		select /*+ INDEX_DESC(RESUME_HISTORY IDX_HISTORY_VAILD_WRITE)*/* 
  		from resume_history
  				join company_type on(company_type_no = type_no)
  				join platform_type using(platform_No)
  		where RESUME_WRITER = ${memberNo} AND RESUME_VAILD = 'Y'
- 		order by resume_date
+ 		order by resume_date desc
  	</select>
  	
  	<!-- 지원 이력에 대한 지원 조건 조회 -->
