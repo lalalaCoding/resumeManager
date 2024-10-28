@@ -56,7 +56,7 @@ public class ResumeHistoryController {
 			//페이지 처리된 '지원 이력' 조회
 			ArrayList<ResumeHistory> rhList = rService.selectAllResumeHistory(memberNo, pi);
 			
-			//지원 이력 -> '지원 조건' 조회			
+			//지원 이력 -> '지원 조건' 조회 : 페이징 처리 된 지원 이력 번호는 최대 10개이므로 IN 연산자로 SQL을 작성함			
 			ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
 			//데이터 전달
 			model.addAttribute("pi", pi);

@@ -45,7 +45,7 @@
  	<select id="getCountResumeHistory" resultType="_int">
  		select count(*) 
  		from resume_history 
- 		where RESUME_WRITER = ${memberNo} AND RESUME_VAILD = 'Y'
+ 		where RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo}
  	</select>
  	
  	<!-- 페이지 처리된 지원 이력 조회 -->
@@ -71,11 +71,11 @@
  	</resultMap>
  	
  	<select id="selectAllResumeHistory" resultMap="resumeHistoryMap">
- 		select /*+ INDEX_DESC(RESUME_HISTORY IDX_HISTORY_VAILD_WRITE)*/* 
+ 		select /*+ INDEX_DESC(RESUME_HISTORY IDX_HISTORY_VAILD_WRITER)*/* 
  		from resume_history
  				join company_type on(company_type_no = type_no)
  				join platform_type using(platform_No)
- 		where RESUME_WRITER = ${memberNo} AND RESUME_VAILD = 'Y'
+ 		where RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo} 
  		order by resume_date desc
  	</select>
  	
