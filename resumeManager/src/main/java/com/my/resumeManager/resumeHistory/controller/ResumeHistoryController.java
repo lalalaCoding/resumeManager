@@ -3,6 +3,7 @@ package com.my.resumeManager.resumeHistory.controller;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -29,7 +30,9 @@ import com.my.resumeManager.resumeHistory.model.vo.ResumeHistoryException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 public class ResumeHistoryController {
 	@Autowired
@@ -44,7 +47,7 @@ public class ResumeHistoryController {
 			Model model, HttpServletRequest request) {
 		
 		Member loginMember = (Member)session.getAttribute("loginMember");
-		System.out.println("로그인 체크 : " + loginMember);
+		log.info("로그인 체크 = {}", loginMember);
 		
 		int memberNo = 0;
 		if(loginMember != null) {
@@ -214,7 +217,71 @@ public class ResumeHistoryController {
 		}
 	}
 	
-	
+	@GetMapping("searchResumeHistory.rh")
+	public String searchResumeHistory(@RequestParam("companyName") String companyName,
+										@RequestParam("beginDt") String beginDt,
+										@RequestParam("endDt") String endDt,
+										@RequestParam("infoName") String infoName,
+										HttpSession session) {
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		String memberNo = "";
+		if (loginMember != null) {
+			memberNo = String.valueOf(loginMember.getMemberNo());
+		} 
+		
+		//데이터 체크 : 입력값이 없으면 null이 아니라 ""로 넘어옴
+		//유효성 검사 (url을 통해 접근할 수 있기 때문)
+		boolean vaildFlag = false;
+		if (companyName.trim().length() > 0) { //회사명 데이터가 존재
+			vaildFlag = true;
+		} else {
+			companyName = null;
+		}
+		if (beginDt.trim().length() > 0 && endDt.trim().length() > 0) { // 시작날짜 종료날짜 모두 존재
+			String[] beginArr = beginDt.split("-");
+			Calendar beginCalendar = Calendar.getInstance();
+			beginCalendar.set(Integer.parseInt(beginArr[0]), Integer.parseInt(beginArr[1]), Integer.parseInt(beginArr[2]));
+			
+			String[] endArr = endDt.split("-");
+			Calendar endCalendar = Calendar.getInstance();
+			endCalendar.set(Integer.parseInt(endArr[0]), Integer.parseInt(endArr[1]), Integer.parseInt(endArr[2]));
+			
+			vaildFlag = beginCalendar.getTimeInMillis() <= endCalendar.getTimeInMillis() ? true : false;
+		} else {
+			beginDt = null;
+			endDt = null;
+		}
+		if (infoName.trim().length() > 0) {
+			vaildFlag = true;
+		} else {
+			infoName = null;
+		}
+		
+		if (vaildFlag) { //유효성 통과
+			HashMap<String, String> condition = new HashMap<String, String>(); 
+			condition.put("memberNo", memberNo);
+			condition.put("companyName", companyName);
+			condition.put("beginDt", beginDt);
+			condition.put("endDt", endDt);
+			condition.put("infoName", infoName);
+			
+			int listCount = rService.getSearchCountResumeHistory(condition);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		} else {
+			throw new ResumeHistoryException("서비스 요청에 실패하였습니다.");
+		}
+		
+		return null;
+	}
 	
 	
 }

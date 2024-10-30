@@ -43,13 +43,13 @@
 			</div>		
 		
 			<div> <!-- 지원 이력 출력 div -->
-				<form>
+				<form id="searchForm" method="get" action="searchResumeHistory.rh">
 					<span>회사명</span>
-					<input type="text" placeHolder="회사명"/>
+					<input type="text" placeHolder="회사명" class="searchFormat" name="companyName"/>
 					<span>지원기간</span>
-					<input type="date"/> - <input type="date"/>
+					<input type="date" class="searchFormat" name="beginDt"/> - <input type="date" class="searchFormat" name="endDt"/>
 					<span>직무 정보</span>
-					<input type="text" placeHolder="스킬명 또는 경험"/>
+					<input type="text" placeHolder="스킬명 또는 경험" class="searchFormat" name="infoName"/>
 					<button type="button" class="btn btn-light" id="searchBtn">검색하기</button>
 					<button type="button" class="btn btn-light" id="selectAllBtn">전체보기</button>
 					<button type="button" class="btn btn-light" id="insertBtn" onclick="location.href='insertResumeHistoryPage.rh'">등록하기</button>
@@ -205,8 +205,61 @@
 				   
 				});
 			//지원 추이에 대한 막대 그래프 (끝)
+
+			//검색 조건 유효성 검사 (시작)
 			
-		
+			const searchFormatVaild = () => {
+				let searchFlag = false;
+				const searchFormatList = document.querySelectorAll('.searchFormat');
+				
+				if (searchFormatList[0].value.trim().length > 0) {
+					searchFlag = true; //회사명 입력 -> 유효성 통과
+				} else if (searchFormatList[1].value.length > 0 && searchFormatList[2].value.length > 0) {
+					const beginDt = new Date(searchFormatList[1].value);
+					const endDt = new Date(searchFormatList[2].value);
+					searchFlag = beginDt <= endDt ? true : false;
+				} else if (searchFormatList[3].value.trim().length > 0) {
+					searchFlag = true;
+				}
+				
+				return searchFlag;
+			}
+			//검색 조건 유효성 검사 (끝)
+			
+			//지원 이력 검색 (시작)
+			const searchBtn = $('#searchBtn');
+			const searchForm = $('#searchForm');
+			const searchFormat = {};
+			
+			searchBtn.on('click', () => {
+				if (searchFormatVaild()) {
+					const searchFormatList = document.querySelectorAll('.searchFormat');
+					/* searchFormat.companyName = searchFormatList[0].value;
+					searchFormat.beginDt = searchFormatList[1].value;
+					searchFormat.endDt = searchFormatList[2].value;
+					searchFormat.companyName = searchFormatList[3].value;
+					location.href = 'searchResumeHistory.rh?' + JSON.stringify(searchFormat); */
+					
+					searchForm.submit();
+					
+					
+				} else {
+					alert('검색 조건을 입력해주세요.');
+				}
+				
+				
+				
+				
+				
+				
+				
+			});
+			
+			
+			
+			
+			
+			//지원 이력 검색 (끝)
 			
 		}	
 	</script>

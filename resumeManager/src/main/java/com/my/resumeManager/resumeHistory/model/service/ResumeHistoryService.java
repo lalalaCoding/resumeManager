@@ -1,6 +1,7 @@
 package com.my.resumeManager.resumeHistory.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.my.resumeManager.common.page.PageInfo;
 import com.my.resumeManager.resumeHistory.model.vo.CompanyType;
@@ -28,5 +29,7 @@ public interface ResumeHistoryService {
 	ArrayList<ResumeHistory> selectAllResumeHistory(int memberNo, PageInfo pi);
 
 	ArrayList<ResumeCondition> selectAllResumeCondition(ArrayList<ResumeHistory> rhList);
+
+	int getSearchCountResumeHistory(HashMap<String, String> condition);
 
 }

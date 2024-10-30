@@ -1,4 +1,4 @@
-package com.my.resumeManager.hourSalary;
+package com.my.resumeManager.api;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +41,8 @@ public class HourSalaryTest {
 			
 			in.close();
 			conn.disconnect();
+			
+			assertThat(hourSalary).isEqualTo(9860);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

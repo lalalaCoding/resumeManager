@@ -1,6 +1,7 @@
 package com.my.resumeManager.resumeHistory.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,11 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 	@Override
 	public ArrayList<ResumeCondition> selectAllResumeCondition(ArrayList<ResumeHistory> rhList) {
 		return rMapper.selectAllResumeCondition(rhList);
+	}
+
+	@Override
+	public int getSearchCountResumeHistory(HashMap<String, String> condition) {
+		return 0;
 	}
 	
 	
