@@ -70,7 +70,14 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 
 	@Override
 	public int getSearchCountResumeHistory(HashMap<String, String> condition) {
-		return 0;
+		return rMapper.getSearchCountResumeHistory(condition);
+	}
+
+	@Override
+	public ArrayList<ResumeHistory> selectResumeHistory(HashMap<String, String> condition, PageInfo pi) {
+		RowBounds rowBounds = 
+					new RowBounds((pi.getCurrentPage() - 1)*pi.getBoardLimit(), pi.getBoardLimit());
+		return rMapper.selectResumeHistory(condition, rowBounds);
 	}
 	
 	

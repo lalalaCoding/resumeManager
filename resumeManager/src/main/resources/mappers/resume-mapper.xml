@@ -90,10 +90,56 @@
 		</foreach>
  	</select>
  	
+ 	<!-- 지원 이력 검색 : listCount 조회 -->
+ 	<select id="getSearchCountResumeHistory" resultType="_int">
+ 		SELECT 
+ 				<if test="infoName == null">
+ 					COUNT(*)
+				</if>
+				<if test="infoName != null">
+ 					COUNT(DISTINCT(RESUME_NO))
+				</if>
+		FROM RESUME_HISTORY
+				<if test="infoName != null">
+					JOIN TABLE(FN_CONDITION_SEARCH(#{infoName})) USING(RESUME_NO)
+				</if>
+		        JOIN COMPANY_TYPE ON(TYPE_NO = COMPANY_TYPE_NO)
+		        JOIN PLATFORM_TYPE USING(PLATFORM_NO)
+		WHERE RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo}
+				<if test="companyName != null">
+					AND CONTAINS(COMPANY_NAME, '%' || #{companyName} ||'%') <![CDATA[>]]> 0
+				</if>
+				<if test="beginDt != null and endDt != null">
+					AND RESUME_DATE BETWEEN TO_DATE(#{beginDt}, 'YYYY-MM-DD') AND TO_DATE(#{endDt}, 'YYYY-MM-DD')
+				</if>
+		ORDER BY RESUME_DATE DESC
+ 	</select>
  	
- 	
- 	
- 	
+ 	<select id="selectResumeHistory" resultMap="resumeHistoryMap">
+ 		SELECT 
+ 				<if test="infoName == null">
+ 					*
+				</if>
+				<if test="infoName != null">
+ 					DISTINCT(RESUME_NO), COMPANY_NAME,COMPANY_REGION, COMPANY_SALARY, RESUME_CAREER,
+ 					RESUME_DATE, RESUME_DEADLINE, RESUME_STATE, RESUME_VAILD, RESUME_WRITER,
+					TYPE_NO, TYPE_NAME, PLATFORM_NO, PLATFORM_NAME
+				</if>
+		FROM RESUME_HISTORY
+				<if test="infoName != null">
+					JOIN TABLE(FN_CONDITION_SEARCH(#{infoName})) USING(RESUME_NO)
+				</if>
+		        JOIN COMPANY_TYPE ON(TYPE_NO = COMPANY_TYPE_NO)
+		        JOIN PLATFORM_TYPE USING(PLATFORM_NO)
+		WHERE RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo}
+				<if test="companyName != null">
+					AND CONTAINS(COMPANY_NAME, '%' || #{companyName} ||'%') <![CDATA[>]]> 0
+				</if>
+				<if test="beginDt != null and endDt != null">
+					AND RESUME_DATE BETWEEN TO_DATE(#{beginDt}, 'YYYY-MM-DD') AND TO_DATE(#{endDt}, 'YYYY-MM-DD')
+				</if>
+		ORDER BY RESUME_DATE DESC
+ 	</select>
  	
  	
  	

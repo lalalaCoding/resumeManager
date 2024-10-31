@@ -1,6 +1,7 @@
 package com.my.resumeManager.resumeHistory.model.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
@@ -31,5 +32,9 @@ public interface ResumeHistoryMapper {
 	ArrayList<ResumeHistory> selectAllResumeHistory(int memberNo, RowBounds rowBounds);
 
 	ArrayList<ResumeCondition> selectAllResumeCondition(ArrayList<ResumeHistory> rhList);
+
+	int getSearchCountResumeHistory(HashMap<String, String> condition);
+
+	ArrayList<ResumeHistory> selectResumeHistory(HashMap<String, String> condition, RowBounds rowBounds);
 
 }

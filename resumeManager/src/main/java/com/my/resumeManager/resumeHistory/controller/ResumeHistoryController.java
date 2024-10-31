@@ -222,6 +222,7 @@ public class ResumeHistoryController {
 										@RequestParam("beginDt") String beginDt,
 										@RequestParam("endDt") String endDt,
 										@RequestParam("infoName") String infoName,
+										@RequestParam(value="page", defaultValue="1") int currentPage,
 										HttpSession session) {
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String memberNo = "";
@@ -266,14 +267,18 @@ public class ResumeHistoryController {
 			condition.put("infoName", infoName);
 			
 			int listCount = rService.getSearchCountResumeHistory(condition);
+			PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 10);
+			
+			//페이지 처리된 '지원 이력' 조회
+			ArrayList<ResumeHistory> rhList = rService.selectResumeHistory(condition, pi);
+			
+			System.out.println("*****");
+			System.out.println(rhList);
+			System.out.println("*****");
 			
 			
-			
-			
-			
-			
-			
-			
+			//지원 이력 -> '지원 조건' 조회 : 페이징 처리 된 지원 이력 번호는 최대 10개이므로 IN 연산자로 SQL을 작성함			
+			//ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
 			
 			
 		} else {

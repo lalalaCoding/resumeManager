@@ -32,4 +32,6 @@ public interface ResumeHistoryService {
 
 	int getSearchCountResumeHistory(HashMap<String, String> condition);
 
+	ArrayList<ResumeHistory> selectResumeHistory(HashMap<String, String> condition, PageInfo pi);
+
 }
