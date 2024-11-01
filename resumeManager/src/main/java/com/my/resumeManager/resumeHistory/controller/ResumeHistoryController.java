@@ -223,7 +223,7 @@ public class ResumeHistoryController {
 										@RequestParam("endDt") String endDt,
 										@RequestParam("infoName") String infoName,
 										@RequestParam(value="page", defaultValue="1") int currentPage,
-										HttpSession session) {
+										HttpSession session, Model model, HttpServletRequest request) {
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		String memberNo = "";
 		if (loginMember != null) {
@@ -272,21 +272,59 @@ public class ResumeHistoryController {
 			//페이지 처리된 '지원 이력' 조회
 			ArrayList<ResumeHistory> rhList = rService.selectResumeHistory(condition, pi);
 			
-			System.out.println("*****");
-			System.out.println(rhList);
-			System.out.println("*****");
-			
-			
 			//지원 이력 -> '지원 조건' 조회 : 페이징 처리 된 지원 이력 번호는 최대 10개이므로 IN 연산자로 SQL을 작성함			
-			//ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
+			ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
+			
+			model.addAttribute("pi", pi);
+			model.addAttribute("loc", request.getRequestURI());
+			model.addAttribute("rhList", rhList);
+			model.addAttribute("conList", conList);
 			
 			
+			return "resume/resumeHistory";
 		} else {
 			throw new ResumeHistoryException("서비스 요청에 실패하였습니다.");
 		}
-		
-		return null;
 	}
+	
+	
+	@GetMapping("updateResumeHistory.rh")
+	public String updateResumeHistory(@RequestParam("resumeNo") int resumeNo, 
+										@RequestParam("page") int currentPage,
+										HttpSession session, Model model) {
+		//세션에 있는 회원 번호 추출
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		int memberNo = 0;
+		if (loginMember != null) {
+			memberNo = loginMember.getMemberNo();
+		} else {
+			throw new ResumeHistoryException("로그인 후 이용해주세요.");
+		}
+		
+		//지원 이력 번호에 대한 작성자 vs 회원 번호를 비교한다.
+		//	일치 -> 정상적으로 수정 로직 시행
+		//	불일치 -> 에러 발생시켜야함
+		ResumeHistory rh = rService.selectOneResumeHistory(resumeNo);
+		
+		if (rh == null) { //수정하려는 이력 번호 데이터가 존재하지 않은 경우 : url을 통한 비정상적인 접근을 차단
+			throw new ResumeHistoryException("비정상적인 접근입니다.");
+		} else { //수정하려는 이력 번호가 데이터가 존재하는 경우
+			if (rh.getResumeWriter() == memberNo) { //수정하려는 지원 이력의 작성자와 현재 로그인 회원이 일치함
+				ArrayList<ResumeCondition> rcList = rService.selectOneResumeCondition(rh);
+				
+				model.addAttribute("rh", rh);
+				model.addAttribute("rcList", rcList);
+				model.addAttribute("currentPage", currentPage);
+				
+				return "resume/updateResumeHistory";
+			} else { //수정하려는 지원 이력의 작성자와 현재 로그인 회원이 일치하지 않음
+				throw new ResumeHistoryException("비정상적인 접근입니다.");
+			}
+		}
+	}
+	
+	
+	
 	
 	
 }

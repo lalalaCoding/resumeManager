@@ -79,6 +79,16 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 					new RowBounds((pi.getCurrentPage() - 1)*pi.getBoardLimit(), pi.getBoardLimit());
 		return rMapper.selectResumeHistory(condition, rowBounds);
 	}
+
+	@Override
+	public ResumeHistory selectOneResumeHistory(int resumeNo) {
+		return rMapper.selectOneResumeHistory(resumeNo);
+	}
+
+	@Override
+	public ArrayList<ResumeCondition> selectOneResumeCondition(ResumeHistory rh) {
+		return rMapper.selectOneResumeCondition(rh);
+	}
 	
 	
 }

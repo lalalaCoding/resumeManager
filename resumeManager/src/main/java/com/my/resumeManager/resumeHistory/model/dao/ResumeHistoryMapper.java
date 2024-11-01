@@ -37,4 +37,8 @@ public interface ResumeHistoryMapper {
 
 	ArrayList<ResumeHistory> selectResumeHistory(HashMap<String, String> condition, RowBounds rowBounds);
 
+	ResumeHistory selectOneResumeHistory(int resumeNo);
+
+	ArrayList<ResumeCondition> selectOneResumeCondition(ResumeHistory rh);
+
 }

@@ -116,15 +116,16 @@
  	</select>
  	
  	<select id="selectResumeHistory" resultMap="resumeHistoryMap">
- 		SELECT 
- 				<if test="infoName == null">
+ 		SELECT *
+ 				<!-- <if test="infoName == null">
  					*
-				</if>
-				<if test="infoName != null">
+				</if> -->
+				<!-- <if test="infoName != null">
  					DISTINCT(RESUME_NO), COMPANY_NAME,COMPANY_REGION, COMPANY_SALARY, RESUME_CAREER,
  					RESUME_DATE, RESUME_DEADLINE, RESUME_STATE, RESUME_VAILD, RESUME_WRITER,
 					TYPE_NO, TYPE_NAME, PLATFORM_NO, PLATFORM_NAME
-				</if>
+				</if> -->
+				<!-- 테스트 -->
 		FROM RESUME_HISTORY
 				<if test="infoName != null">
 					JOIN TABLE(FN_CONDITION_SEARCH(#{infoName})) USING(RESUME_NO)
@@ -141,10 +142,21 @@
 		ORDER BY RESUME_DATE DESC
  	</select>
  	
+ 	<select id="selectOneResumeHistory" resultMap="resumeHistoryMap">
+ 		SELECT *
+ 		FROM RESUME_HISTORY
+ 				JOIN COMPANY_TYPE ON(TYPE_NO = COMPANY_TYPE_NO)
+		        JOIN PLATFORM_TYPE USING(PLATFORM_NO) 
+ 		WHERE RESUME_NO = ${resumeNo} AND RESUME_VAILD = 'Y'
+ 	</select>
  	
  	
- 	
- 	
+ 	<select id="selectOneResumeCondition" resultType="ResumeCondition">
+ 		select *
+ 		from resume_condition
+ 				join condition_info using(info_no)
+		where resume_no = ${resumeNo}
+ 	</select>
  	
  	
  	

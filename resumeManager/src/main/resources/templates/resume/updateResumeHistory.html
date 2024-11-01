@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>입사 지원 이력 수정</title>
+	<!-- 다음 우편번호 API -->
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+<body>
+	<div th:replace="~{common/header :: header}"></div>
+		
+	<div>
+		<div><!-- 왼쪽 공백 --></div>
+	
+		<div>
+			<form method="get" action="insertResumeHistory.rh" id="insertForm">
+				<table class="table table-hover">
+					<tr>
+						<td>지원 일자(필수)</td>
+						<td>
+							<input type="date" name="resumeDate" th:value="${rh.resumeDate}"/>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>회사명(필수)</td>
+						<td>
+							<input type="text" placeHolder="회사 명을 입력해주세요" name="companyName"/>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>회사위치</td>
+						<td>
+							<input type="text" class="form-control companyAddress" placeholder="우편번호" readOnly/>
+							<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
+							<br/>
+							<input type="text" class="form-control companyAddress" placeholder="기본 주소 입력" readOnly/>
+							<input type="text" class="form-control companyAddress" placeholder="상세 주소 입력"/>
+							<input type="hidden" name="companyRegion"/>
+						</td>
+					</tr>
+					<tr>
+						<td>급여 수준</td>
+						<td>
+							<input type="number" name="companySalary"/>
+							<i>(만원)</i>
+							<span class="badge text-bg-light">미입력 시 최저시급으로 입력됩니다.</span>
+						</td>
+					</tr>				
+					<tr>
+						<td>지원상태(필수)</td>
+						<td>
+							<label><input type="radio" name="resumeState" value="0"/>지원 중</label>					
+							<label><input type="radio" name="resumeState" value="1"/>서류 합격</label>
+							<label><input type="radio" name="resumeState" value="2"/>면접 합격</label>
+							<label><input type="radio" name="resumeState" value="3"/>최종 합격</label>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>경력(필수)</td>
+						<td>
+							<label><input type="radio" name="resumeCareer" value="0"/>신입</label>					
+							<label><input type="radio" name="resumeCareer" value="1"/>1년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="3"/>3년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="5"/>5년차 이상</label>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>지원마감일</td>
+						<td>
+							<!-- <input type="date" name="resumeDeadline"/> -->
+							<input type="date" name="deadline"/>
+						</td>
+					</tr>
+					<tr>
+						<td>회사 유형</td>
+						<td>
+							<label><input type="radio" name="companyTypeName" value="SI"/>SI</label>
+							<label><input type="radio" name="companyTypeName" value="SM"/>SM</label>
+							<label><input type="radio" name="companyTypeName" value="SOLUTION"/>SOLUTION</label>
+							<label><input type="radio" name="companyTypeName" value="SERVICE"/>SERVICE</label>
+							<label><input type="radio" name="companyTypeName" value="START UP"/>START UP</label>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>지원 플랫폼(필수)</td>
+						<td>
+							<!-- 플랫폼이 추가될 수 있기 때문에 select로 구현 -->
+							<select name="platformName">
+								<option value="none">-</option>
+								<option value="jobKorea">잡코리아</option>
+								<option value="incrute">인크루트</option>
+								<option value="peopleIn">사람인</option>
+								<option value="jumpIt">점핏</option>
+								<option value="personal">지인</option>
+							</select>
+							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>필수 자격 조건</td>
+						<td>
+							<input type="hidden" name="essential"/>
+							
+							<span>언어</span>
+							<button type="button" class="btn btn-light essential">JAVA</button>
+							<button type="button" class="btn btn-light essential">JAVASCRIPT</button>
+							<button type="button" class="btn btn-light essential">HTML/CSS</button>
+							<br/>
+							
+							<span>라이브러리</span>
+							<button type="button" class="btn btn-light essential">jQuery</button>
+							<br/>
+							
+							<span>프레임워크</span>
+							<button type="button" class="btn btn-light essential">Spring</button>
+							<button type="button" class="btn btn-light essential">Spring Boot</button>
+							<button type="button" class="btn btn-light essential">React</button>
+							<button type="button" class="btn btn-light essential">Vue.js</button>
+							<br/>
+						
+							<span>데이터베이스</span>
+							<button type="button" class="btn btn-light essential">Oracle</button>
+							<button type="button" class="btn btn-light essential">MySQL</button>
+							<button type="button" class="btn btn-light essential">MsSQL</button>
+							<button type="button" class="btn btn-light essential">MariaDB</button>
+							<br/>
+							
+							<span>지식</span>
+							<button type="button" class="btn btn-light essential">Linux</button>
+							<button type="button" class="btn btn-light essential">RESTful</button>
+							<button type="button" class="btn btn-light essential">CI/CD</button>
+							<button type="button" class="btn btn-light essential">Github</button>
+							<button type="button" class="btn btn-light essential">Git</button>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>우대 자격 조건</td>
+						<td>
+							<input type="hidden" name="preferential"/>
+							
+							<span>언어</span>
+							<button type="button" class="btn btn-light preferential">JAVA</button>
+							<button type="button" class="btn btn-light preferential">JAVASCRIPT</button>
+							<button type="button" class="btn btn-light preferential">HTML/CSS</button>
+							<br/>
+							
+							<span>라이브러리</span>
+							<button type="button" class="btn btn-light preferential">jQuery</button>
+							<br/>
+							
+							<span>프레임워크</span>
+							<button type="button" class="btn btn-light preferential">Spring</button>
+							<button type="button" class="btn btn-light preferential">Spring Boot</button>
+							<button type="button" class="btn btn-light preferential">React</button>
+							<button type="button" class="btn btn-light preferential">Vue.js</button>
+							<br/>
+						
+							<span>데이터베이스</span>
+							<button type="button" class="btn btn-light preferential">Oracle</button>
+							<button type="button" class="btn btn-light preferential">MySQL</button>
+							<button type="button" class="btn btn-light preferential">MsSQL</button>
+							<button type="button" class="btn btn-light preferential">MariaDB</button>
+							<br/>
+							
+							<span>지식</span>
+							<button type="button" class="btn btn-light preferential">Linux</button>
+							<button type="button" class="btn btn-light preferential">RESTful</button>
+							<button type="button" class="btn btn-light preferential">CI/CD</button>
+							<button type="button" class="btn btn-light preferential">Github</button>
+							<button type="button" class="btn btn-light preferential">Git</button>
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<button type="button" class="btn btn-danger" id="insertBtn">등록하기</button>
+				<button type="button" class="btn btn-danger" onclick="history.back()">돌아가기</button>
+			</form>
+		</div>
+		
+		<div><!-- 오른쪽 공백 --></div>
+	</div>	
+	
+	<div th:replace="~{common/footer :: footer}"></div>
+	
+	<script th:inline="javascript">
+		window.onload = () => {
+			/*<![CDATA[*/
+			const yearSalary = /*[[${yearSalary}]]*/'최저연봉';
+			/*]]>*/
+			
+			const resumeDate = document.getElementsByName('resumeDate')[0]; // 지원 일자 요소 -> 필수
+			const companyName = document.getElementsByName('companyName')[0]; // 회사 이름 요소 -> 필수
+			const companyRegion = document.getElementsByName('companyRegion')[0]; //회사 주소
+			const companySalary = document.getElementsByName('companySalary')[0]; // 급여 요소 
+			const resumeStates = document.getElementsByName('resumeState'); // 지원 상태 요소 배열 -> 필수
+			const resumeCareers = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
+			const deadline = document.getElementsByName('deadline')[0]; // 지원 마감 요소
+			const companyTypeNames = document.getElementsByName('companyTypeName');//회사 유형 라디오 요소 배열
+			const platformName = document.getElementsByName('platformName')[0]; // 플랫폼 요소 -> 필수
+			const essentials = document.querySelectorAll('.essential'); // 필수 자격 조건 버튼 배열 
+			const preferentials = document.querySelectorAll('.preferential'); // 우대 자격 조건 배열
+			
+			
+			const infoClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-danger');
+				element.classList.add('text-bg-info');
+			}
+			
+			const dangerClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-danger');
+			}
+			
+			const lightClass = (element) => {
+				element.classList.remove('text-bg-danger');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-light');
+			}
+			
+			// 지원 일자 유효성 검사 (시작)
+			let resumeDateFlag = false;
+			resumeDate.addEventListener('change', function() {
+				if(resumeDate.value.length == 0) {
+					dangerClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '지원 일자를 선택해주세요!';
+					resumeDateFlag = false;
+				} else{
+					infoClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '지원 일자가 선택되었습니다.';
+					resumeDateFlag = true;
+				}
+			});
+			// 지원 일자 유효성 검사 함수(끝)
+			
+			//회사명 유효성 검사 (시작)
+			let companyNameFlag = false;
+			companyName.addEventListener('change', function() {
+				if(companyName.value.trim().length == 0) {
+					dangerClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '회사명을 입력해주세요!';
+					companyNameFlag = false;
+				} else{
+					infoClass(this.nextElementSibling);
+					this.nextElementSibling.textContent = '회사명이 입력되었습니다.';
+					companyNameFlag = true;
+				}
+			});
+			//회사명 유효성 검사 (끝)
+			
+			// 주소 검색 및 입력 (시작)
+			const searchAddress = document.querySelector('#searchAddress');
+			const companyAddress = document.querySelectorAll('.companyAddress');
+			
+			searchAddress.addEventListener('click', () => {
+				new daum.Postcode({
+					oncomplete: function(data) {
+						// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+	
+						// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+						let addr = ''; // 주소 변수
+	
+						//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+						if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+							addr = data.roadAddress;
+						} else { // 사용자가 지번 주소를 선택했을 경우(J)
+							addr = data.jibunAddress;
+						}
+						
+						companyAddress[0].value = data.zonecode; // 우편번호 입력
+						companyAddress[1].value = addr; // 기본주소 입력
+						companyAddress[2].focus(); // 상세주소 입력요소로 커서가 이동
+					}
+			    }).open();
+			});
+			// 주소 검색 및 입력 (끝)
+			
+			//지원 상태 유효성 검사 (시작)
+			let resumeStateFlag = false;
+			for(const s of resumeStates){
+				s.addEventListener('click', function() {
+					const span = this.parentElement.parentElement.querySelector('span');
+					infoClass(span);
+					span.textContent = '지원 상태를 선택하셨습니다.';
+					resumeStateFlag = true;
+				});
+			}
+			//지원 상태 유효성 검사 (끝)
+			
+			//경력 상태 유효성 검사 (시작)
+			let resumeCareerFlag = false;
+			for(const s of resumeCareers){
+				s.addEventListener('click', function() {
+					const span = this.parentElement.parentElement.querySelector('span');
+					infoClass(span);
+					span.textContent = '경력을 선택하셨습니다.';
+					resumeCareerFlag = true;
+				});
+			}
+			//경력 상태 유효성 검사 (끝)
+			
+			//회사 유형 유효성 검사 (시작)
+			let companyTypeFlag = false;
+			for(const s of companyTypeNames){
+				s.addEventListener('click', function() {
+					const span = this.parentElement.parentElement.querySelector('span');
+					infoClass(span);
+					span.textContent = '회사 유형을 선택하셨습니다.';
+					companyTypeFlag = true;
+				});
+			}
+			//회사 유형 유효성 검사 (끝)
+			
+			//플랫폼 유효성 검사 (시작)
+			let platformFlag = false;
+			platformName.addEventListener('change', function() {
+				const span = this.nextElementSibling;
+				if(this.value == 'none') {
+					dangerClass(span);
+					span.textContent = '플랫폼을 선택해주세요!';
+					platformFlag = false;
+				}
+				else {
+					infoClass(span);
+					span.textContent = '플랫폼을 선택하셨습니다.';
+					platformFlag = true;
+				}
+			});
+			//플랫폼 유효성 검사 (끝)
+			
+			//자격 조건 클릭 이벤트 (시작)
+			for(const e of essentials){
+				e.addEventListener('click', function(){
+					this.classList.toggle('btn-light');
+					this.classList.toggle('btn-info');
+				});
+			}
+			for(const e of preferentials){
+				e.addEventListener('click', function(){
+					this.classList.toggle('btn-light');
+					this.classList.toggle('btn-info');
+				});
+			}
+			//자격 조건 클릭 이벤트 (끝)
+			
+			//자격 조건 가공 (시작)
+			//선택 항목 -> 배열 -> JSON.stringify -> 히든 요소에 주입 -> 파라미터 전달 -> 결과 확인
+			let essential_array = []; // 배열
+			let preferential_array = [];
+			
+			const setEssential = () => {
+				for(const e of essentials){
+					if(e.className.includes('btn-info')){//버튼을 선택했다면
+						essential_array.push(e.innerText);
+					}
+				}
+				document.getElementsByName('essential')[0].value = JSON.stringify(essential_array);
+			}
+			
+			const setpreferential = () => {
+				for(const p of preferentials){
+					if(p.className.includes('btn-info')){//버튼을 선택했다면
+						preferential_array.push(p.innerText);
+					}
+				}
+				document.getElementsByName('preferential')[0].value = JSON.stringify(preferential_array);
+			}
+			//자격 조건 가공 (끝)
+			
+			// 입력 요소 유효성 검사 함수 (시작)
+			const checkVaild = () => {
+				if(resumeDateFlag && companyNameFlag && resumeStateFlag && resumeCareerFlag && platformFlag && companyTypeFlag){
+					return true;
+				} else{
+					return false;
+				}
+			}
+			// 입력 요소 유효성 검사 함수 (끝)
+			
+			// 등록하기 요청 (시작)
+			const insertBtn = document.querySelector('#insertBtn');
+			insertBtn.addEventListener('click', () => {
+				if(checkVaild()){
+					//주소 입력 값 병합
+					for(let i = 0; i < companyAddress.length; i++){
+						if(companyAddress[i].value.length != 0){
+							if(i != companyAddress.length - 1){
+								companyRegion.value += companyAddress[i].value + '_';
+							}else{
+								companyRegion.value += companyAddress[i].value;
+							}
+						}
+					}
+					
+					//최저 시급 검사
+					let modifySalary = companySalary.value * 10000; // 원 단위로 교정
+					
+					
+					if(modifySalary < yearSalary){
+						companySalary.value = yearSalary;
+					} else{
+						companySalary.value = modifySalary;
+					}
+					
+					//자격 조건 가공
+					setEssential();
+					setpreferential();
+					
+					document.querySelector('#insertForm').submit();
+				}else{
+					console.log('유효성 검사 통과못함');
+				}
+			});
+			// 등록하기 요청 (끝)
+			
+			console.log(yearSalary); //24728880
+		}
+	</script>
+</body>
+</html>

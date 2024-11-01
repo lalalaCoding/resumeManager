@@ -76,7 +76,7 @@
 					<tbody>
 						<tr th:each="rh : ${rhList}">
 							<td>
-								<input type="text" name="resumeNo" th:value="${rh.resumeNo}"/>
+								<input type="hidden" name="resumeNo" th:value="${rh.resumeNo}"/>
 								<input type="checkbox"/>
 							</td>
 							<td th:text="${#strings.substring(rh.resumeDate, 2)}"></td>
@@ -111,7 +111,7 @@
 								</th:block>
 							</td>
 							<td>
-								<button type="button" class="btn btn-light">Modify</button>
+								<button type="button" class="btn btn-light modifyBtn">Modify</button>
 							</td>
 						</tr>
 					</tbody>
@@ -151,7 +151,7 @@
 	</div>
 	
 	<div th:replace="~{common/footer :: footer}"></div>	
-	<script>
+	<script th:inline="javascript">
 		window.onload = () => {
 			// 지원 직군에 대한 원형 그래프 (시작)
 			const ctx = document.getElementById('piChart');
@@ -239,27 +239,42 @@
 					searchFormat.endDt = searchFormatList[2].value;
 					searchFormat.companyName = searchFormatList[3].value;
 					location.href = 'searchResumeHistory.rh?' + JSON.stringify(searchFormat); */
-					
 					searchForm.submit();
-					
-					
 				} else {
 					alert('검색 조건을 입력해주세요.');
 				}
-				
-				
-				
-				
-				
-				
-				
 			});
-			
-			
-			
-			
-			
 			//지원 이력 검색 (끝)
+			
+			//전체보기 (시작)
+			const selectAllBtn = $('#selectAllBtn');
+			selectAllBtn.on('click', () => {
+				location.href='resumeHistoryPage.rh';
+			});
+			//전체보기 (끝)
+			
+			//수정하기 (시작) : jQuery로 요소에 접근하였기 때문에 for문 없이 이벤트 지정 가능
+			const modifyBtnList = $('.modifyBtn'); 
+			modifyBtnList.on('click', function() {
+				//지원번호에 접근하기
+				const resumeNo = $(this).parent().parent().children()[0].children[0].value;
+				//currentPage에 접근하기
+				/*<![CDATA[*/
+				const pi = /*[[${pi}]]*/'currentPage';
+				/*]]>*/
+				
+				location.href='updateResumeHistory.rh?resumeNo=' + resumeNo + '&page=' + pi.currentPage;
+			});
+			//수정하기 (끝)
+
+			
+			
+			
+			
+			
+			
+			
+			
 			
 		}	
 	</script>

@@ -34,4 +34,8 @@ public interface ResumeHistoryService {
 
 	ArrayList<ResumeHistory> selectResumeHistory(HashMap<String, String> condition, PageInfo pi);
 
+	ResumeHistory selectOneResumeHistory(int resumeNo);
+
+	ArrayList<ResumeCondition> selectOneResumeCondition(ResumeHistory rh);
+
 }
