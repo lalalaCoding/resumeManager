@@ -13,11 +13,12 @@
 		<div><!-- 왼쪽 공백 --></div>
 	
 		<div>
-			<form method="get" action="insertResumeHistory.rh" id="insertForm">
+			<form method="get" action="updateResumeHistory.rh" id="updateForm">
 				<table class="table table-hover">
 					<tr>
 						<td>지원 일자(필수)</td>
 						<td>
+							<input type="hidden" name="resumeNo" th:value="${rh.resumeNo}"/>
 							<input type="date" name="resumeDate" th:value="${rh.resumeDate}"/>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
@@ -25,25 +26,35 @@
 					<tr>
 						<td>회사명(필수)</td>
 						<td>
-							<input type="text" placeHolder="회사 명을 입력해주세요" name="companyName"/>
+							<input type="text" placeHolder="회사 명을 입력해주세요" name="companyName" th:value="${rh.companyName}"/>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
 					<tr>
 						<td>회사위치</td>
 						<td>
-							<input type="text" class="form-control companyAddress" placeholder="우편번호" readOnly/>
-							<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
-							<br/>
-							<input type="text" class="form-control companyAddress" placeholder="기본 주소 입력" readOnly/>
-							<input type="text" class="form-control companyAddress" placeholder="상세 주소 입력"/>
-							<input type="hidden" name="companyRegion"/>
+							<th:block th:if="${rh.companyRegion != null}" th:with="address = ${#strings.arraySplit(rh.companyRegion, '_')}">
+								<input type="text" class="form-control companyAddress" placeholder="우편번호" readOnly th:value="${address[0]}"/>
+								<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
+								<br/>
+								<input type="text" class="form-control companyAddress" placeholder="기본 주소 입력" readOnly th:value="${address[1]}"/>
+								<input type="text" class="form-control companyAddress" placeholder="상세 주소 입력" th:value="${address.length == 3 ? address[2] : ''}"/>
+								<input type="hidden" name="companyRegion"/>
+							</th:block>
+							<th:block th:if="${rh.companyRegion == null}">
+								<input type="text" class="form-control companyAddress" placeholder="우편번호" readOnly/>
+								<button type="button" id="searchAddress" class="btn btn-primary">입력하기</button>
+								<br/>
+								<input type="text" class="form-control companyAddress" placeholder="기본 주소 입력" readOnly/>
+								<input type="text" class="form-control companyAddress" placeholder="상세 주소 입력"/>
+								<input type="hidden" name="companyRegion"/>
+							</th:block>
 						</td>
 					</tr>
 					<tr>
 						<td>급여 수준</td>
 						<td>
-							<input type="number" name="companySalary"/>
+							<input type="number" name="companySalary" th:min=${rh.companySalary/10000} th:value="${rh.companySalary/10000}"/>
 							<i>(만원)</i>
 							<span class="badge text-bg-light">미입력 시 최저시급으로 입력됩니다.</span>
 						</td>
@@ -51,37 +62,36 @@
 					<tr>
 						<td>지원상태(필수)</td>
 						<td>
-							<label><input type="radio" name="resumeState" value="0"/>지원 중</label>					
-							<label><input type="radio" name="resumeState" value="1"/>서류 합격</label>
-							<label><input type="radio" name="resumeState" value="2"/>면접 합격</label>
-							<label><input type="radio" name="resumeState" value="3"/>최종 합격</label>
+							<label><input type="radio" name="resumeState" value="0" th:checked="${rh.resumeState == 0}"/>지원 중</label>					
+							<label><input type="radio" name="resumeState" value="1" th:checked="${rh.resumeState == 1}"/>서류 합격</label>
+							<label><input type="radio" name="resumeState" value="2" th:checked="${rh.resumeState == 2}"/>면접 합격</label>
+							<label><input type="radio" name="resumeState" value="3" th:checked="${rh.resumeState == 3}"/>최종 합격</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
 					<tr>
 						<td>경력(필수)</td>
 						<td>
-							<label><input type="radio" name="resumeCareer" value="0"/>신입</label>					
-							<label><input type="radio" name="resumeCareer" value="1"/>1년차 이상</label>
-							<label><input type="radio" name="resumeCareer" value="3"/>3년차 이상</label>
-							<label><input type="radio" name="resumeCareer" value="5"/>5년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="0" th:checked="${rh.resumeCareer == 0}"/>신입</label>					
+							<label><input type="radio" name="resumeCareer" value="1" th:checked="${rh.resumeCareer == 0}"/>1년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="3" th:checked="${rh.resumeCareer == 0}"/>3년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="5" th:checked="${rh.resumeCareer == 0}"/>5년차 이상</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
 					<tr>
 						<td>지원마감일</td>
 						<td>
-							<!-- <input type="date" name="resumeDeadline"/> -->
-							<input type="date" name="deadline"/>
+							<input type="date" name="deadline" th:value="${rh.resumeDeadline}"/>
 						</td>
 					</tr>
 					<tr>
 						<td>회사 유형</td>
 						<td>
-							<label><input type="radio" name="companyTypeName" value="SI"/>SI</label>
-							<label><input type="radio" name="companyTypeName" value="SM"/>SM</label>
-							<label><input type="radio" name="companyTypeName" value="SOLUTION"/>SOLUTION</label>
-							<label><input type="radio" name="companyTypeName" value="SERVICE"/>SERVICE</label>
+							<label><input type="radio" name="companyTypeName" value="SI" th:checked="${rh.companyType.typeName == 'SI'}"/>SI</label>
+							<label><input type="radio" name="companyTypeName" value="SM" th:checked="${rh.companyType.typeName == 'SM'}"/>SM</label>
+							<label><input type="radio" name="companyTypeName" value="SOLUTION" th:checked="${rh.companyType.typeName == 'SOLUTION'}"/>SOLUTION</label>
+							<label><input type="radio" name="companyTypeName" value="SERVICE" th:checked="${rh.companyType.typeName == 'SERVICE'}"/>SERVICE</label>
 							<label><input type="radio" name="companyTypeName" value="START UP"/>START UP</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
@@ -92,11 +102,11 @@
 							<!-- 플랫폼이 추가될 수 있기 때문에 select로 구현 -->
 							<select name="platformName">
 								<option value="none">-</option>
-								<option value="jobKorea">잡코리아</option>
-								<option value="incrute">인크루트</option>
-								<option value="peopleIn">사람인</option>
-								<option value="jumpIt">점핏</option>
-								<option value="personal">지인</option>
+								<option value="jobKorea" th:selected="${rh.platformType.platformName == '잡코리아'}">잡코리아</option>
+								<option value="incrute" th:selected="${rh.platformType.platformName == '인크루트'}">인크루트</option>
+								<option value="peopleIn" th:selected="${rh.platformType.platformName == '사람인'}">사람인</option>
+								<option value="jumpIt" th:selected="${rh.platformType.platformName == '점핏'}">점핏</option>
+								<option value="personal" th:selected="${rh.platformType.platformName == '지인'}">지인</option>
 							</select>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
@@ -105,37 +115,36 @@
 						<td>필수 자격 조건</td>
 						<td>
 							<input type="hidden" name="essential"/>
-							
 							<span>언어</span>
-							<button type="button" class="btn btn-light essential">JAVA</button>
-							<button type="button" class="btn btn-light essential">JAVASCRIPT</button>
-							<button type="button" class="btn btn-light essential">HTML/CSS</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '01')} ? 'btn btn-info essential' : 'btn btn-light essential'">JAVA</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '02')} ? 'btn btn-info essential' : 'btn btn-light essential'">JAVASCRIPT</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '03')} ? 'btn btn-info essential' : 'btn btn-light essential'">HTML/CSS</button>
 							<br/>
 							
 							<span>라이브러리</span>
-							<button type="button" class="btn btn-light essential">jQuery</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '04')} ? 'btn btn-info essential' : 'btn btn-light essential'">jQuery</button>
 							<br/>
 							
 							<span>프레임워크</span>
-							<button type="button" class="btn btn-light essential">Spring</button>
-							<button type="button" class="btn btn-light essential">Spring Boot</button>
-							<button type="button" class="btn btn-light essential">React</button>
-							<button type="button" class="btn btn-light essential">Vue.js</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '05')} ? 'btn btn-info essential' : 'btn btn-light essential'">Spring</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '06')} ? 'btn btn-info essential' : 'btn btn-light essential'">Spring Boot</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '07')} ? 'btn btn-info essential' : 'btn btn-light essential'">React</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '08')} ? 'btn btn-info essential' : 'btn btn-light essential'">Vue.js</button>
 							<br/>
 						
 							<span>데이터베이스</span>
-							<button type="button" class="btn btn-light essential">Oracle</button>
-							<button type="button" class="btn btn-light essential">MySQL</button>
-							<button type="button" class="btn btn-light essential">MsSQL</button>
-							<button type="button" class="btn btn-light essential">MariaDB</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '09')} ? 'btn btn-info essential' : 'btn btn-light essential'">Oracle</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '10')} ? 'btn btn-info essential' : 'btn btn-light essential'">MySQL</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '11')} ? 'btn btn-info essential' : 'btn btn-light essential'">MsSQL</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '12')} ? 'btn btn-info essential' : 'btn btn-light essential'">MariaDB</button>
 							<br/>
 							
 							<span>지식</span>
-							<button type="button" class="btn btn-light essential">Linux</button>
-							<button type="button" class="btn btn-light essential">RESTful</button>
-							<button type="button" class="btn btn-light essential">CI/CD</button>
-							<button type="button" class="btn btn-light essential">Github</button>
-							<button type="button" class="btn btn-light essential">Git</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '13')} ? 'btn btn-info essential' : 'btn btn-light essential'">Linux</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '14')} ? 'btn btn-info essential' : 'btn btn-light essential'">RESTful</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '15')} ? 'btn btn-info essential' : 'btn btn-light essential'">CI/CD</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '16')} ? 'btn btn-info essential' : 'btn btn-light essential'">Github</button>
+							<button type="button" th:class="${#strings.contains(essentialInfoNo, '17')} ? 'btn btn-info essential' : 'btn btn-light essential'">Git</button>
 						</td>
 					</tr>
 					
@@ -144,43 +153,44 @@
 						<td>
 							<input type="hidden" name="preferential"/>
 							
+							[[${preferentialInfoNo}]]
 							<span>언어</span>
-							<button type="button" class="btn btn-light preferential">JAVA</button>
-							<button type="button" class="btn btn-light preferential">JAVASCRIPT</button>
-							<button type="button" class="btn btn-light preferential">HTML/CSS</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '01')} ? 'btn btn-info essential' : 'btn btn-light essential'">JAVA</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '02')} ? 'btn btn-info essential' : 'btn btn-light essential'">JAVASCRIPT</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '03')} ? 'btn btn-info essential' : 'btn btn-light essential'">HTML/CSS</button>
 							<br/>
 							
 							<span>라이브러리</span>
-							<button type="button" class="btn btn-light preferential">jQuery</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '04')} ? 'btn btn-info essential' : 'btn btn-light essential'">jQuery</button>
 							<br/>
 							
 							<span>프레임워크</span>
-							<button type="button" class="btn btn-light preferential">Spring</button>
-							<button type="button" class="btn btn-light preferential">Spring Boot</button>
-							<button type="button" class="btn btn-light preferential">React</button>
-							<button type="button" class="btn btn-light preferential">Vue.js</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '05')} ? 'btn btn-info essential' : 'btn btn-light essential'">Spring</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '06')} ? 'btn btn-info essential' : 'btn btn-light essential'">Spring Boot</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '07')} ? 'btn btn-info essential' : 'btn btn-light essential'">React</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '08')} ? 'btn btn-info essential' : 'btn btn-light essential'">Vue.js</button>
 							<br/>
 						
 							<span>데이터베이스</span>
-							<button type="button" class="btn btn-light preferential">Oracle</button>
-							<button type="button" class="btn btn-light preferential">MySQL</button>
-							<button type="button" class="btn btn-light preferential">MsSQL</button>
-							<button type="button" class="btn btn-light preferential">MariaDB</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '09')} ? 'btn btn-info essential' : 'btn btn-light essential'">Oracle</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '10')} ? 'btn btn-info essential' : 'btn btn-light essential'">MySQL</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '11')} ? 'btn btn-info essential' : 'btn btn-light essential'">MsSQL</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '12')} ? 'btn btn-info essential' : 'btn btn-light essential'">MariaDB</button>
 							<br/>
 							
 							<span>지식</span>
-							<button type="button" class="btn btn-light preferential">Linux</button>
-							<button type="button" class="btn btn-light preferential">RESTful</button>
-							<button type="button" class="btn btn-light preferential">CI/CD</button>
-							<button type="button" class="btn btn-light preferential">Github</button>
-							<button type="button" class="btn btn-light preferential">Git</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '13')} ? 'btn btn-info essential' : 'btn btn-light essential'">Linux</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '14')} ? 'btn btn-info essential' : 'btn btn-light essential'">RESTful</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '15')} ? 'btn btn-info essential' : 'btn btn-light essential'">CI/CD</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '16')} ? 'btn btn-info essential' : 'btn btn-light essential'">Github</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '17')} ? 'btn btn-info essential' : 'btn btn-light essential'">Git</button>
 						</td>
 					</tr>
 				</table>
 				
 				<br/>
 				
-				<button type="button" class="btn btn-danger" id="insertBtn">등록하기</button>
+				<button type="button" class="btn btn-danger" id="updateBtn">수정하기</button>
 				<button type="button" class="btn btn-danger" onclick="history.back()">돌아가기</button>
 			</form>
 		</div>
@@ -386,9 +396,9 @@
 			}
 			// 입력 요소 유효성 검사 함수 (끝)
 			
-			// 등록하기 요청 (시작)
-			const insertBtn = document.querySelector('#insertBtn');
-			insertBtn.addEventListener('click', () => {
+			// 수정하기 요청 (시작)
+			const updateBtn = document.querySelector('#updateBtn');
+			updateBtn.addEventListener('click', () => {
 				if(checkVaild()){
 					//주소 입력 값 병합
 					for(let i = 0; i < companyAddress.length; i++){
@@ -415,14 +425,12 @@
 					setEssential();
 					setpreferential();
 					
-					document.querySelector('#insertForm').submit();
+					document.querySelector('#updateForm').submit();
 				}else{
 					console.log('유효성 검사 통과못함');
 				}
 			});
-			// 등록하기 요청 (끝)
-			
-			console.log(yearSalary); //24728880
+			// 수정하기 요청 (끝)
 		}
 	</script>
 </body>

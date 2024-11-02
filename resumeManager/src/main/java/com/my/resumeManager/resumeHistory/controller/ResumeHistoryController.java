@@ -35,11 +35,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 public class ResumeHistoryController {
-	@Autowired
+	//@Autowired
 	private ResumeHistoryService rService;
 	
-	@Autowired
+	//@Autowired
 	private OpenAPIController oController;
+	private static int yearSalary;
+	
+	//컴포넌트 스캔 -> 빈 등록 시점에서 의존성을 주입하여 컨트롤러 빈을 등록해준다.
+	public ResumeHistoryController(ResumeHistoryService rService, OpenAPIController oController) {
+		this.rService = rService;
+		this.oController = oController;
+		int hourSalary = oController.getHourSalary();
+		double monthAvgWeek = (double)365/12/7; //월별 평균 주차 -> 4.35주
+		int weekWorkTime = 8*5 + 8; //주별 평균 근로 시간
+		int monthWorkTime =  (int)Math.ceil(weekWorkTime * monthAvgWeek); //월별 평균 근로 시간, 약 209시간
+		int monthSalary = monthWorkTime * hourSalary; //월별 최저 임금
+		yearSalary = monthSalary * 12; //최저 연봉 24,728,880		
+	}
 	
 	@GetMapping("resumeHistoryPage.rh")
 	public String resumeHistoryPage(HttpSession session, 
@@ -74,14 +87,7 @@ public class ResumeHistoryController {
 	@GetMapping("insertResumeHistoryPage.rh")
 	public String insertResumeHistoryPage(Model model) {
 		// 최저 시급 계산하여 전달
-		int hourSalary = oController.getHourSalary();
-		double monthAvgWeek = (double)365/12/7; //월별 평균 주차 -> 4.35주
-		int weekWorkTime = 8*5 + 8; //주별 평균 근로 시간
-		int monthWorkTime =  (int)Math.ceil(weekWorkTime * monthAvgWeek); //월별 평균 근로 시간, 약 209시간
-		int monthSalary = monthWorkTime * hourSalary; //월별 최저 임금
-		int yearSalary = monthSalary * 12; //최저 연봉 24,728,880
 		model.addAttribute("yearSalary", yearSalary);
-		
 		return "resume/insertResumeHistory";
 	}
 	
@@ -288,8 +294,8 @@ public class ResumeHistoryController {
 	}
 	
 	
-	@GetMapping("updateResumeHistory.rh")
-	public String updateResumeHistory(@RequestParam("resumeNo") int resumeNo, 
+	@GetMapping("updateResumeHistoryPage.rh")
+	public String updateResumeHistoryPage(@RequestParam("resumeNo") int resumeNo, 
 										@RequestParam("page") int currentPage,
 										HttpSession session, Model model) {
 		//세션에 있는 회원 번호 추출
@@ -312,9 +318,29 @@ public class ResumeHistoryController {
 			if (rh.getResumeWriter() == memberNo) { //수정하려는 지원 이력의 작성자와 현재 로그인 회원이 일치함
 				ArrayList<ResumeCondition> rcList = rService.selectOneResumeCondition(rh);
 				
+				StringBuffer essentialBuffer = new StringBuffer("");
+				StringBuffer preferentialBuffer = new StringBuffer("");
+				for (ResumeCondition con : rcList) {
+					if (con.getConditionType() == 1) { //필수
+						if (con.getInfoNo() < 10) {
+							essentialBuffer.append("0" + con.getInfoNo() + "_"); // 1 -> 01
+						} else {
+							essentialBuffer.append(con.getInfoNo() + "_");
+						}
+					} else { //우대
+						if (con.getInfoNo() < 10) {
+							preferentialBuffer.append("0" + con.getInfoNo() + "_");
+						} else {
+							preferentialBuffer.append(con.getInfoNo() + "_");
+						}
+					}
+				}
+				
 				model.addAttribute("rh", rh);
-				model.addAttribute("rcList", rcList);
+				model.addAttribute("essentialInfoNo", essentialBuffer.toString());
+				model.addAttribute("preferentialInfoNo", preferentialBuffer.toString());
 				model.addAttribute("currentPage", currentPage);
+				model.addAttribute("yearSalary", yearSalary);
 				
 				return "resume/updateResumeHistory";
 			} else { //수정하려는 지원 이력의 작성자와 현재 로그인 회원이 일치하지 않음
@@ -323,7 +349,20 @@ public class ResumeHistoryController {
 		}
 	}
 	
-	
+	@GetMapping("updateResumeHistory.rh")
+	public String updateResumeHistory(@ModelAttribute ResumeHistory resumeHistory,
+										HttpSession session,
+										@RequestParam(value="deadline", defaultValue="always") String deadline,
+										@RequestParam("companyTypeName") String companyTypeName,
+										@RequestParam("platformName") String platformName,
+										@RequestParam("essential") String essential,
+										@RequestParam("preferential") String preferential) {
+		
+		
+		
+		
+		return null;
+	}
 	
 	
 	
