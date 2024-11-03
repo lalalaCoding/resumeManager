@@ -54,7 +54,7 @@
 					<tr>
 						<td>급여 수준</td>
 						<td>
-							<input type="number" name="companySalary" th:min=${rh.companySalary/10000} th:value="${rh.companySalary/10000}"/>
+							<input type="number" name="salary" th:min=${rh.companySalary/10000} th:value="${rh.companySalary/10000}"/>
 							<i>(만원)</i>
 							<span class="badge text-bg-light">미입력 시 최저시급으로 입력됩니다.</span>
 						</td>
@@ -73,9 +73,9 @@
 						<td>경력(필수)</td>
 						<td>
 							<label><input type="radio" name="resumeCareer" value="0" th:checked="${rh.resumeCareer == 0}"/>신입</label>					
-							<label><input type="radio" name="resumeCareer" value="1" th:checked="${rh.resumeCareer == 0}"/>1년차 이상</label>
-							<label><input type="radio" name="resumeCareer" value="3" th:checked="${rh.resumeCareer == 0}"/>3년차 이상</label>
-							<label><input type="radio" name="resumeCareer" value="5" th:checked="${rh.resumeCareer == 0}"/>5년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="1" th:checked="${rh.resumeCareer == 1}"/>1년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="3" th:checked="${rh.resumeCareer == 3}"/>3년차 이상</label>
+							<label><input type="radio" name="resumeCareer" value="5" th:checked="${rh.resumeCareer == 5}"/>5년차 이상</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
@@ -209,7 +209,7 @@
 			const resumeDate = document.getElementsByName('resumeDate')[0]; // 지원 일자 요소 -> 필수
 			const companyName = document.getElementsByName('companyName')[0]; // 회사 이름 요소 -> 필수
 			const companyRegion = document.getElementsByName('companyRegion')[0]; //회사 주소
-			const companySalary = document.getElementsByName('companySalary')[0]; // 급여 요소 
+			const companySalary = document.getElementsByName('salary')[0]; // 급여 요소 
 			const resumeStates = document.getElementsByName('resumeState'); // 지원 상태 요소 배열 -> 필수
 			const resumeCareers = document.getElementsByName('resumeCareer'); // 경력 요소 배열 -> 필수
 			const deadline = document.getElementsByName('deadline')[0]; // 지원 마감 요소
@@ -237,35 +237,55 @@
 				element.classList.add('text-bg-light');
 			}
 			
-			// 지원 일자 유효성 검사 (시작)
+			// 지원 일자 유효성 검사 함수(시작)
 			let resumeDateFlag = false;
+			const vaildResumeDate = () => {
+				if(resumeDate.value.length == 0) {
+					dangerClass(resumeDate.nextElementSibling);
+					resumeDate.nextElementSibling.textContent = '지원 일자를 선택해주세요!';
+					resumeDateFlag = false;
+				} else{
+					infoClass(resumeDate.nextElementSibling);
+					resumeDate.nextElementSibling.textContent = '지원 일자가 선택되었습니다.';
+					resumeDateFlag = true;
+				}
+			}
+			
 			resumeDate.addEventListener('change', function() {
 				if(resumeDate.value.length == 0) {
 					dangerClass(this.nextElementSibling);
 					this.nextElementSibling.textContent = '지원 일자를 선택해주세요!';
-					resumeDateFlag = false;
 				} else{
 					infoClass(this.nextElementSibling);
-					this.nextElementSibling.textContent = '지원 일자가 선택되었습니다.';
-					resumeDateFlag = true;
+					this.nextElementSibling.textContent = '지원 일자가 변경하였습니다.';
 				}
 			});
 			// 지원 일자 유효성 검사 함수(끝)
 			
-			//회사명 유효성 검사 (시작)
+			//회사명 유효성 검사 함수 (시작)
 			let companyNameFlag = false;
+			const vaildCompanyName = () => {
+				if(companyName.value.trim().length == 0) {
+					dangerClass(companyName.nextElementSibling);
+					companyName.nextElementSibling.textContent = '회사명을 입력해주세요!';
+					companyNameFlag = false;
+				} else{
+					infoClass(companyName.nextElementSibling);
+					companyName.nextElementSibling.textContent = '회사명이 입력되었습니다.';
+					companyNameFlag = true;
+				}
+			}
+			
 			companyName.addEventListener('change', function() {
 				if(companyName.value.trim().length == 0) {
 					dangerClass(this.nextElementSibling);
 					this.nextElementSibling.textContent = '회사명을 입력해주세요!';
-					companyNameFlag = false;
 				} else{
 					infoClass(this.nextElementSibling);
 					this.nextElementSibling.textContent = '회사명이 입력되었습니다.';
-					companyNameFlag = true;
 				}
 			});
-			//회사명 유효성 검사 (끝)
+			//회사명 유효성 검사 함수 (끝)
 			
 			// 주소 검색 및 입력 (시작)
 			const searchAddress = document.querySelector('#searchAddress');
@@ -294,55 +314,115 @@
 			});
 			// 주소 검색 및 입력 (끝)
 			
-			//지원 상태 유효성 검사 (시작)
+			//지원 상태 유효성 검사 함수(시작)
 			let resumeStateFlag = false;
+			const vaildResumeState = () => {
+				for(const s of resumeStates){
+					if (s.checked) {
+						const span = s.parentElement.parentElement.querySelector('span');
+						infoClass(span);
+						span.textContent = '지원 상태를 변경하셨습니다.';
+						resumeStateFlag = true;
+						break;
+					}
+				}
+			}
+			
 			for(const s of resumeStates){
 				s.addEventListener('click', function() {
 					const span = this.parentElement.parentElement.querySelector('span');
 					infoClass(span);
-					span.textContent = '지원 상태를 선택하셨습니다.';
-					resumeStateFlag = true;
+					span.textContent = '지원 상태를 변경하셨습니다.';
 				});
 			}
-			//지원 상태 유효성 검사 (끝)
+			//지원 상태 유효성 검사 함수(끝)
 			
-			//경력 상태 유효성 검사 (시작)
+			//경력 상태 유효성 검사 함수(시작)
 			let resumeCareerFlag = false;
+			const vaildResumeCareer = () => {
+				for(const s of resumeCareers) {
+					if (s.checked) {
+						const span = s.parentElement.parentElement.querySelector('span');
+						infoClass(span);
+						span.textContent = '경력을 변경하셨습니다.';
+						resumeCareerFlag = true;
+						break;
+					}
+				}
+			}
+			
 			for(const s of resumeCareers){
 				s.addEventListener('click', function() {
 					const span = this.parentElement.parentElement.querySelector('span');
 					infoClass(span);
 					span.textContent = '경력을 선택하셨습니다.';
-					resumeCareerFlag = true;
 				});
 			}
-			//경력 상태 유효성 검사 (끝)
+			//경력 상태 유효성 검사 함수(끝)
+			
+			//지원 마감일 유효성 검사 함수 (시작)
+			const vaildDeadLine = () => {
+				if(deadline.value != '') {
+					const d1 = new Date(resumeDate.value);
+					const d2 = new Date(deadline.value);
+					
+					if (d1 <= d2) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					return true;
+				}
+			}
+			//지원 마감일 유효성 검사 함수 (끝)
 			
 			//회사 유형 유효성 검사 (시작)
 			let companyTypeFlag = false;
+			const vaildComapnyType = () => {
+				for(const s of companyTypeNames){
+					if (s.checked) {
+						const span = s.parentElement.parentElement.querySelector('span');
+						infoClass(span);
+						span.textContent = '회사 유형을 선택하셨습니다.';
+						companyTypeFlag = true;
+						break;
+					}
+				}
+			}
+			
 			for(const s of companyTypeNames){
 				s.addEventListener('click', function() {
 					const span = this.parentElement.parentElement.querySelector('span');
 					infoClass(span);
 					span.textContent = '회사 유형을 선택하셨습니다.';
-					companyTypeFlag = true;
 				});
 			}
 			//회사 유형 유효성 검사 (끝)
 			
 			//플랫폼 유효성 검사 (시작)
 			let platformFlag = false;
+			const vaildPlatForm = () => {
+				const span = platformName.nextElementSibling;
+				if (platformName.value == 'none') {
+					dangerClass(span);
+					span.textContent = '플랫폼을 선택해주세요!';
+					platformFlag = false;
+				} else {
+					infoClass(span);
+					span.textContent = '플랫폼을 선택하셨습니다.';
+					platformFlag = true;
+				}
+			}
+			
 			platformName.addEventListener('change', function() {
 				const span = this.nextElementSibling;
 				if(this.value == 'none') {
 					dangerClass(span);
 					span.textContent = '플랫폼을 선택해주세요!';
-					platformFlag = false;
-				}
-				else {
+				} else {
 					infoClass(span);
 					span.textContent = '플랫폼을 선택하셨습니다.';
-					platformFlag = true;
 				}
 			});
 			//플랫폼 유효성 검사 (끝)
@@ -388,6 +468,14 @@
 			
 			// 입력 요소 유효성 검사 함수 (시작)
 			const checkVaild = () => {
+				//필수 입력 요소들에 대한 유효성 검사 함수들을 호출
+				vaildResumeDate();
+				vaildCompanyName();
+				vaildResumeState();
+				vaildResumeCareer();
+				vaildComapnyType();
+				vaildPlatForm();
+				
 				if(resumeDateFlag && companyNameFlag && resumeStateFlag && resumeCareerFlag && platformFlag && companyTypeFlag){
 					return true;
 				} else{
@@ -425,7 +513,11 @@
 					setEssential();
 					setpreferential();
 					
-					document.querySelector('#updateForm').submit();
+					if (vaildDeadLine()) {
+						document.querySelector('#updateForm').submit();
+					} else {
+						console.log('지원 마감일 선택이 잘못됨');
+					}
 				}else{
 					console.log('유효성 검사 통과못함');
 				}

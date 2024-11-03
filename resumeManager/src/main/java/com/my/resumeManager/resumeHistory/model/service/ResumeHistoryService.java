@@ -38,4 +38,6 @@ public interface ResumeHistoryService {
 
 	ArrayList<ResumeCondition> selectOneResumeCondition(ResumeHistory rh);
 
+	int updateResumeHistory(HashMap<String, Object> updMap);
+
 }

@@ -89,6 +89,11 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 	public ArrayList<ResumeCondition> selectOneResumeCondition(ResumeHistory rh) {
 		return rMapper.selectOneResumeCondition(rh);
 	}
+
+	@Override
+	public int updateResumeHistory(HashMap<String, Object> updMap) {
+		return rMapper.updateResumeHistory(updMap);
+	}
 	
 	
 }

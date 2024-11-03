@@ -339,7 +339,7 @@ public class ResumeHistoryController {
 				model.addAttribute("rh", rh);
 				model.addAttribute("essentialInfoNo", essentialBuffer.toString());
 				model.addAttribute("preferentialInfoNo", preferentialBuffer.toString());
-				model.addAttribute("currentPage", currentPage);
+				//model.addAttribute("currentPage", currentPage);
 				model.addAttribute("yearSalary", yearSalary);
 				
 				return "resume/updateResumeHistory";
@@ -350,16 +350,109 @@ public class ResumeHistoryController {
 	}
 	
 	@GetMapping("updateResumeHistory.rh")
-	public String updateResumeHistory(@ModelAttribute ResumeHistory resumeHistory,
+	public String updateResumeHistory(@ModelAttribute ResumeHistory newResumeHistory,
+										@RequestParam("salary") String salary,
 										HttpSession session,
 										@RequestParam(value="deadline", defaultValue="always") String deadline,
 										@RequestParam("companyTypeName") String companyTypeName,
 										@RequestParam("platformName") String platformName,
 										@RequestParam("essential") String essential,
 										@RequestParam("preferential") String preferential) {
+		//작성자 지정
+		Member loginMember = (Member)session.getAttribute("loginMember");
+		System.out.println("로그인 회원 확인");
+		System.out.println(loginMember);
+		if(loginMember != null) {
+			newResumeHistory.setResumeWriter(loginMember.getMemberNo());
+		}
+		
+		//급여 주입
+		newResumeHistory.setCompanySalary(Integer.valueOf(salary));
+		
+		//지원마감일 가공
+		if(!deadline.equals("always")) {
+			StringTokenizer st = new StringTokenizer(deadline, "-");
+			
+			//캘린더 객체 생성 -> 캘린더에 시간을 지정 -> 밀리초 반환 -> Date 객체 생성
+			Calendar c = Calendar.getInstance();
+			c.set(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()) - 1, Integer.parseInt(st.nextToken()));
+			long date = c.getTimeInMillis();
+			newResumeHistory.setResumeDeadline(new Date(date)); // 데드라인 지정
+		}
+		
+		//회사 유형 가공
+		if(getCompanyType(companyTypeName) == null) {
+			throw new ResumeHistoryException("서비스 요청 실패");
+		} else {
+			newResumeHistory.setCompanyType(getCompanyType(companyTypeName));
+		}
+		
+		//플랫폼 정보 가공
+		if(getPlatformType(platformName) == null) {
+			throw new ResumeHistoryException("서비스 요청 실패");
+		} else {
+			newResumeHistory.setPlatformType(getPlatformType(platformName));
+		}
+		
+		//수정할 컬럼과 데이터를 구하기
+		HashMap<String, Object> updMap = new HashMap<String, Object>();
+		ResumeHistory oldResumeHistory = rService.selectOneResumeHistory(newResumeHistory.getResumeNo());
+		updMap.put("resumeNo", newResumeHistory.getResumeNo());
+		updMap.put("resumeWriter", newResumeHistory.getResumeWriter());
+		if (oldResumeHistory.getResumeDate() != newResumeHistory.getResumeDate()) {
+			//Date 객체들은 시간 정보를 기준으로 비교연산 가능
+			updMap.put("RESUME_DATE", newResumeHistory.getResumeDate());
+		}
+		if (!oldResumeHistory.getCompanyName().equals(newResumeHistory.getCompanyName())) {
+			updMap.put("COMPANY_NAME", newResumeHistory.getCompanyName());
+		}
+		if (!oldResumeHistory.getCompanyRegion().equals(newResumeHistory.getCompanyRegion())) {
+			updMap.put("COMPANY_REGION", newResumeHistory.getCompanyRegion());
+		}
+		if (oldResumeHistory.getCompanySalary() != newResumeHistory.getCompanySalary()) {
+			updMap.put("COMPANY_SALARY", Integer.valueOf(newResumeHistory.getCompanySalary()));
+		}
+		if (oldResumeHistory.getResumeState() != newResumeHistory.getResumeState()) {
+			updMap.put("RESUME_STATE", Integer.valueOf(newResumeHistory.getResumeState()));
+		}
+		if (oldResumeHistory.getResumeCareer() != newResumeHistory.getResumeCareer()) {
+			updMap.put("RESUME_CAREER", Integer.valueOf(newResumeHistory.getResumeCareer()));
+		}
+		if (oldResumeHistory.getResumeDeadline() != newResumeHistory.getResumeDeadline()) {
+			updMap.put("RESUME_DEADLINE", newResumeHistory.getResumeDeadline());
+		}
+		if (oldResumeHistory.getCompanyType().getTypeNo() != newResumeHistory.getCompanyType().getTypeNo()) {
+			updMap.put("COMPANY_TYPE_NO", Integer.valueOf(newResumeHistory.getCompanyType().getTypeNo()));
+		}
+		if (oldResumeHistory.getPlatformType().getPlatformNo() != newResumeHistory.getPlatformType().getPlatformNo() ) {
+			updMap.put("PLATFORM_NO", Integer.valueOf(newResumeHistory.getPlatformType().getPlatformNo()));
+		}
+		
+		//지원 이력 수정
+		int updateHistoryResult = rService.updateResumeHistory(updMap);
+		
+		if(updMap.size() == updateHistoryResult) {
+			log.info("수정 성공={}/{}", updateHistoryResult, updMap.size());
+		} else {
+			log.info("수정 실패={}/{}", updateHistoryResult, updMap.size());
+		}
 		
 		
 		
+		
+		
+//		if(insertHistoryResult > 0) { //지원 이력 삽입 성공
+//			//자격 조건 삽입
+//			String insertConditionResult = insertResumeCondition(essential, preferential, resumeHistory.getResumeNo());
+//			if(insertConditionResult.equals("success")) { //자격 조건 삽입 성공
+//				//지원 이력 조회 페이지로 이동
+//			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
+//				rService.deleteResumeHistory(newResumeHistory.getResumeNo());
+//				throw new ResumeHistoryException("서비스 요청 실패");
+//			}
+//		} else { //지원 이력 삽입 실패
+//			throw new ResumeHistoryException("서비스 요청 실패");
+//		}
 		
 		return null;
 	}

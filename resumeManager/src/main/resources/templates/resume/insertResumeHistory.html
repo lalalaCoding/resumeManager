@@ -308,6 +308,23 @@
 			}
 			//경력 상태 유효성 검사 (끝)
 			
+			//지원 마감일 유효성 검사 함수 (시작)
+			const vaildDeadLine = () => {
+				if(deadline.value != '') {
+					const d1 = new Date(resumeDate.value);
+					const d2 = new Date(deadline.value);
+					
+					if (d1 <= d2) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					return true;
+				}
+			}
+			//지원 마감일 유효성 검사 함수 (끝)
+			
 			//회사 유형 유효성 검사 (시작)
 			let companyTypeFlag = false;
 			for(const s of companyTypeNames){
@@ -415,7 +432,12 @@
 					setEssential();
 					setpreferential();
 					
-					document.querySelector('#insertForm').submit();
+					if (vaildDeadLine()) {
+						document.querySelector('#insertForm').submit();
+					} else {
+						console.log('지원 마감일 선택이 잘못되었다.');
+					}
+					
 				}else{
 					console.log('유효성 검사 통과못함');
 				}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
 import com.my.resumeManager.resumeHistory.model.vo.CompanyType;
@@ -40,5 +41,7 @@ public interface ResumeHistoryMapper {
 	ResumeHistory selectOneResumeHistory(int resumeNo);
 
 	ArrayList<ResumeCondition> selectOneResumeCondition(ResumeHistory rh);
+
+	int updateResumeHistory(@Param("updMap") HashMap<String, Object> updMap);
 
 }

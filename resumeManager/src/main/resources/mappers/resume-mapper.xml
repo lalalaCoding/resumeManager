@@ -158,8 +158,21 @@
 		where resume_no = ${resumeNo}
  	</select>
  	
- 	
- 	
+ 	<!-- 지원 이력 수정하기 -->
+ 	<update id="updateResumeHistory" parameterType="java.util.Map">
+ 		update resume_history
+ 		<set>
+ 			<foreach collection="updMap" index="key" item="value" separator=" ">
+ 				<if test="!key.equals('RESUME_DATE') and !key.equals('RESUME_DEADLINE')">
+	 				${key} = #{value},
+ 				</if>
+ 				<if test="key.equals('RESUME_DATE') or key.equals('RESUME_DEADLINE')">
+ 					${key} = to_date(#{value}),
+ 				</if>
+ 			</foreach>
+ 		</set>
+ 		where resume_no = ${updMap.resumeNo} and resume_writer = ${updMap.resumeWriter}
+ 	</update>
  	
  	
  	
