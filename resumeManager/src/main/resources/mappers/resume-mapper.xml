@@ -163,10 +163,10 @@
  		update resume_history
  		<set>
  			<foreach collection="updMap" index="key" item="value" separator=" ">
- 				<if test="!key.equals('RESUME_DATE') and !key.equals('RESUME_DEADLINE')">
+ 				<if test="!key.equals('RESUME_DATE') and !key.equals('RESUME_DEADLINE') and !key.equals('resumeNo') and !key.equals('resumeWriter')">
 	 				${key} = #{value},
  				</if>
- 				<if test="key.equals('RESUME_DATE') or key.equals('RESUME_DEADLINE')">
+ 				<if test="key.equals('RESUME_DATE') or key.equals('RESUME_DEADLINE') and !key.equals('resumeNo') and !key.equals('resumeWriter')">
  					${key} = to_date(#{value}),
  				</if>
  			</foreach>

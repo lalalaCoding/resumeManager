@@ -92,7 +92,7 @@
 							<label><input type="radio" name="companyTypeName" value="SM" th:checked="${rh.companyType.typeName == 'SM'}"/>SM</label>
 							<label><input type="radio" name="companyTypeName" value="SOLUTION" th:checked="${rh.companyType.typeName == 'SOLUTION'}"/>SOLUTION</label>
 							<label><input type="radio" name="companyTypeName" value="SERVICE" th:checked="${rh.companyType.typeName == 'SERVICE'}"/>SERVICE</label>
-							<label><input type="radio" name="companyTypeName" value="START UP"/>START UP</label>
+							<label><input type="radio" name="companyTypeName" value="START UP" th:checked="${rh.companyType.typeName == 'START UP'}"/>START UP</label>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
 					</tr>
@@ -155,35 +155,35 @@
 							
 							[[${preferentialInfoNo}]]
 							<span>언어</span>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '01')} ? 'btn btn-info essential' : 'btn btn-light essential'">JAVA</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '02')} ? 'btn btn-info essential' : 'btn btn-light essential'">JAVASCRIPT</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '03')} ? 'btn btn-info essential' : 'btn btn-light essential'">HTML/CSS</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '01')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">JAVA</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '02')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">JAVASCRIPT</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '03')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">HTML/CSS</button>
 							<br/>
 							
 							<span>라이브러리</span>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '04')} ? 'btn btn-info essential' : 'btn btn-light essential'">jQuery</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '04')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">jQuery</button>
 							<br/>
 							
 							<span>프레임워크</span>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '05')} ? 'btn btn-info essential' : 'btn btn-light essential'">Spring</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '06')} ? 'btn btn-info essential' : 'btn btn-light essential'">Spring Boot</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '07')} ? 'btn btn-info essential' : 'btn btn-light essential'">React</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '08')} ? 'btn btn-info essential' : 'btn btn-light essential'">Vue.js</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '05')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Spring</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '06')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Spring Boot</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '07')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">React</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '08')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Vue.js</button>
 							<br/>
 						
 							<span>데이터베이스</span>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '09')} ? 'btn btn-info essential' : 'btn btn-light essential'">Oracle</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '10')} ? 'btn btn-info essential' : 'btn btn-light essential'">MySQL</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '11')} ? 'btn btn-info essential' : 'btn btn-light essential'">MsSQL</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '12')} ? 'btn btn-info essential' : 'btn btn-light essential'">MariaDB</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '09')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Oracle</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '10')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">MySQL</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '11')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">MsSQL</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '12')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">MariaDB</button>
 							<br/>
 							
 							<span>지식</span>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '13')} ? 'btn btn-info essential' : 'btn btn-light essential'">Linux</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '14')} ? 'btn btn-info essential' : 'btn btn-light essential'">RESTful</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '15')} ? 'btn btn-info essential' : 'btn btn-light essential'">CI/CD</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '16')} ? 'btn btn-info essential' : 'btn btn-light essential'">Github</button>
-							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '17')} ? 'btn btn-info essential' : 'btn btn-light essential'">Git</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '13')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Linux</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '14')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">RESTful</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '15')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">CI/CD</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '16')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Github</button>
+							<button type="button" th:class="${#strings.contains(preferentialInfoNo, '17')} ? 'btn btn-info preferential' : 'btn btn-light preferential'">Git</button>
 						</td>
 					</tr>
 				</table>
@@ -502,16 +502,19 @@
 					//최저 시급 검사
 					let modifySalary = companySalary.value * 10000; // 원 단위로 교정
 					
-					
 					if(modifySalary < yearSalary){
-						companySalary.value = yearSalary;
-					} else{
-						companySalary.value = modifySalary;
-					}
+						companySalary.value = Math.floor(yearSalary / 10000);
+					} 
 					
 					//자격 조건 가공
 					setEssential();
 					setpreferential();
+					
+					
+					//console.log('급여 : ' + companySalary.value);
+					//console.log('필수 조건 : ' + document.getElementsByName('essential')[0].value);
+					//console.log('우대 조건 : ' + document.getElementsByName('preferential')[0].value)
+					
 					
 					if (vaildDeadLine()) {
 						document.querySelector('#updateForm').submit();

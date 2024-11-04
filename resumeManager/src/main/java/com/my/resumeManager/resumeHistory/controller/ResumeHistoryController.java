@@ -362,6 +362,9 @@ public class ResumeHistoryController {
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		System.out.println("로그인 회원 확인");
 		System.out.println(loginMember);
+		
+		System.out.println("급여 확인 : " + salary);
+		
 		if(loginMember != null) {
 			newResumeHistory.setResumeWriter(loginMember.getMemberNo());
 		}
@@ -378,6 +381,8 @@ public class ResumeHistoryController {
 			c.set(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()) - 1, Integer.parseInt(st.nextToken()));
 			long date = c.getTimeInMillis();
 			newResumeHistory.setResumeDeadline(new Date(date)); // 데드라인 지정
+		} else {
+			newResumeHistory.setResumeDeadline(null);
 		}
 		
 		//회사 유형 가공
@@ -399,7 +404,8 @@ public class ResumeHistoryController {
 		ResumeHistory oldResumeHistory = rService.selectOneResumeHistory(newResumeHistory.getResumeNo());
 		updMap.put("resumeNo", newResumeHistory.getResumeNo());
 		updMap.put("resumeWriter", newResumeHistory.getResumeWriter());
-		if (oldResumeHistory.getResumeDate() != newResumeHistory.getResumeDate()) {
+		
+		if (oldResumeHistory.getResumeDate().getTime() != newResumeHistory.getResumeDate().getTime()) {
 			//Date 객체들은 시간 정보를 기준으로 비교연산 가능
 			updMap.put("RESUME_DATE", newResumeHistory.getResumeDate());
 		}
@@ -418,9 +424,35 @@ public class ResumeHistoryController {
 		if (oldResumeHistory.getResumeCareer() != newResumeHistory.getResumeCareer()) {
 			updMap.put("RESUME_CAREER", Integer.valueOf(newResumeHistory.getResumeCareer()));
 		}
-		if (oldResumeHistory.getResumeDeadline() != newResumeHistory.getResumeDeadline()) {
-			updMap.put("RESUME_DEADLINE", newResumeHistory.getResumeDeadline());
+		
+		if(oldResumeHistory.getResumeDeadline() != null) { //원본 마감일이 존재
+			if(newResumeHistory.getResumeDeadline() != null) {
+				Date oldDate = oldResumeHistory.getResumeDeadline();
+				Calendar oldCal = Calendar.getInstance();
+				oldCal.setTimeInMillis(oldDate.getTime());
+				int oldYear = oldCal.get(Calendar.YEAR);
+				int oldMonth = oldCal.get(Calendar.MONTH);
+				int oldDay = oldCal.get(Calendar.DAY_OF_MONTH);
+				
+				Date newDate = newResumeHistory.getResumeDeadline();
+				Calendar newCal = Calendar.getInstance();
+				newCal.setTimeInMillis(newDate.getTime());
+				int newYear = oldCal.get(Calendar.YEAR);
+				int newMonth = oldCal.get(Calendar.MONTH);
+				int newDay = oldCal.get(Calendar.DAY_OF_MONTH);
+				
+				if (oldDay != newDay && oldMonth != newMonth && oldYear != newYear) {
+					updMap.put("RESUME_DEADLINE", newResumeHistory.getResumeDeadline());
+				}
+			} else {
+				updMap.put("RESUME_DEADLINE", null);
+			}
+		} else { //원본 마감일이 존재하지 않음
+			if(newResumeHistory.getResumeDeadline() != null) {
+				updMap.put("RESUME_DEADLINE", newResumeHistory.getResumeDeadline());
+			}
 		}
+		
 		if (oldResumeHistory.getCompanyType().getTypeNo() != newResumeHistory.getCompanyType().getTypeNo()) {
 			updMap.put("COMPANY_TYPE_NO", Integer.valueOf(newResumeHistory.getCompanyType().getTypeNo()));
 		}
@@ -429,29 +461,81 @@ public class ResumeHistoryController {
 		}
 		
 		//지원 이력 수정
-		int updateHistoryResult = rService.updateResumeHistory(updMap);
+		int updateHistoryResult = 0;
+		if (updMap.size() > 2) { //RESUME_HISTORY 테이블에서 수정할 내용이 존재함
+			updateHistoryResult = rService.updateResumeHistory(updMap); //행을 기준으로 업데이트 성공 횟수 반환
+		}
 		
-		if(updMap.size() == updateHistoryResult) {
-			log.info("수정 성공={}/{}", updateHistoryResult, updMap.size());
-		} else {
-			log.info("수정 실패={}/{}", updateHistoryResult, updMap.size());
+		if(updMap.size() <= 2 || updateHistoryResult > 0) {
+			//자격 조건 수정을 시도
+			String updateConditionResult = updateResumeCondition(essential, preferential, newResumeHistory);
+			if(updateConditionResult.equals("success")) { //자격 조건 삽입 성공
+				//지원 이력 조회 페이지로 이동
+			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
+				//rService.deleteResumeHistory(newResumeHistory.getResumeNo());
+				throw new ResumeHistoryException("서비스 요청 실패");
+			}
+		} else { //RESUME_HISTORY 테이블에서 수정할 내용이 존재 -> 수정에 실패
+			throw new ResumeHistoryException("서비스 요청 실패");
+		}
+		
+		return null;
+	}
+
+	private String updateResumeCondition(String essential, String preferential, ResumeHistory newResumeHistory) {
+		//원본에 대한 ResumeCondition 정보 가져오기
+		ArrayList<ResumeCondition> oldList = rService.selectOneResumeCondition(newResumeHistory);
+		
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayList<ResumeCondition> updateList = new ArrayList<ResumeCondition>();
+		try {
+			List<String> essentialUpdList = mapper.readValue(essential, new TypeReference<List<String>>(){});
+			List<String> preferentialUpdList = mapper.readValue(preferential, new TypeReference<List<String>>(){});
+			
+			System.out.println("필수 : " + essentialUpdList);
+			System.out.println("우대 : " + preferentialUpdList);
+			
+			
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 		
 		
-		
-		
-		
-//		if(insertHistoryResult > 0) { //지원 이력 삽입 성공
-//			//자격 조건 삽입
-//			String insertConditionResult = insertResumeCondition(essential, preferential, resumeHistory.getResumeNo());
-//			if(insertConditionResult.equals("success")) { //자격 조건 삽입 성공
-//				//지원 이력 조회 페이지로 이동
-//			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
-//				rService.deleteResumeHistory(newResumeHistory.getResumeNo());
-//				throw new ResumeHistoryException("서비스 요청 실패");
+//		ObjectMapper mapper = new ObjectMapper();
+//		int result = 0;
+//		ArrayList<ResumeCondition> insertList = new ArrayList<ResumeCondition>();
+//		try {
+//			//RESUME_CONDITION 테이블에 삽입
+//			List<String> essentialList = mapper.readValue(essential, new TypeReference<List<String>>(){});
+//			List<String> preferentialList = mapper.readValue(preferential, new TypeReference<List<String>>(){});
+//		
+//			//인포번호 조회 -> ResumeCondition 객체 생성 -> 테이블 삽입
+//			ArrayList<ConditionInfo> infoList = rService.selectAllConditionInfo();
+//			for(ConditionInfo c : infoList) {
+//				for(String e : essentialList) {
+//					if(c.getInfoName().equalsIgnoreCase(e)) {
+////ResumeCondition(int conditionNo, int resumeNo, int conditionType, int infoNo, int infoType, String infoName)
+//						insertList.add(new ResumeCondition(0, resumeHistoryNo, 1, c.getInfoNo(), c.getInfoType(), c.getInfoName()));
+//					}
+//				}
+//				for(String e : preferentialList) {
+//					if(c.getInfoName().equalsIgnoreCase(e)) {
+//						insertList.add(new ResumeCondition(0, resumeHistoryNo, 0, c.getInfoNo(), c.getInfoType(), c.getInfoName()));
+//					}
+//				}
 //			}
-//		} else { //지원 이력 삽입 실패
-//			throw new ResumeHistoryException("서비스 요청 실패");
+//			
+//			result = rService.insertResumeCondition(insertList);
+//			
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		if(result == insertList.size()) {
+//			return "success";
+//		} else {
+//			return "fail";
 //		}
 		
 		return null;
