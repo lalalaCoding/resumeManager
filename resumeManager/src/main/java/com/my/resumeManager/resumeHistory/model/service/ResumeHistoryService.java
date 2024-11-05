@@ -40,4 +40,6 @@ public interface ResumeHistoryService {
 
 	int updateResumeHistory(HashMap<String, Object> updMap);
 
+	int deleteResumeCondition(ArrayList<ResumeCondition> delConList);
+
 }

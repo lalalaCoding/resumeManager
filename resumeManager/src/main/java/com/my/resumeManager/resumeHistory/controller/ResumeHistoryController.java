@@ -271,15 +271,20 @@ public class ResumeHistoryController {
 			condition.put("beginDt", beginDt);
 			condition.put("endDt", endDt);
 			condition.put("infoName", infoName);
+			log.info("검색 조건 ={}", condition);
+			
 			
 			int listCount = rService.getSearchCountResumeHistory(condition);
+			log.info("검색된 listCount={}", listCount);
 			PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 10);
 			
 			//페이지 처리된 '지원 이력' 조회
 			ArrayList<ResumeHistory> rhList = rService.selectResumeHistory(condition, pi);
+			log.info("페이징된 지원 이력={}", rhList);
 			
-			//지원 이력 -> '지원 조건' 조회 : 페이징 처리 된 지원 이력 번호는 최대 10개이므로 IN 연산자로 SQL을 작성함			
+			//지원 이력 -> '지원 조건' 조회 : 페이징 처리 된 지원 이력 번호는 최대 10개이므로 IN 연산자로 SQL을 작성함	
 			ArrayList<ResumeCondition> conList = rService.selectAllResumeCondition(rhList); 
+			log.info("페이징된 지원 이력에 대한 지원 조건={}", conList);
 			
 			model.addAttribute("pi", pi);
 			model.addAttribute("loc", request.getRequestURI());
@@ -470,75 +475,104 @@ public class ResumeHistoryController {
 			//자격 조건 수정을 시도
 			String updateConditionResult = updateResumeCondition(essential, preferential, newResumeHistory);
 			if(updateConditionResult.equals("success")) { //자격 조건 삽입 성공
-				//지원 이력 조회 페이지로 이동
+				//지원 이력 조회 페이지로 
+				return "redirect:resumeHistoryPage.rh";
+				
 			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
-				//rService.deleteResumeHistory(newResumeHistory.getResumeNo());
 				throw new ResumeHistoryException("서비스 요청 실패");
 			}
 		} else { //RESUME_HISTORY 테이블에서 수정할 내용이 존재 -> 수정에 실패
 			throw new ResumeHistoryException("서비스 요청 실패");
 		}
-		
-		return null;
 	}
 
 	private String updateResumeCondition(String essential, String preferential, ResumeHistory newResumeHistory) {
 		//원본에 대한 ResumeCondition 정보 가져오기
 		ArrayList<ResumeCondition> oldList = rService.selectOneResumeCondition(newResumeHistory);
-		
-		
 		ObjectMapper mapper = new ObjectMapper();
-		ArrayList<ResumeCondition> updateList = new ArrayList<ResumeCondition>();
+		
+		boolean insCheck = false; //삽입 결과 플래그
+		boolean delCheck = false; //삭제 결과 플래그
 		try {
+			ArrayList<ResumeCondition> updList = new ArrayList<>();
 			List<String> essentialUpdList = mapper.readValue(essential, new TypeReference<List<String>>(){});
 			List<String> preferentialUpdList = mapper.readValue(preferential, new TypeReference<List<String>>(){});
-			
-			System.out.println("필수 : " + essentialUpdList);
-			System.out.println("우대 : " + preferentialUpdList);
+			ArrayList<ConditionInfo> infoList = rService.selectAllConditionInfo();
 			
 			
+			for(ConditionInfo c : infoList) {
+				for(String e : essentialUpdList) {
+					if(c.getInfoName().equalsIgnoreCase(e)) {
+						updList.add(new ResumeCondition(0, newResumeHistory.getResumeNo(), 1, c.getInfoNo(), c.getInfoType(), c.getInfoName()));
+					}
+				}
+				for(String e : preferentialUpdList) {
+					if(c.getInfoName().equalsIgnoreCase(e)) {
+						updList.add(new ResumeCondition(0, newResumeHistory.getResumeNo(), 0, c.getInfoNo(), c.getInfoType(), c.getInfoName()));
+					}
+				}
+			}
+			
+//			1. oldList에는 없지만, updList에 존재하는 것 → 삽입해야 한다.
+//			2. oldList에는 있지만, updList에 존재하지 않는 것 → 삭제해야 한다.
+//			3. oldList에도 있고, updList에도 존재하는 것 → 유지해야 한다.
+			ArrayList<ResumeCondition> insertConList = new ArrayList<>();
+			ArrayList<ResumeCondition> delConList =  new ArrayList<>();
+			
+			for (ResumeCondition u : updList) {
+				boolean check = false;
+				for (ResumeCondition o : oldList) {
+					if (o.getConditionType() == u.getConditionType() && o.getInfoNo() == u.getInfoNo()) {
+						check = true;
+						break;
+					}
+				}
+				if (!check) {
+					insertConList.add(u);
+				}
+			}
+			
+			for (ResumeCondition o : oldList) {
+				boolean check = false;
+				for (ResumeCondition u : updList) {
+					if (o.getConditionType() == u.getConditionType() && o.getInfoNo() == u.getInfoNo()) {
+						check = true;
+						break;
+					}
+				}
+				
+				if (!check) {
+					delConList.add(o);
+				}
+			}
+			
+			log.info("삽입이 필요한 항목={}", insertConList);
+			log.info("제거가 필요한 항목={}", delConList);
+			
+			if (insertConList.size() > 0) {
+				int insResult = rService.insertResumeCondition(insertConList); //삽입 요청
+				if(insResult == insertConList.size()) insCheck = true;
+				else insCheck = false;
+			} else { //삽입할 내용이 없음
+				insCheck = true;
+			}
+			
+			if (delConList.size() > 0) {
+				int delResult = rService.deleteResumeCondition(delConList);
+				if(delResult == delConList.size()) delCheck = true;
+				else delCheck = false;
+			} else { //삭제할 내용이 없음
+				delCheck = true;
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
-		
-//		ObjectMapper mapper = new ObjectMapper();
-//		int result = 0;
-//		ArrayList<ResumeCondition> insertList = new ArrayList<ResumeCondition>();
-//		try {
-//			//RESUME_CONDITION 테이블에 삽입
-//			List<String> essentialList = mapper.readValue(essential, new TypeReference<List<String>>(){});
-//			List<String> preferentialList = mapper.readValue(preferential, new TypeReference<List<String>>(){});
-//		
-//			//인포번호 조회 -> ResumeCondition 객체 생성 -> 테이블 삽입
-//			ArrayList<ConditionInfo> infoList = rService.selectAllConditionInfo();
-//			for(ConditionInfo c : infoList) {
-//				for(String e : essentialList) {
-//					if(c.getInfoName().equalsIgnoreCase(e)) {
-////ResumeCondition(int conditionNo, int resumeNo, int conditionType, int infoNo, int infoType, String infoName)
-//						insertList.add(new ResumeCondition(0, resumeHistoryNo, 1, c.getInfoNo(), c.getInfoType(), c.getInfoName()));
-//					}
-//				}
-//				for(String e : preferentialList) {
-//					if(c.getInfoName().equalsIgnoreCase(e)) {
-//						insertList.add(new ResumeCondition(0, resumeHistoryNo, 0, c.getInfoNo(), c.getInfoType(), c.getInfoName()));
-//					}
-//				}
-//			}
-//			
-//			result = rService.insertResumeCondition(insertList);
-//			
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//		
-//		if(result == insertList.size()) {
-//			return "success";
-//		} else {
-//			return "fail";
-//		}
-		
-		return null;
+		if(insCheck && delCheck) {
+			return "success";
+		} else {
+			return "fail"; // 수동 롤백을 추가해야 한다.
+		}
 	}
 	
 	

@@ -421,12 +421,9 @@
 					//최저 시급 검사
 					let modifySalary = companySalary.value * 10000; // 원 단위로 교정
 					
-					
 					if(modifySalary < yearSalary){
-						companySalary.value = yearSalary;
-					} else{
-						companySalary.value = modifySalary;
-					}
+						companySalary.value = Math.floor(yearSalary / 10000);
+					} 
 					
 					//자격 조건 가공
 					setEssential();
