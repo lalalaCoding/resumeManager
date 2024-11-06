@@ -51,7 +51,7 @@
 					<span>직무 정보</span>
 					<input type="text" placeHolder="스킬명 또는 경험" class="searchFormat" name="infoName"/>
 					<button type="button" class="btn btn-light" id="searchBtn">검색하기</button>
-					<button type="button" class="btn btn-light" id="selectAllBtn">전체보기</button>
+					<button type="button" class="btn btn-light" id="selectAllBtn" onclick="location.href='resumeHistoryPage.rh'">전체보기</button>
 					<button type="button" class="btn btn-light" id="insertBtn" onclick="location.href='insertResumeHistoryPage.rh'">등록하기</button>
 				</form>
 							
@@ -260,10 +260,10 @@
 				const resumeNo = $(this).parent().parent().children()[0].children[0].value;
 				//currentPage에 접근하기
 				/*<![CDATA[*/
-				const pi = /*[[${pi}]]*/'currentPage';
+				const loc = /*[[${loc}]]*/'loc';
 				/*]]>*/
 				
-				location.href='updateResumeHistoryPage.rh?resumeNo=' + resumeNo + '&page=' + pi.currentPage;
+				location.href='updateResumeHistoryPage.rh?resumeNo=' + resumeNo + '&loc=' + loc;
 			});
 			//수정하기 (끝)
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -160,7 +161,7 @@ public class ResumeHistoryController {
 			throw new ResumeHistoryException("서비스 요청 실패");
 		}
 		
-		return null;
+		return "redirect:resumeHistoryPage.rh";
 	}
 	
 	private CompanyType getCompanyType(String companyTypeName) {
@@ -312,7 +313,7 @@ public class ResumeHistoryController {
 	
 	@GetMapping("updateResumeHistoryPage.rh")
 	public String updateResumeHistoryPage(@RequestParam("resumeNo") int resumeNo, 
-										@RequestParam("page") int currentPage,
+										@RequestParam("loc") String loc,
 										HttpSession session, Model model) {
 		//세션에 있는 회원 번호 추출
 		Member loginMember = (Member)session.getAttribute("loginMember");
@@ -355,7 +356,7 @@ public class ResumeHistoryController {
 				model.addAttribute("rh", rh);
 				model.addAttribute("essentialInfoNo", essentialBuffer.toString());
 				model.addAttribute("preferentialInfoNo", preferentialBuffer.toString());
-				//model.addAttribute("currentPage", currentPage);
+				model.addAttribute("loc", loc);
 				model.addAttribute("yearSalary", yearSalary);
 				
 				return "resume/updateResumeHistory";
@@ -373,7 +374,8 @@ public class ResumeHistoryController {
 										@RequestParam("companyTypeName") String companyTypeName,
 										@RequestParam("platformName") String platformName,
 										@RequestParam("essential") String essential,
-										@RequestParam("preferential") String preferential) {
+										@RequestParam("preferential") String preferential,
+										@RequestParam("loc") String loc) {
 		//작성자 지정
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		System.out.println("로그인 회원 확인");
@@ -428,9 +430,24 @@ public class ResumeHistoryController {
 		if (!oldResumeHistory.getCompanyName().equals(newResumeHistory.getCompanyName())) {
 			updMap.put("COMPANY_NAME", newResumeHistory.getCompanyName());
 		}
-		if (!oldResumeHistory.getCompanyRegion().equals(newResumeHistory.getCompanyRegion())) {
-			updMap.put("COMPANY_REGION", newResumeHistory.getCompanyRegion());
+		
+		//회사 지역이 null일 수 있음
+		if(oldResumeHistory.getCompanyRegion() != null) { //원본 회사주소가 존재
+			if(newResumeHistory.getCompanyRegion() != null) { //새로운 회사주소가 존재
+				if (!oldResumeHistory.getCompanyRegion().equals(newResumeHistory.getCompanyRegion())) {
+					updMap.put("COMPANY_REGION", newResumeHistory.getCompanyRegion());
+				}
+			} else { //새로운 회사주소가 존재하지 않음
+				updMap.put("COMPANY_REGION", null);
+			}
+		} else { //원본 회사주소가 없음
+			if(newResumeHistory.getCompanyRegion() != null) { //새로운 회사주소가 존재
+				updMap.put("COMPANY_REGION", newResumeHistory.getCompanyRegion());
+			} else {
+				updMap.put("COMPANY_REGION", null);
+			}
 		}
+		
 		if (oldResumeHistory.getCompanySalary() != newResumeHistory.getCompanySalary()) {
 			updMap.put("COMPANY_SALARY", Integer.valueOf(newResumeHistory.getCompanySalary()));
 		}
@@ -487,8 +504,7 @@ public class ResumeHistoryController {
 			String updateConditionResult = updateResumeCondition(essential, preferential, newResumeHistory);
 			if(updateConditionResult.equals("success")) { //자격 조건 삽입 성공
 				//지원 이력 조회 페이지로 
-				return "redirect:resumeHistoryPage.rh";
-				
+				return "redirect:" + loc;
 			} else { //자격 조건 삽입 실패 : 자격 조건 삭제 -> 지원 이력 삭제
 				throw new ResumeHistoryException("서비스 요청 실패");
 			}

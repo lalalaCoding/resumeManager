@@ -19,6 +19,7 @@
 						<td>지원 일자(필수)</td>
 						<td>
 							<input type="hidden" name="resumeNo" th:value="${rh.resumeNo}"/>
+							<input type="hidden" name="loc" th:value="${loc}"/>
 							<input type="date" name="resumeDate" th:value="${rh.resumeDate}"/>
 							<span class="badge text-bg-light">필수 입력 항목입니다.</span>
 						</td>
@@ -509,12 +510,6 @@
 					//자격 조건 가공
 					setEssential();
 					setpreferential();
-					
-					
-					//console.log('급여 : ' + companySalary.value);
-					//console.log('필수 조건 : ' + document.getElementsByName('essential')[0].value);
-					//console.log('우대 조건 : ' + document.getElementsByName('preferential')[0].value)
-					
 					
 					if (vaildDeadLine()) {
 						document.querySelector('#updateForm').submit();

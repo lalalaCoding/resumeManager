@@ -183,7 +183,7 @@
  		</foreach>
  	</delete> 
  	
- 	<!--  -->
+ 	<!--지원 이력 삭제 요청 처리  -->
  	<update id="deleteAllResumeHistory">
  		update resume_history
  		set RESUME_VAILD = 'N'
