@@ -99,6 +99,11 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 	public int deleteResumeCondition(ArrayList<ResumeCondition> delConList) {
 		return rMapper.deleteResumeCondition(delConList);
 	}
+
+	@Override
+	public int deleteAllResumeHistory(HashMap<String, Object> delMap) {
+		return rMapper.deleteAllResumeHistory(delMap);
+	}
 	
 	
 }

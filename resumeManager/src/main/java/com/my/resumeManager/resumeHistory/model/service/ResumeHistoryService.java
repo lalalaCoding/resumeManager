@@ -22,7 +22,7 @@ public interface ResumeHistoryService {
 
 	int insertResumeHistory(ResumeHistory resumeHistory);
 
-	void deleteResumeHistory(int resumeNo);
+	void deleteResumeHistory(int resumeNo); 
 
 	int getCountResumeHistory(int memberNo);
 
@@ -41,5 +41,7 @@ public interface ResumeHistoryService {
 	int updateResumeHistory(HashMap<String, Object> updMap);
 
 	int deleteResumeCondition(ArrayList<ResumeCondition> delConList);
+	
+	int deleteAllResumeHistory(HashMap<String, Object> delMap); 
 
 }

@@ -55,7 +55,7 @@
 					<button type="button" class="btn btn-light" id="insertBtn" onclick="location.href='insertResumeHistoryPage.rh'">등록하기</button>
 				</form>
 							
-				<button type="button" class="btn btn-danger">삭제</button>
+				<button type="button" class="btn btn-danger" id="delBtn">삭제</button>
 			
 				<table class="table table-hover">
 					<thead>
@@ -77,7 +77,7 @@
 						<tr th:each="rh : ${rhList}">
 							<td>
 								<input type="hidden" name="resumeNo" th:value="${rh.resumeNo}"/>
-								<input type="checkbox"/>
+								<input type="checkbox" class="delCheckBox"/>
 							</td>
 							<td th:text="${#strings.substring(rh.resumeDate, 2)}"></td>
 							<td th:text="${rh.companyName}"></td>
@@ -267,11 +267,47 @@
 			});
 			//수정하기 (끝)
 
+			//삭제하기 (시작)
+			const delCheckBoxList = document.querySelectorAll('.delCheckBox');
+			const delResumeNoArray = [];
+			const getDelResumeNo = () => {
+				
+				for (let b of delCheckBoxList) {
+					if (b.checked) {
+						delResumeNoArray.push(b.previousElementSibling.value);
+					}
+				}
+			}
 			
-			
-			
-			
-			
+			const delBtn = document.querySelector('#delBtn'); 
+			delBtn.addEventListener('click', () => {
+				getDelResumeNo(); //삭제할 글 번호를 배열에 저장하기
+				
+				if(delResumeNoArray.length == 0) { //삭제할 글 번호가 없음
+					alert('지원 이력을 선택해주세요.');
+				} else { //삭제할 글 번호가 있음
+					//글 번호 노출 -> url을 통해 삭제 요청을 할지 모르는데? -> post 방식으로 전달하기를 바람
+					console.log(JSON.stringify(delResumeNoArray));
+					
+					$.ajax({
+						url: 'deleteResumeHistory.rh',
+						type: 'POST',
+						data: {delResumeNoArray: delResumeNoArray},
+						success: data => {
+							if(data == 'success') {
+								location.href='resumeHistoryPage.rh';
+								
+							} else {
+								location.href='resumeHistoryErrorPage.rh?msg=del';
+							}
+						},
+						error: data => {
+							console.log(data);
+						}
+					});
+				}
+			});
+			//삭제하기 (끝)
 			
 			
 			

@@ -174,7 +174,7 @@
  		where resume_no = ${updMap.resumeNo} and resume_writer = ${updMap.resumeWriter}
  	</update>
  	
- 	<!--  -->
+ 	<!--지원 이력 수정 : 자격 조건 삭제 -->
  	<delete id="deleteResumeCondition">
  		delete from resume_condition
  		where condition_no in
@@ -182,6 +182,18 @@
  			${item.conditionNo}
  		</foreach>
  	</delete> 
+ 	
+ 	<!--  -->
+ 	<update id="deleteAllResumeHistory">
+ 		update resume_history
+ 		set RESUME_VAILD = 'N'
+ 		where RESUME_WRITER = ${delMap.memberNo} 
+ 				and RESUME_NO in
+ 				<foreach collection="delMap.delResumeNoArray" item="item" open="(" close=")" separator=", ">
+					${item}
+ 				</foreach>
+ 	</update>
+ 	
  	
  	
  	

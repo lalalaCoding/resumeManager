@@ -2,17 +2,19 @@ package com.my.resumeManager.resumeHistory.controller;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +55,16 @@ public class ResumeHistoryController {
 		int monthSalary = monthWorkTime * hourSalary; //월별 최저 임금
 		yearSalary = monthSalary * 12; //최저 연봉 24,728,880		
 	}
+	
+	@GetMapping("resumeHistoryErrorPage.rh")
+	public void resumeHistoryErrorPage(@RequestParam("msg") String msg) {
+		if (msg.equals("del")) {
+			throw new ResumeHistoryException("지원 이력 삭제 서비스 요청에 실패하였습니다.");
+		}
+	}
+	
+	
+	
 	
 	@GetMapping("resumeHistoryPage.rh")
 	public String resumeHistoryPage(HttpSession session, 
@@ -102,8 +114,7 @@ public class ResumeHistoryController {
 										) {
 		//작성자 지정
 		Member loginMember = (Member)session.getAttribute("loginMember");
-		System.out.println("로그인 회원 확인");
-		System.out.println(loginMember);
+		log.info("로그인 회원={}", loginMember);
 		if(loginMember != null) {
 			resumeHistory.setResumeWriter(loginMember.getMemberNo());
 		}
@@ -574,6 +585,34 @@ public class ResumeHistoryController {
 			return "fail"; // 수동 롤백을 추가해야 한다.
 		}
 	}
+	
+	@PostMapping("deleteResumeHistory.rh")
+	@ResponseBody
+	public String deleteResumeHistory(@RequestParam("delResumeNoArray") int[] delResumeNo, HttpSession session) {
+		log.info("삭제 번호={}", Arrays.toString(delResumeNo));
+		
+		//현재 로그인된 사용자에 대한 
+		Member loginUser = (Member)session.getAttribute("loginMember");
+		int memberNo = 0;
+		if (loginUser != null) {
+			memberNo = loginUser.getMemberNo();
+		} else {
+			throw new ResumeHistoryException("로그인 후 이용해주세요.");
+		}
+		
+		//삭제 요청 : 사용자 vs 작성자는 쿼리에서 비교하도록 했음
+		HashMap<String, Object> delMap = new HashMap<>();
+		delMap.put("memberNo", memberNo);
+		delMap.put("delResumeNoArray", delResumeNo);
+		
+		int delResult = rService.deleteAllResumeHistory(delMap);
+		log.info("삭제처리 결과={}", delResult);
+		
+		return delResult > 0 ? "success" : "fail";
+	}
+	
+	
+	
 	
 	
 	

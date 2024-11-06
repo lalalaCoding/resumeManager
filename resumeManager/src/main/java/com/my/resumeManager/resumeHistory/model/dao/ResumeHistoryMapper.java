@@ -46,4 +46,6 @@ public interface ResumeHistoryMapper {
 
 	int deleteResumeCondition(ArrayList<ResumeCondition> delConList);
 
+	int deleteAllResumeHistory(@Param("delMap") HashMap<String, Object> delMap);
+
 }
