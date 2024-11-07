@@ -24,17 +24,20 @@
 			          		<a class="nav-link active" aria-current="page" href="home.do">Home</a>
 			        	</li>
 			        	<li class="nav-item">
-			          		<a class="nav-link" href="resumeHistoryPage.rh">입사지원 이력</a>
+			          		<a class="nav-link" th:href="${session.loginMember != null ? 'resumeHistoryPage.rh' : '#'}">입사지원 이력</a>
+			        	</li>
+			        	<li class="nav-item">
+			          		<a class="nav-link" href="resumeEpliloguePage.re">후기 게시판</a>
 			        	</li>
 			        	<li class="nav-item dropdown">
 					        <a class="nav-link dropdown-toggle" href="infoPage.me?info=default" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 					            내 정보
 					        </a>
 					        <ul class="dropdown-menu">
-						        <li><a class="dropdown-item" href="infoPage.me?info=default">일반 정보</a></li>
-						        <li><a class="dropdown-item" href="infoPage.me?info=epilogue">후기 정보</a></li>
+						        <li><a class="dropdown-item" href="infoPage.me?info=general">일반 정보</a></li>
+						        <li><a class="dropdown-item" href="infoPage.me?info=epilogue">나의 후기</a></li>
 						        <!-- <li><hr class="dropdown-divider"></li> -->
-						        <li><a class="dropdown-item" href="#">비밀번호 수정</a></li>
+						        <li><a class="dropdown-item" href="infoPage.me?info=pwd">비밀번호 수정</a></li>
 					        </ul>
 			        	</li>
 				        <li class="nav-item">
