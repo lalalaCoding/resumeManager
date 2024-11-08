@@ -2,6 +2,8 @@ package com.my.resumeManager.epilogue.model.vo;
 
 import java.sql.Date;
 
+import com.my.resumeManager.resumeHistory.model.vo.ResumeHistory;
+
 public class Epilogue {
 	private int epilogueNo; //후기 번호
 	private int epilogueWriter; //작성자

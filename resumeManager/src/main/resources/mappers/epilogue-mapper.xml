@@ -7,9 +7,36 @@
 	<select id="connectTest" resultType="_int">
 		select count(*) from epilogue
 	</select>
-
-
-
+	
+	<resultMap type="com.my.resumeManager.resumeHistory.model.vo.ResumeHistory" id="resumeHistoryMap">
+ 		<id property="resumeNo" column="RESUME_NO"></id>
+ 		<result property="companyName" column="COMPANY_NAME"></result>
+ 		<result property="companyRegion" column="COMPANY_REGION"></result>
+ 		<result property="companySalary" column="COMPANY_SALARY"></result>
+ 		<result property="resumeCareer" column="RESUME_CAREER"></result>
+ 		<result property="resumeDate" column="RESUME_DATE"></result>
+ 		<result property="resumeDeadline" column="RESUME_DEADLINE"></result>
+ 		<result property="resumeState" column="RESUME_STATE"></result>
+ 		<result property="resumeVaild" column="RESUME_VAILD"></result>
+ 		<result property="resumeWriter" column="RESUME_WRITER"></result>
+ 		<association property="companyType" javaType="com.my.resumeManager.resumeHistory.model.vo.CompanyType">
+ 			<result property="typeNo" column="TYPE_NO"></result>
+ 			<result property="typeName" column="TYPE_NAME"></result>
+ 		</association>
+ 		<association property="platformType" javaType="com.my.resumeManager.resumeHistory.model.vo.PlatformType">
+ 			<result property="platformNo" column="PLATFORM_NO"></result>
+ 			<result property="platformName" column="PLATFORM_NAME"></result>
+ 		</association>
+ 	</resultMap>
+	
+	<select id="selectPositiveHistory" resultMap="resumeHistoryMap">
+		select /*+ INDEX_DESC(RESUME_HISTORY IDX_HISTORY_VAILD_WRITER)*/* 
+ 		from resume_history
+ 				join company_type on(company_type_no = type_no)
+ 				join platform_type using(platform_No)
+ 		where RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo} AND RESUME_STATE > 0
+ 		order by resume_date desc
+	</select>
 
 
 

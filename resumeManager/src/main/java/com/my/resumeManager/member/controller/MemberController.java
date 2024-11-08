@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.my.resumeManager.common.gcs.GCSController;
 import com.my.resumeManager.common.gcs.GCSRequest;
+import com.my.resumeManager.epilogue.controller.EpilogueController;
 import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.member.model.vo.MemberException;
@@ -227,7 +228,21 @@ public class MemberController {
 		}
 	}
 	
-	
-	
+	@GetMapping("infoPage.me")
+	public String infoPage(@RequestParam("info") String info, Model model, HttpSession session) {
+		model.addAttribute("info", info); //인포 페이지에서 메뉴바의 클래스명을 제어하기 위한 정보
+		
+		if (info.equals("general")) {
+			return "member/generalInfo";
+		}
+		
+		
+		if (info.equals("pwd")) {
+			return "member/modifyPwd";
+		}
+		
+		
+		throw new MemberException("서비스 요청에 실패하였습니다.");
+	}
 	
 }
