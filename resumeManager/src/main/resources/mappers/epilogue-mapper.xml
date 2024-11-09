@@ -4,6 +4,7 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="com.my.resumeManager.epilogue.model.dao.EpilogueMapper">
+	<!-- 단위 테스트 : EPILOGUE 테이블 연결 -->
 	<select id="connectTest" resultType="_int">
 		select count(*) from epilogue
 	</select>
@@ -29,6 +30,13 @@
  		</association>
  	</resultMap>
 	
+	<select id="getPositiveHistoryCount" resultType="int">
+		select /*+ INDEX_DESC(RESUME_HISTORY IDX_HISTORY_VAILD_WRITER)*/count(*) 
+ 		from resume_history
+ 		where RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo} AND RESUME_STATE > 0
+	</select>
+	
+	<!-- 나의 후기 목록 : 페이징을 반영한 지원 정보 조회 -->
 	<select id="selectPositiveHistory" resultMap="resumeHistoryMap">
 		select /*+ INDEX_DESC(RESUME_HISTORY IDX_HISTORY_VAILD_WRITER)*/* 
  		from resume_history
@@ -37,7 +45,13 @@
  		where RESUME_VAILD = 'Y' AND RESUME_WRITER = ${memberNo} AND RESUME_STATE > 0
  		order by resume_date desc
 	</select>
-
-
+	
+	<!-- 나의 후기 목록 : 후기 내역 조회 -->
+	<select id="selectAllEpilogue" resultType="Epilogue">
+		SELECT *
+		FROM EPILOGUE
+		WHERE EPILOGUE_VAILD = 'Y' AND RESUME_NO IN
+		<foreach collection="rhList" item="item" open="(" close=")" separator=", ">${item.resumeNo}</foreach>
+	</select>
 
 </mapper>
