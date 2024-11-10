@@ -122,58 +122,154 @@
 	<div th:replace="~{common/footer :: footer}"></div>
 	
 	
-	<!-- 후기 출력용 모달 -->
-	<div class="modal fade" id="epilogueModal" tabindex="-1" aria-labelledby="epilogueModalLabel" aria-hidden="true">
+	<!-- 후기 작성용 모달 -->
+	<div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel" aria-hidden="true" data-bs-backdrop="static">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h1 class="modal-title fs-5" id="epilogueModalLabel">후기 작성 또는 조회</h1>
+	        <h1 class="modal-title fs-5" id="insertModalLabel">후기 작성</h1>
 	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 	      </div>
 	      <div class="modal-body">
 	        <form>
 	          <div class="mb-3">
-	            <label for="modalCompanyName" class="col-form-label">CompanyName:</label>
-	            <input type="text" class="form-control" id="modalCompanyName">
+	            <label for="insertCompanyName" class="col-form-label">CompanyName:</label>
+	            <input type="text" class="form-control" id="insertCompanyName">
 	          </div>
 	          <div class="mb-3">
-	            <label for="message-text" class="col-form-label">Epilogue Message:</label>
-	            <input type="hidden" name="resumeNo" value=""/>
-	            <textarea class="form-control" id="message-text" rows="10" style="resize:none;"></textarea>
+	            <label for="insertMessage" class="col-form-label">Epilogue Message:</label>
+	            <input type="hidden" name="resumeNo" id="insertResumeNo" value=""/>
+	            <textarea class="form-control" id="insertMessage" rows="10" style="resize:none;"></textarea>
 	          </div>
 	        </form>
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary">Submit</button>
+	        <button type="button" class="btn btn-secondary" id="insertClose" data-bs-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" id="insertSubmit">Submit</button>
 	      </div>
 	    </div>
 	  </div>
 	</div>
 	
+	<!-- 후기 조회용 모달 -->
+	<div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true" data-bs-backdrop="static">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h1 class="modal-title fs-5" id="selectModalLabel">후기 조회</h1>
+	        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	      </div>
+	      <div class="modal-body">
+	        <form>
+	          <div class="mb-3">
+	            <label for="selectCompanyName" class="col-form-label">CompanyName:</label>
+	            <input type="text" class="form-control" id="selectCompanyName">
+	          </div>
+	          <div class="mb-3">
+	            <label for="selectMessage" class="col-form-label">Epilogue Message:</label>
+	            <input type="hidden" name="resumeNo" id="selectResumeNo" value=""/>
+	            <textarea class="form-control" id="selectMessage" rows="10" style="resize:none;"></textarea>
+	          </div>
+	        </form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" id="selectClose" data-bs-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" id="selectUpdate">Update</button>
+	        <button type="button" class="btn btn-danger" id="selectDelete">Delete</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 	
-	<script>
+	<script th:inline="javascript">
 		window.onload = () => {
+			//후기에 대한 버튼 요소에 접근
 			const readBtnList = $('.readBtn');
 			const writeBtnList = $('.writeBtn');
+			// 후기 작성용 모달 내 요소에 접근
+			const modalTitle = document.querySelector('#insertModalLabel');
+			const modalCompanyName = document.querySelector('#insertCompanyName');
+			const modalResumeNo = document.querySelector('#insertResumeNo');
+			const modalMessageText = document.querySelector('#insertMessage');
+			const modalSubmit  = document.querySelector('#insertSubmit');
+			// 후기 조회용 모달 내 요소 접근
+			const selectCompanyName = document.querySelector('#selectCompanyName');
+			const selectResumeNo = document.querySelector('#selectResumeNo');
+			const selectMessage = document.querySelector('#selectMessage');
+			const selectUpdate = document.querySelector('#selectUpdate');
+			const selectDelete = document.querySelector('#selectDelete');
 			
-			//후기 작성 이벤트 (시작)
+			/*<![CDATA[*/
+			const epList = /*[[${epList}]]*/'후기리스트';
+			/*]]>*/
+			
+			//후기 작성버튼 : 클릭 이벤트 (시작)
 			writeBtnList.on('click', function() {
 				const resumeNo = $(this).parent().prev().val();
 				//text() : 공백를 포함해서 요소 내부 텍스트를 읽어온다
 				const companyName = $(this).parent().parent().prev().find('.companySpan').text();
 				
-				document.querySelector('#epilogueModalLabel').textContent = '후기 작성';
-				document.querySelector('#modalCompanyName').value = companyName;
+				modalCompanyName.value = companyName;
+				modalResumeNo.value = resumeNo;
+				modalMessageText.value = ''; //과거에 입력된 내용을 초기화
+				$('#insertModal').modal('show');
+				
+			});
+			//후기 작성버튼 : 클릭 이벤트 (끝)
+			
+			//후기 제출버튼 : 클릭 이벤트 (시작)
+			modalSubmit.addEventListener('click', () => {
+				//지원이력 번호와 후기 내용을 컨트롤러에게 전달한다.
+				console.log('지원이력 번호 = ' + modalResumeNo.value);
+				console.log('후기 내용 = ' + modalMessageText.value);
+				
+				$.ajax({
+					url : 'insertEpilogue.ep',
+					type : 'POST',
+					data : {
+						resumeNo : modalResumeNo.value,
+						epilogueContent : modalMessageText.value
+					},
+					success : data => {
+						console.log(data);
+						
+						if(data == 'success') {
+							location.reload(); //화면 요소를 변경하고, 변경된 요소에 대한 이벤트를 지정해야함 -> 새로고침
+						} else {
+							alert('서비스 요청에 실패하였습니다.');
+						}
+					},
+					error : data => {
+						console.log(data);
+					}
+				});
+			});
+			//후기 제출버튼 : 클릭 이벤트 (끝)
+			
+			//후기 조회버튼 : 클릭 이벤트 (시작)
+			//반복문 내에서 클릭 이벤트를 지정하기 싫어서 jQuery 문법으로 클릭 이벤트를 지정하였다.
+			readBtnList.on('click', function() {
+				//후기 내용 -> 콘솔로 찍기
+				for (const ep of epList) {
+					if (ep.resumeNo == $(this).parent().prev().val()) {
+						const companyName = $(this).parent().parent().prev().find('.companySpan').text();
+						selectCompanyName.value = companyName;
+						selectResumeNo.value = ep.resumeNo;
+						selectMessage.readOnly = true;
+						selectMessage.value = ep.epilogueContent; //과거에 입력된 내용을 초기화
+						
+						
+						$('#selectModal').modal('show');
+						
+					}
+				}
 				
 				
 				
-				
-				$('#epilogueModal').modal('show');
 				
 				
 			});
-			//후기 작성 이벤트 (끝)
+			//후기 조회버튼 : 클릭 이벤트 (끝)
 		}
 	</script>
 </body>

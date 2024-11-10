@@ -20,6 +20,8 @@ public interface EpilogueMapper {
 	
 	public ArrayList<Epilogue> selectAllEpilogue(@Param("rhList") ArrayList<ResumeHistory> rhList);
 
+	public int insertEpilogue(Epilogue epilogue);
+
 
 
 	

@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.my.resumeManager.common.page.PageInfo;
 import com.my.resumeManager.common.page.Pagination;
@@ -31,7 +34,7 @@ public class EpilogueController {
 	private static int memberNo; //현재 로그인된 사용자의 회원번호 저장
 	
 	
-	@GetMapping("epiloguePage.ep")
+	@GetMapping("epiloguePage.ep") //나의 후기 관리 페이지로 이동
 	public String epiloguePage(HttpSession session, Model model,
 								@RequestParam(value="page", defaultValue="1") int currentPage,
 								HttpServletRequest request) {
@@ -77,10 +80,27 @@ public class EpilogueController {
 		model.addAttribute("tree", tree);
 		
 		
-		
-		
-		
 		return "member/epilogueInfo";
+	}
+	
+	
+	@PostMapping("insertEpilogue.ep")
+	@ResponseBody
+	public String insertEpilogue(@ModelAttribute Epilogue epilogue, HttpSession session) {
+		log.info("후기 작성요청={}", epilogue);
+		//post요청이기 때문에 본인이 작성한 이력에 대한 후기 작성요청인지는 검사할 필요가 없다.
+		//바로 등록 ㄱㄱ
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember != null) {
+			memberNo = loginMember.getMemberNo();
+			epilogue.setEpilogueWriter(memberNo);
+		} else {
+			throw new EpilogueException("로그인 후 이용해주세요.");
+		}
+		
+		int insertResult = eService.insertEpilogue(epilogue);
+		
+		return insertResult > 0 ? "success" : "fail";
 	}
 	
 	
@@ -89,7 +109,9 @@ public class EpilogueController {
 	
 	
 	
-	@GetMapping("resumeEpliloguePage.re")
+	
+	
+	@GetMapping("resumeEpliloguePage.re") //일반 후기게시판으로 이동
 	public String resumeEpliloguePage() {
 		
 		return "epilogue/epilogue";

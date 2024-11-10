@@ -33,6 +33,11 @@ public class EpilogueServiceImpl implements EpilogueService{
 		return eMapper.selectAllEpilogue(rhList);
 	}
 
+	@Override
+	public int insertEpilogue(Epilogue epilogue) {
+		return eMapper.insertEpilogue(epilogue);
+	}
+
 
 	
 	

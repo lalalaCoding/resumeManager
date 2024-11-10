@@ -54,4 +54,11 @@
 		<foreach collection="rhList" item="item" open="(" close=")" separator=", ">${item.resumeNo}</foreach>
 	</select>
 
+	<!-- 나의 후기 등록 -->
+	<insert id="insertEpilogue">
+		insert into epilogue
+		values(SEQ_EPILOGUE.nextval, ${epilogueWriter}, ${resumeNo}, #{epilogueContent}, default, default)
+	</insert>
+
+
 </mapper>

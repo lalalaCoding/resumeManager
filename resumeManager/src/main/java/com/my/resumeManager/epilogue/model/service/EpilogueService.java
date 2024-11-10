@@ -14,5 +14,7 @@ public interface EpilogueService {
 
 	ArrayList<Epilogue> selectAllEpilogue(ArrayList<ResumeHistory> rhList);
 
+	int insertEpilogue(Epilogue epilogue);
+
 
 }
