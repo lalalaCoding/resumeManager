@@ -88,6 +88,7 @@
 			  	</div>
 			</div>
 			
+			<br/>
 			
 			<nav aria-label="Page navigation" th:with="loc=${loc}"> <!-- loc = 요청url -->
 			    <ul class="pagination">
@@ -134,7 +135,7 @@
 	        <form>
 	          <div class="mb-3">
 	            <label for="insertCompanyName" class="col-form-label">CompanyName:</label>
-	            <input type="text" class="form-control" id="insertCompanyName">
+	            <input type="text" class="form-control" id="insertCompanyName" readOnly>
 	          </div>
 	          <div class="mb-3">
 	            <label for="insertMessage" class="col-form-label">Epilogue Message:</label>
@@ -163,7 +164,7 @@
 	        <form>
 	          <div class="mb-3">
 	            <label for="selectCompanyName" class="col-form-label">CompanyName:</label>
-	            <input type="text" class="form-control" id="selectCompanyName">
+	            <input type="text" class="form-control" id="selectCompanyName" readOnly>
 	          </div>
 	          <div class="mb-3">
 	            <label for="selectMessage" class="col-form-label">Epilogue Message:</label>
@@ -175,6 +176,7 @@
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" id="selectClose" data-bs-dismiss="modal">Close</button>
 	        <button type="button" class="btn btn-primary" id="selectUpdate">Update</button>
+	        <button type="button" class="btn btn-primary" id="updateSubmit" style="display:none;">Submit</button>
 	        <button type="button" class="btn btn-danger" id="selectDelete">Delete</button>
 	      </div>
 	    </div>
@@ -193,10 +195,13 @@
 			const modalMessageText = document.querySelector('#insertMessage');
 			const modalSubmit  = document.querySelector('#insertSubmit');
 			// 후기 조회용 모달 내 요소 접근
+			const selectModalLabel = document.querySelector('#selectModalLabel');
 			const selectCompanyName = document.querySelector('#selectCompanyName');
 			const selectResumeNo = document.querySelector('#selectResumeNo');
 			const selectMessage = document.querySelector('#selectMessage');
+			const selectClose = document.querySelector('#selectClose');
 			const selectUpdate = document.querySelector('#selectUpdate');
+			const updateSubmit = document.querySelector('#updateSubmit');
 			const selectDelete = document.querySelector('#selectDelete');
 			
 			/*<![CDATA[*/
@@ -234,6 +239,7 @@
 						console.log(data);
 						
 						if(data == 'success') {
+							alert('후기 등록이 완료되었습니다.');
 							location.reload(); //화면 요소를 변경하고, 변경된 요소에 대한 이벤트를 지정해야함 -> 새로고침
 						} else {
 							alert('서비스 요청에 실패하였습니다.');
@@ -249,7 +255,7 @@
 			//후기 조회버튼 : 클릭 이벤트 (시작)
 			//반복문 내에서 클릭 이벤트를 지정하기 싫어서 jQuery 문법으로 클릭 이벤트를 지정하였다.
 			readBtnList.on('click', function() {
-				//후기 내용 -> 콘솔로 찍기
+				//후기 내용 
 				for (const ep of epList) {
 					if (ep.resumeNo == $(this).parent().prev().val()) {
 						const companyName = $(this).parent().parent().prev().find('.companySpan').text();
@@ -258,18 +264,94 @@
 						selectMessage.readOnly = true;
 						selectMessage.value = ep.epilogueContent; //과거에 입력된 내용을 초기화
 						
-						
 						$('#selectModal').modal('show');
-						
 					}
 				}
-				
-				
-				
-				
-				
 			});
 			//후기 조회버튼 : 클릭 이벤트 (끝)
+			
+			//후기 수정버튼 : 클릭 이벤트(시작)
+			selectUpdate.addEventListener('click', function() {
+				selectModalLabel.textContent = '후기 수정';
+				selectMessage.readOnly = false;				
+				this.style.display = 'none';
+				updateSubmit.style.display = 'inline';
+			});
+			//후기 수정버튼 : 클릭 이벤트(끝)
+			
+			//후기 조회 모달 : 닫기 버튼 -> 클릭 이벤트 (시작)
+			selectClose.addEventListener('click', () => {
+				selectUpdate.style.display = 'inline'; //수정 버튼 보이기
+				updateSubmit.style.display = 'none'; //제출 버튼 숨기기
+			});
+			//후기 조회 모달 : 닫기 버튼 -> 클릭 이벤트 (끝)
+			
+			//후기 수정제출 버튼 : 클릭 이벤트(시작)
+			updateSubmit.addEventListener('click', function() {
+				//지원이력 번호와 후기 내용을 컨트롤러에게 전달한다.
+				console.log('지원이력 번호 = ' + selectResumeNo.value);
+				console.log('후기 내용 = ' + selectMessage.value);
+				
+				$.ajax({
+					url : 'updateEpilogue.ep',
+					type : 'POST',
+					data : {
+						resumeNo : selectResumeNo.value,
+						epilogueContent : selectMessage.value
+					},
+					success : data => {
+						console.log(data);
+						
+						if(data == 'success') {
+							alert('수정이 완료되었습니다.');
+							selectMessage.readOnly = true;
+							this.style.display = 'none';
+							selectUpdate.style.display = 'inline';
+							
+							//백단에서 가져온 후기 목록 중에서 수정한 내용을 최신화해야 함
+							for (const ep of epList) {
+								if (ep.resumeNo == selectResumeNo.value) {
+									ep.epilogueContent = selectMessage.value;
+								}
+							}
+						} else {
+							alert('서비스 요청에 실패하였습니다.');
+						}
+					},
+					error : data => {
+						console.log(data);
+					}
+				});
+			});
+			//후기 수정제출 버튼 : 클릭 이벤트(끝)
+			
+			//후기 조회 모달 -> 후기 삭제 버튼 : 클릭 이벤트(시작)
+			selectDelete.addEventListener('click', () => {
+				console.log('삭제할 번호 : ' + selectResumeNo.value);
+				
+				$.ajax({
+					url : 'deleteEpilogue.ep',
+					type : 'POST',
+					data : {
+						resumeNo : selectResumeNo.value
+					},
+					success : data => {
+						console.log(data);
+						
+						if (data == 'success') {
+							location.reload();
+						} else {
+							alert('서비스 요청에 실패하였습니다.');
+						}
+					},
+					error : data => {
+						console.log(data);
+					}
+				});
+				
+			});
+			//후기 조회 모달 -> 후기 삭제 버튼 : 클릭 이벤트(끝)
+			
 		}
 	</script>
 </body>

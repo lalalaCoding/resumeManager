@@ -22,6 +22,13 @@ public interface EpilogueMapper {
 
 	public int insertEpilogue(Epilogue epilogue);
 
+	public int updateEpilogue(Epilogue epilogue);
+
+	public int selectEpilogueNo(int resumeNo);
+	
+	public int deleteEpilogue(int resumeNo);
+
+
 
 
 	

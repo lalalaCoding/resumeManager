@@ -48,7 +48,7 @@
 	
 	<!-- 나의 후기 목록 : 후기 내역 조회 -->
 	<select id="selectAllEpilogue" resultType="Epilogue">
-		SELECT *
+		SELECT /*+ INDEX(EPILOGUE IDX_EPILOGUE_VAILD_RESUME)*/*
 		FROM EPILOGUE
 		WHERE EPILOGUE_VAILD = 'Y' AND RESUME_NO IN
 		<foreach collection="rhList" item="item" open="(" close=")" separator=", ">${item.resumeNo}</foreach>
@@ -59,6 +59,30 @@
 		insert into epilogue
 		values(SEQ_EPILOGUE.nextval, ${epilogueWriter}, ${resumeNo}, #{epilogueContent}, default, default)
 	</insert>
-
-
+	
+	<!-- 나의 후기 수정 -->
+	<update id="updateEpilogue">
+		update /*+ INDEX(EPILOGUE IDX_EPILOGUE_RESUME)*/epilogue
+		set epilogue_content = #{epilogueContent}, epilogue_create = sysdate
+		where resume_no = ${resumeNo}
+	</update>
+	
+	<!-- 나의 후기 삭제 -->
+	<select id="selectEpilogueNo" resultType="_int">
+		select /*+ INDEX(EPILOGUE IDX_EPILOGUE_VAILD_RESUME)*/epilogue_no
+		from epilogue
+		where epilogue_vaild = 'Y' AND resume_no = ${resumeNo}
+	</select>
+	
+	
+	<update id="deleteEpilogue">
+		update epilogue
+		set epilogue_vaild = 'N'
+		where epilogue_no = ${epilogueNo}
+	</update>
+	
+	
+	
+	
+	
 </mapper>

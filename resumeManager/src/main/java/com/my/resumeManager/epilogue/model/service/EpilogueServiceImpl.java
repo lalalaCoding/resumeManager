@@ -38,6 +38,23 @@ public class EpilogueServiceImpl implements EpilogueService{
 		return eMapper.insertEpilogue(epilogue);
 	}
 
+	@Override
+	public int updateEpilogue(Epilogue epilogue) {
+		return eMapper.updateEpilogue(epilogue);
+	}
+
+	@Override
+	public int selectEpilogueNo(int resumeNo) {
+		return eMapper.selectEpilogueNo(resumeNo);
+	}
+	
+	@Override
+	public int deleteEpilogue(int resumeNo) {
+		return eMapper.deleteEpilogue(resumeNo);
+	}
+
+	
+
 
 	
 	

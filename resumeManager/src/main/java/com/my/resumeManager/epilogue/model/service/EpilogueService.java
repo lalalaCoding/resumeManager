@@ -16,5 +16,12 @@ public interface EpilogueService {
 
 	int insertEpilogue(Epilogue epilogue);
 
+	int updateEpilogue(Epilogue epilogue);
+
+	int selectEpilogueNo(int resumeNo);
+	
+	int deleteEpilogue(int resumeNo);
+
+
 
 }

@@ -103,10 +103,24 @@ public class EpilogueController {
 		return insertResult > 0 ? "success" : "fail";
 	}
 	
+	@PostMapping("updateEpilogue.ep")
+	@ResponseBody
+	public String updateEpilogue(@ModelAttribute Epilogue epilogue) {
+		log.info("후기 수정요청={}", epilogue);
+		int updateResult = eService.updateEpilogue(epilogue);
+		
+		return updateResult > 0 ? "success" : "fail";
+	}
 	
-	
-	
-	
+	@PostMapping("deleteEpilogue.ep")
+	@ResponseBody
+	public String deleteEpilogue(@RequestParam("resumeNo") int resumeNo) {
+		log.info("후기 삭제(지원 이력 번호)={}", resumeNo);
+		int epilogueNo = eService.selectEpilogueNo(resumeNo);
+		int deleteResult = eService.deleteEpilogue(epilogueNo);
+		
+		return deleteResult > 0 ? "success" : "fail";
+	}
 	
 	
 	
