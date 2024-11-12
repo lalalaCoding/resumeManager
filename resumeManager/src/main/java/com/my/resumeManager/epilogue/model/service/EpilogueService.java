@@ -22,6 +22,12 @@ public interface EpilogueService {
 	
 	int deleteEpilogue(int resumeNo);
 
+	int getEpilogueCount();
+
+	ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi);
+
+	ArrayList<ResumeHistory> selectAllHistory(ArrayList<Epilogue> epList);
+
 
 
 }

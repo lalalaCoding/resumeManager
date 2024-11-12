@@ -133,7 +133,7 @@
 					        </a>
 					    </li>
 					    <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
-					    	<a class="page-link" th:if="${pi.currentPage != p}" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
+					    	<a class="page-link" th:if="${pi.currentPage != p && p > 0}" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
 					    	<a class="page-link disabled" th:unless="${pi.currentPage != p}" href="#">[[${p}]]</a>
 				    	</li>
 					    <li class="page-item">

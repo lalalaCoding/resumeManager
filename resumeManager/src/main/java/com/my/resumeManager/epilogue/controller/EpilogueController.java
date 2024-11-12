@@ -59,7 +59,10 @@ public class EpilogueController {
 		model.addAttribute("rhList", rhList);
 		
 		//유효한 지원 이력에 대한 후기 정보 조회
-		ArrayList<Epilogue> epList = eService.selectAllEpilogue(rhList);
+		ArrayList<Epilogue> epList = null;
+		if (!rhList.isEmpty()) {
+			epList = eService.selectAllEpilogue(rhList);
+		}
 		log.info("epList={}", epList);
 		model.addAttribute("epList", epList);
 		
@@ -122,11 +125,29 @@ public class EpilogueController {
 		return deleteResult > 0 ? "success" : "fail";
 	}
 	
-	
-	
-	
 	@GetMapping("resumeEpliloguePage.re") //일반 후기게시판으로 이동
-	public String resumeEpliloguePage() {
+	public String resumeEpliloguePage(@RequestParam(value="page", defaultValue="1") int currentPage, Model model,
+										HttpServletRequest request) {
+		
+		int listCount = eService.getEpilogueCount();
+		log.info("listCount={}",listCount);
+		
+		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
+		ArrayList<Epilogue> epList = eService.selectAllEpiloguePage(pi);
+		log.info("후기 목록={}", epList);
+		
+		ArrayList<ResumeHistory> rhList = null;
+		if (!epList.isEmpty()) {
+			rhList = eService.selectAllHistory(epList);
+			
+		}
+		log.info("지원 이력={}", rhList);
+		
+		
+		model.addAttribute("loc", request.getRequestURI());
+		model.addAttribute("epList", epList);
+		model.addAttribute("rhList", rhList);
+		model.addAttribute("pi", pi);
 		
 		return "epilogue/epilogue";
 	}

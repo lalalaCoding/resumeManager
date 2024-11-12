@@ -28,6 +28,12 @@ public interface EpilogueMapper {
 	
 	public int deleteEpilogue(int resumeNo);
 
+	public int getEpilogueCount();
+
+	public ArrayList<Epilogue> selectAllEpiloguePage(RowBounds rowBounds);
+
+	public ArrayList<ResumeHistory> selectAllHistory(@Param("epList") ArrayList<Epilogue> epList);
+
 
 
 

@@ -53,6 +53,22 @@ public class EpilogueServiceImpl implements EpilogueService{
 		return eMapper.deleteEpilogue(resumeNo);
 	}
 
+	@Override
+	public int getEpilogueCount() {
+		return eMapper.getEpilogueCount();
+	}
+
+	@Override
+	public ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi) {
+		RowBounds rowBounds = new RowBounds((pi.getCurrentPage() - 1) * pi.getBoardLimit(), pi.getBoardLimit());
+		return eMapper.selectAllEpiloguePage(rowBounds);
+	}
+
+	@Override
+	public ArrayList<ResumeHistory> selectAllHistory(ArrayList<Epilogue> epList) {
+		return eMapper.selectAllHistory(epList);
+	}
+
 	
 
 
