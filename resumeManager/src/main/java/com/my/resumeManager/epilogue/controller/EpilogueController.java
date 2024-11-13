@@ -1,6 +1,7 @@
 package com.my.resumeManager.epilogue.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +154,25 @@ public class EpilogueController {
 	}
 	
 	
-	
+	@GetMapping("searchEpilogue.ep") //일반 후기 검색
+	public String searchEpilogue(@RequestParam("companyName") String companyName, Model model) {
+		log.info("검색 회사명={}", companyName);
+		
+		//검색 조건을 Map에 저장 : 검색 조건이 추가될 확장성을 고려
+		HashMap<String, String> conditionMap = new HashMap<>();
+		conditionMap.put("companyName", companyName);
+		
+		
+		eService.ctxReloadCompanyName();
+		int listCount = eService.getEpilogueSearchCount(conditionMap);
+		log.info("listCount={}", listCount);
+		
+		
+		
+		
+		
+		return null;
+	}
 	
 	
 	

@@ -1,6 +1,7 @@
 package com.my.resumeManager.epilogue.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.my.resumeManager.common.page.PageInfo;
 import com.my.resumeManager.epilogue.model.vo.Epilogue;
@@ -27,6 +28,10 @@ public interface EpilogueService {
 	ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi);
 
 	ArrayList<ResumeHistory> selectAllHistory(ArrayList<Epilogue> epList);
+
+	int getEpilogueSearchCount(HashMap<String, String> conditionMap);
+
+	void ctxReloadCompanyName();
 
 
 

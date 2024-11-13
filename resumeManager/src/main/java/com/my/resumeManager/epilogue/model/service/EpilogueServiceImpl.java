@@ -1,6 +1,7 @@
 package com.my.resumeManager.epilogue.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,16 @@ public class EpilogueServiceImpl implements EpilogueService{
 	@Override
 	public ArrayList<ResumeHistory> selectAllHistory(ArrayList<Epilogue> epList) {
 		return eMapper.selectAllHistory(epList);
+	}
+
+	@Override
+	public int getEpilogueSearchCount(HashMap<String, String> conditionMap) {
+		return eMapper.getEpilogueSearchCount(conditionMap);
+	}
+
+	@Override
+	public void ctxReloadCompanyName() {
+		eMapper.ctxReloadCompanyName();
 	}
 
 	

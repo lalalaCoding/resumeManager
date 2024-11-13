@@ -105,6 +105,20 @@
 				<foreach collection="epList" item="item" open="(" close=")" separator=", ">${item.resumeNo}</foreach>
 	</select>
 	
+	<!-- 후기 검색 : 컨텍스트 인덱스 갱신에 대한 프로시저 호출 -->
+	<select id="ctxReloadCompanyName" statementType="CALLABLE">
+		{ CALL CTX_RELOAD_COMPANY_NAME() }
+	</select>
+	
+	<!-- 후기 검색 : 컨텐츠 개수 -->
+	<select id="getEpilogueSearchCount" resultType="_int">
+		select count(*)
+		from EPILOGUE
+		        join RESUMEMANAGER.RESUME_HISTORY RH on RH.RESUME_NO = EPILOGUE.RESUME_NO
+		where epilogue_vaild = 'Y'  and contains(RH.COMPANY_NAME, '%다%') > 0
+	</select>
+	
+	
 	
 	
 </mapper>

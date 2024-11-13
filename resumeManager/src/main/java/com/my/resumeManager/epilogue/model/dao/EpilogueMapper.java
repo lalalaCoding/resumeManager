@@ -1,6 +1,7 @@
 package com.my.resumeManager.epilogue.model.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,6 +34,10 @@ public interface EpilogueMapper {
 	public ArrayList<Epilogue> selectAllEpiloguePage(RowBounds rowBounds);
 
 	public ArrayList<ResumeHistory> selectAllHistory(@Param("epList") ArrayList<Epilogue> epList);
+
+	public int getEpilogueSearchCount(@Param("conditionMap") HashMap<String, String> conditionMap);
+
+	public void ctxReloadCompanyName();
 
 
 

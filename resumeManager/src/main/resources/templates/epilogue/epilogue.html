@@ -11,10 +11,27 @@
 <body>
 	<div th:replace="~{common/header :: header}"></div>	
 	
+	<br/>
+	
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>	
 	
 		<div> <!-- 후기 컨텐츠 출력 -->
+			<div class="row g-3 align-items-center"> <!-- 후기 검색 div -->
+				<div class="col-auto">
+				    <label for="inputPassword6" class="col-form-label">회사 이름 : </label>
+				</div>
+				<div class="col-auto">
+				    <input type="text" id="companyName" class="form-control">
+				</div>
+				<div class="col-auto">
+				    <button type="button" class="btn btn-light" id="searchBtn">검색하기</button>
+					<button type="button" class="btn btn-light" id="clearBtn">전체보기</button>
+				</div>
+			</div>
+		
+			<br/>		
+		
 			<div class="row row-cols-1 row-cols-md-3 g-4">
 				<div class="col" th:each="ep : ${epList}">
 			    	<div class="card h-100" style="width: 18rem;">
@@ -109,9 +126,6 @@
 	</div>
 	
 	
-	
-	
-	
 	<script th:inline="javascript">
 		window.onload = () => {
 			/* <![CDATA[ */
@@ -150,15 +164,31 @@
 				
 				$('#selectModal').modal('show');
 				
-				
-				
-				
 			});
 			//후기조회 버튼 : 클릭 이벤트 (시작)
 			
+			//회사이름 검색 (시작)
+			const companyName = document.querySelector('#companyName');
+			const searchBtn = document.querySelector('#searchBtn');
+			
+			searchBtn.addEventListener('click', function() {
+				const search = companyName.value.trim();
+				if(search.length > 0) {
+					location.href = 'searchEpilogue.ep?companyName=' + companyName.value;
+				} else {
+					alert('회사 이름을 입력해주세요.');
+					companyName.value = '';
+					companyName.focus();
+				}
+			});
 			
 			
 			
+			
+			
+			
+			
+			//회사이름 검색 (끝)
 		}
 	</script>
 </body>
