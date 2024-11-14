@@ -30,9 +30,9 @@ public interface EpilogueMapper {
 	
 	public int deleteEpilogue(int resumeNo);
 
-	public int getEpilogueCount();
+	public int getEpilogueCount(@Param("conditionMap") HashMap<String, String> conditionMap);
 
-	public ArrayList<Epilogue> selectAllEpiloguePage(RowBounds rowBounds);
+	public ArrayList<Epilogue> selectAllEpiloguePage(RowBounds rowBounds, @Param("conditionMap") HashMap<String, String> conditionMap);
 
 	public ArrayList<ResumeHistory> selectAllHistory(@Param("epList") ArrayList<Epilogue> epList);
 
@@ -41,6 +41,7 @@ public interface EpilogueMapper {
 	public void ctxReloadCompanyName();
 
 	public ArrayList<Epilogue> searchEpilogue(RowBounds rowBounds, @Param("conditionMap") HashMap<String, String> conditionMap);
+
 
 
 

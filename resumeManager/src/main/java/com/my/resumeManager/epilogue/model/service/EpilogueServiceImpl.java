@@ -55,14 +55,14 @@ public class EpilogueServiceImpl implements EpilogueService{
 	}
 
 	@Override
-	public int getEpilogueCount() {
-		return eMapper.getEpilogueCount();
+	public int getEpilogueCount(HashMap<String, String> conditionMap) {
+		return eMapper.getEpilogueCount(conditionMap);
 	}
 
 	@Override
-	public ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi) {
+	public ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi, HashMap<String, String> conditionMap) {
 		RowBounds rowBounds = new RowBounds((pi.getCurrentPage() - 1) * pi.getBoardLimit(), pi.getBoardLimit());
-		return eMapper.selectAllEpiloguePage(rowBounds);
+		return eMapper.selectAllEpiloguePage(rowBounds, conditionMap);
 	}
 
 	@Override
@@ -87,7 +87,6 @@ public class EpilogueServiceImpl implements EpilogueService{
 		return eMapper.searchEpilogue(rowBounds, conditionMap);
 	}
 
-	
 
 
 	

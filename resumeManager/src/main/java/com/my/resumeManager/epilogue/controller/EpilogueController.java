@@ -126,39 +126,77 @@ public class EpilogueController {
 		return deleteResult > 0 ? "success" : "fail";
 	}
 	
+//	@GetMapping("resumeEpliloguePage.ep") //일반 후기 목록 출력
+//	public String resumeEpliloguePage(@RequestParam(value="page", defaultValue="1") int currentPage, Model model,
+//										HttpServletRequest request,
+//										@RequestParam(value="companyName", required = false) String companyName) {
+//		
+//		log.info("검색조건={}",companyName);
+//		HashMap<String, String> conditionMap = new HashMap<>(); //검색 조건을 Map에 저장 : 검색 조건이 추가될 확장성을 고려
+//		
+//		int listCount = 0;
+//		PageInfo pi = null;
+//		ArrayList<Epilogue> epList = null;
+//		ArrayList<ResumeHistory> rhList = null;
+//		
+//		if (companyName == null) { //모든 목록 출력 요청
+//			listCount = eService.getEpilogueCount();
+//
+//			pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
+//			epList = eService.selectAllEpiloguePage(pi);
+//			if (!epList.isEmpty()) {
+//				rhList = eService.selectAllHistory(epList);
+//			}
+//			
+//		} else { //검색 목록 출력 요청
+//			conditionMap.put("companyName", companyName);
+//			
+//			eService.ctxReloadCompanyName();
+//			listCount = eService.getEpilogueSearchCount(conditionMap);
+//			
+//			pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
+//			epList = eService.searchEpilogue(pi, conditionMap);
+//			if (!epList.isEmpty()) {
+//				rhList = eService.selectAllHistory(epList);
+//			}
+//		}
+//		
+//		log.info("listCount={}",listCount);
+//		log.info("후기 목록={}", epList);
+//		log.info("후기 목록={}", epList);
+//		
+//		model.addAttribute("conditionMap", conditionMap);
+//		model.addAttribute("loc", request.getRequestURI());
+//		model.addAttribute("epList", epList);
+//		model.addAttribute("rhList", rhList);
+//		model.addAttribute("pi", pi);
+//		
+//		
+//		int listCount2 = eService.getEpilogueCount2(conditionMap);
+//		log.info("listCount2 테스트={}", listCount2);
+//		
+//		
+//		return "epilogue/epilogue";
+//	}
+	
+	
 	@GetMapping("resumeEpliloguePage.ep") //일반 후기 목록 출력
 	public String resumeEpliloguePage(@RequestParam(value="page", defaultValue="1") int currentPage, Model model,
 										HttpServletRequest request,
 										@RequestParam(value="companyName", required = false) String companyName) {
 		
 		log.info("검색조건={}",companyName);
-		HashMap<String, String> conditionMap = new HashMap<>();
-		int listCount = 0;
-		PageInfo pi = null;
-		ArrayList<Epilogue> epList = null;
-		ArrayList<ResumeHistory> rhList = null;
-		
-		if (companyName == null) { //모든 목록 출력 요청
-			listCount = eService.getEpilogueCount();
-			
-			pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
-			epList = eService.selectAllEpiloguePage(pi);
-			if (!epList.isEmpty()) {
-				rhList = eService.selectAllHistory(epList);
-			}
-			
-		} else { //검색 목록 출력 요청
-			//검색 조건을 Map에 저장 : 검색 조건이 추가될 확장성을 고려
+		HashMap<String, String> conditionMap = new HashMap<>(); //검색 조건을 Map에 저장 : 검색 조건이 추가될 확장성을 고려
+		if(companyName != null) {
 			conditionMap.put("companyName", companyName);
-			
 			eService.ctxReloadCompanyName();
-			listCount = eService.getEpilogueSearchCount(conditionMap);
-			
-			pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
-			epList = eService.searchEpilogue(pi, conditionMap);
-			if (!epList.isEmpty()) {
-				rhList = eService.selectAllHistory(epList);
-			}
+		}
+		int listCount = eService.getEpilogueCount(conditionMap);
+		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
+		ArrayList<Epilogue> epList = eService.selectAllEpiloguePage(pi, conditionMap);
+		ArrayList<ResumeHistory> rhList = null;
+		if (!epList.isEmpty()) {
+			rhList = eService.selectAllHistory(epList);
 		}
 		
 		log.info("listCount={}",listCount);
@@ -173,9 +211,6 @@ public class EpilogueController {
 		
 		return "epilogue/epilogue";
 	}
-	
-	
-	
 	
 	
 	

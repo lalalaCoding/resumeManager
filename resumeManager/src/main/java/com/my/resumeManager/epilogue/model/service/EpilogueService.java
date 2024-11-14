@@ -23,9 +23,9 @@ public interface EpilogueService {
 	
 	int deleteEpilogue(int resumeNo);
 
-	int getEpilogueCount();
+	int getEpilogueCount(HashMap<String, String> conditionMap);
 
-	ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi);
+	ArrayList<Epilogue> selectAllEpiloguePage(PageInfo pi, HashMap<String, String> conditionMap);
 
 	ArrayList<ResumeHistory> selectAllHistory(ArrayList<Epilogue> epList);
 
@@ -34,6 +34,7 @@ public interface EpilogueService {
 	void ctxReloadCompanyName();
 
 	ArrayList<Epilogue> searchEpilogue(PageInfo pi, HashMap<String, String> conditionMap);
+
 
 
 
