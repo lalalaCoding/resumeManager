@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
+import com.my.resumeManager.common.page.PageInfo;
 import com.my.resumeManager.epilogue.model.vo.Epilogue;
 import com.my.resumeManager.resumeHistory.model.vo.ResumeHistory;
 
@@ -38,6 +39,8 @@ public interface EpilogueMapper {
 	public int getEpilogueSearchCount(@Param("conditionMap") HashMap<String, String> conditionMap);
 
 	public void ctxReloadCompanyName();
+
+	public ArrayList<Epilogue> searchEpilogue(RowBounds rowBounds, @Param("conditionMap") HashMap<String, String> conditionMap);
 
 
 

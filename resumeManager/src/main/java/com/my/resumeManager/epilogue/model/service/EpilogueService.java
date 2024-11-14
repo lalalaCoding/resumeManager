@@ -33,6 +33,8 @@ public interface EpilogueService {
 
 	void ctxReloadCompanyName();
 
+	ArrayList<Epilogue> searchEpilogue(PageInfo pi, HashMap<String, String> conditionMap);
+
 
 
 }

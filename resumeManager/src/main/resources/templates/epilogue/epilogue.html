@@ -22,7 +22,7 @@
 				    <label for="inputPassword6" class="col-form-label">회사 이름 : </label>
 				</div>
 				<div class="col-auto">
-				    <input type="text" id="companyName" class="form-control">
+				    <input type="text" id="companyName" class="form-control" th:value="${conditionMap.isEmpty ? '' : conditionMap.companyName}">
 				</div>
 				<div class="col-auto">
 				    <button type="button" class="btn btn-light" id="searchBtn">검색하기</button>
@@ -167,6 +167,13 @@
 			});
 			//후기조회 버튼 : 클릭 이벤트 (시작)
 			
+			//전체보기 검색 (시작)
+			const clearBtn = document.querySelector('#clearBtn');
+			clearBtn.addEventListener('click', () => {
+				location.href='resumeEpliloguePage.ep';
+			});
+			//전체보기 검색 (끝)
+
 			//회사이름 검색 (시작)
 			const companyName = document.querySelector('#companyName');
 			const searchBtn = document.querySelector('#searchBtn');
@@ -174,21 +181,16 @@
 			searchBtn.addEventListener('click', function() {
 				const search = companyName.value.trim();
 				if(search.length > 0) {
-					location.href = 'searchEpilogue.ep?companyName=' + companyName.value;
+					//location.href = 'searchEpilogue.ep?companyName=' + companyName.value;
+					location.href = 'resumeEpliloguePage.ep?companyName=' + companyName.value;
 				} else {
 					alert('회사 이름을 입력해주세요.');
 					companyName.value = '';
 					companyName.focus();
 				}
 			});
-			
-			
-			
-			
-			
-			
-			
 			//회사이름 검색 (끝)
+			
 		}
 	</script>
 </body>

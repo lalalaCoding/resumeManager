@@ -115,10 +115,15 @@
 		select count(*)
 		from EPILOGUE
 		        join RESUMEMANAGER.RESUME_HISTORY RH on RH.RESUME_NO = EPILOGUE.RESUME_NO
-		where epilogue_vaild = 'Y'  and contains(RH.COMPANY_NAME, '%다%') > 0
+		where epilogue_vaild = 'Y'  and contains(RH.COMPANY_NAME, '%${conditionMap.companyName}%') > 0
 	</select>
 	
-	
+	<select id="searchEpilogue" resultType="Epilogue">
+		select *
+		from EPILOGUE
+		        join RESUMEMANAGER.RESUME_HISTORY RH on RH.RESUME_NO = EPILOGUE.RESUME_NO
+		where epilogue_vaild = 'Y'  and contains(RH.COMPANY_NAME, '%${conditionMap.companyName}%') > 0
+	</select>
 	
 	
 </mapper>

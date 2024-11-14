@@ -80,6 +80,13 @@ public class EpilogueServiceImpl implements EpilogueService{
 		eMapper.ctxReloadCompanyName();
 	}
 
+	@Override
+	public ArrayList<Epilogue> searchEpilogue(PageInfo pi, HashMap<String, String> conditionMap) {
+		RowBounds rowBounds = new RowBounds((pi.getCurrentPage() - 1)*pi.getBoardLimit(), pi.getBoardLimit());
+		
+		return eMapper.searchEpilogue(rowBounds, conditionMap);
+	}
+
 	
 
 

@@ -126,25 +126,46 @@ public class EpilogueController {
 		return deleteResult > 0 ? "success" : "fail";
 	}
 	
-	@GetMapping("resumeEpliloguePage.re") //일반 후기게시판으로 이동
+	@GetMapping("resumeEpliloguePage.ep") //일반 후기 목록 출력
 	public String resumeEpliloguePage(@RequestParam(value="page", defaultValue="1") int currentPage, Model model,
-										HttpServletRequest request) {
+										HttpServletRequest request,
+										@RequestParam(value="companyName", required = false) String companyName) {
 		
-		int listCount = eService.getEpilogueCount();
+		log.info("검색조건={}",companyName);
+		HashMap<String, String> conditionMap = new HashMap<>();
+		int listCount = 0;
+		PageInfo pi = null;
+		ArrayList<Epilogue> epList = null;
+		ArrayList<ResumeHistory> rhList = null;
+		
+		if (companyName == null) { //모든 목록 출력 요청
+			listCount = eService.getEpilogueCount();
+			
+			pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
+			epList = eService.selectAllEpiloguePage(pi);
+			if (!epList.isEmpty()) {
+				rhList = eService.selectAllHistory(epList);
+			}
+			
+		} else { //검색 목록 출력 요청
+			//검색 조건을 Map에 저장 : 검색 조건이 추가될 확장성을 고려
+			conditionMap.put("companyName", companyName);
+			
+			eService.ctxReloadCompanyName();
+			listCount = eService.getEpilogueSearchCount(conditionMap);
+			
+			pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
+			epList = eService.searchEpilogue(pi, conditionMap);
+			if (!epList.isEmpty()) {
+				rhList = eService.selectAllHistory(epList);
+			}
+		}
+		
 		log.info("listCount={}",listCount);
-		
-		PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 9);
-		ArrayList<Epilogue> epList = eService.selectAllEpiloguePage(pi);
+		log.info("후기 목록={}", epList);
 		log.info("후기 목록={}", epList);
 		
-		ArrayList<ResumeHistory> rhList = null;
-		if (!epList.isEmpty()) {
-			rhList = eService.selectAllHistory(epList);
-			
-		}
-		log.info("지원 이력={}", rhList);
-		
-		
+		model.addAttribute("conditionMap", conditionMap);
 		model.addAttribute("loc", request.getRequestURI());
 		model.addAttribute("epList", epList);
 		model.addAttribute("rhList", rhList);
@@ -154,25 +175,7 @@ public class EpilogueController {
 	}
 	
 	
-	@GetMapping("searchEpilogue.ep") //일반 후기 검색
-	public String searchEpilogue(@RequestParam("companyName") String companyName, Model model) {
-		log.info("검색 회사명={}", companyName);
-		
-		//검색 조건을 Map에 저장 : 검색 조건이 추가될 확장성을 고려
-		HashMap<String, String> conditionMap = new HashMap<>();
-		conditionMap.put("companyName", companyName);
-		
-		
-		eService.ctxReloadCompanyName();
-		int listCount = eService.getEpilogueSearchCount(conditionMap);
-		log.info("listCount={}", listCount);
-		
-		
-		
-		
-		
-		return null;
-	}
+	
 	
 	
 	
