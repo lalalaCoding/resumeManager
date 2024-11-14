@@ -114,20 +114,6 @@
 		{ CALL CTX_RELOAD_COMPANY_NAME() }
 	</select>
 	
-	<!-- 후기 검색 : 컨텐츠 개수 -->
-	<select id="getEpilogueSearchCount" resultType="_int">
-		select count(*)
-		from EPILOGUE
-		        join RESUMEMANAGER.RESUME_HISTORY RH on RH.RESUME_NO = EPILOGUE.RESUME_NO
-		where epilogue_vaild = 'Y'  and contains(RH.COMPANY_NAME, '%${conditionMap.companyName}%') > 0
-	</select>
-	
-	<select id="searchEpilogue" resultType="Epilogue">
-		select *
-		from EPILOGUE
-		        join RESUMEMANAGER.RESUME_HISTORY RH on RH.RESUME_NO = EPILOGUE.RESUME_NO
-		where epilogue_vaild = 'Y'  and contains(RH.COMPANY_NAME, '%${conditionMap.companyName}%') > 0
-	</select>
 	
 	
 	
