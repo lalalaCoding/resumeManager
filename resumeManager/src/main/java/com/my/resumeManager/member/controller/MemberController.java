@@ -18,14 +18,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.my.resumeManager.common.gcs.GCSController;
 import com.my.resumeManager.common.gcs.GCSRequest;
-import com.my.resumeManager.epilogue.controller.EpilogueController;
 import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.member.model.vo.MemberException;
+import com.my.resumeManager.member.model.vo.ProfileImage;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 public class MemberController {
 	@Autowired
@@ -50,9 +52,12 @@ public class MemberController {
 	}
 	
 	@PostMapping("enrollMember.me")
-	public void enrollMember(@ModelAttribute Member m, @ModelAttribute GCSRequest profile, HttpServletResponse response) {
+	public void enrollMember(@ModelAttribute Member m, @ModelAttribute GCSRequest profile, HttpServletResponse response, @RequestParam("memberAge") int memberAge) {
 		m.setMemberPwd(bCrypt.encode(m.getMemberPwd())); // 비밀번호 암호화
 		m.setMemberSocial('N'); // 소셜 로그인 유형 -> 임시로 N으로 지정하자. 소셜로그인을 구현할 때 수정해야함
+		
+		log.info("생년월일={}", memberAge);
+		log.info("가입정보={}", m);
 		
 		int enrollResult = mService.enrollMember(m);
 		
@@ -131,6 +136,7 @@ public class MemberController {
 	public String login(@ModelAttribute Member m, HttpSession session, RedirectAttributes ra, HttpServletResponse response) {
 		// id가 일치하는 회원을 조회
 		Member loginMember = mService.login(m);
+		log.info("loginMember={}", loginMember);
 		String msg = null;
 		
 		if(loginMember != null) {
@@ -232,7 +238,24 @@ public class MemberController {
 	public String infoPage(@RequestParam("info") String info, Model model, HttpSession session) {
 		model.addAttribute("info", info); //인포 페이지에서 메뉴바의 클래스명을 제어하기 위한 정보
 		
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		int memberNo = 0;
+		if (loginMember != null) {
+			memberNo = loginMember.getMemberNo();
+		} else {
+			throw new MemberException("로그인 후 이용해주세요.");
+		}
+		
+		
+		log.info("로그인 멤버={}", loginMember);
+		
+		
 		if (info.equals("general")) {
+			//ProfileImage p = mService.selectProfileImage(memberNo);
+			
+			
+			
+			
 			return "member/generalInfo";
 		}
 		

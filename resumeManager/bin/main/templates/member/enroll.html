@@ -27,7 +27,7 @@
 							<div id="profileBtns">
 								<input type="file" id="profile" name="file" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
 								<br/>
-								<button id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button>
+								<button type="button" id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button>
 							</div>
 						</td>
 					</tr>
@@ -68,8 +68,8 @@
 					<tr>
 						<td>생년월일</td>
 						<td>
-							<input type="number" id="memberAge" class="form-control"/>
-							<span id="ageCheckResult" class="badge rounded-pill text-bg-light">YYMMdd의 형식으로 입력해주세요.</span>
+							<input type="number" id="memberAge" name="memberAge" class="form-control"/>
+							<span id="ageCheckResult" class="badge rounded-pill text-bg-light">YYYYMMdd의 형식으로 입력해주세요.</span>
 						</td>
 					</tr>
 					<tr>
@@ -481,6 +481,7 @@
 		const enrollBtn = document.querySelector('#enrollBtn');
 		const submit = document.querySelector('#submit');
 		enrollBtn.addEventListener('click', () => {
+			
 			if(checkvalid()){
 				submit.submit();
 			} else{

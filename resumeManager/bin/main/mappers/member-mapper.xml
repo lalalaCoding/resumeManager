@@ -4,6 +4,12 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  
 <mapper namespace="com.my.resumeManager.member.model.dao.MemberMapper">
+	<!-- MEMBER 클래스가 상속받은 PROFILE_IMAGE 클래스의 필드까지 매핑될 수 있도록 resultMap을 작성한다. -->
+	
+
+
+
+
 	<!-- 회원가입 : 아이디 중복 확인 -->
 	<select id="checkId" resultType="int">
 		SELECT COUNT(*) FROM MEMBER WHERE MEMBER_ID = #{memberId}
@@ -14,8 +20,10 @@
 		<selectKey resultType="_int" keyProperty="memberNo" order="BEFORE">
 			SELECT SEQ_MEMBER.NEXTVAL FROM DUAL
 		</selectKey>
-		INSERT INTO MEMBER VALUES(${memberNo}, #{memberId}, #{memberPwd}, #{memberName}, #{memberAddress}, #{memberPhone}, 
-									#{memberEmail}, #{memberSocial}, #{memberToken}, #{memberHistory}, DEFAULT, DEFAULT, SYSDATE, SYSDATE)
+		INSERT INTO MEMBER(MEMBER_NO, MEMBER_ID, MEMBER_PWD, MEMBER_NAME, MEMBER_ADDRESS, MEMBER_PHONE, MEMBER_EMAIL, MEMBER_SOCIAL, MEMBER_TOKEN,
+							MEMBER_HISTORY, MEMBER_STATUS, MEMBER_TYPE, MEMBER_ENROLL, MEMBER_UPDATE, MEMBER_GENDER, MEMBER_AGE) 
+		VALUES(${memberNo}, #{memberId}, #{memberPwd}, #{memberName}, #{memberAddress}, #{memberPhone}, 
+				#{memberEmail}, #{memberSocial}, #{memberToken}, #{memberHistory}, DEFAULT, DEFAULT, SYSDATE, SYSDATE, #{memberGender}, ${memberAge})
 	</insert>
 	
 	<!-- 회원가입 : PROFILE_IMAGE 테이블에 삽입 -->
@@ -36,9 +44,17 @@
 	</select>
 	
 	<!-- 회원 번호가 일치하는 회원 정보 조회 -->
+	<!-- <select id="selectMemberNo" resultType="Member">
+		SELECT * FROM MEMBER WHERE MEMBER_NO = ${memberNo} and member_status = 'Y'
+	</select> -->
+	
 	<select id="selectMemberNo" resultType="Member">
-		SELECT * FROM MEMBER WHERE MEMBER_NO = ${memberNo}
+		SELECT * FROM MEMBER join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_NO = ${memberNo} and member_status = 'Y'
 	</select>
+	
+	
+	
+	
 	
 	<!-- 비밀번호 찾기 : 아이디를 기준으로 아이디와 전화번호, 회원번호 조회 -->
 	<select id="checkIdPhone" resultType="Member">
