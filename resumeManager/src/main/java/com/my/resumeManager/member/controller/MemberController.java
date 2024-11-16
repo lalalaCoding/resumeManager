@@ -3,6 +3,7 @@ package com.my.resumeManager.member.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +22,6 @@ import com.my.resumeManager.common.gcs.GCSRequest;
 import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.member.model.vo.MemberException;
-import com.my.resumeManager.member.model.vo.ProfileImage;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -251,7 +251,14 @@ public class MemberController {
 		
 		
 		if (info.equals("general")) {
-			//ProfileImage p = mService.selectProfileImage(memberNo);
+			HashMap<String, String> profileMap = new HashMap<>();
+			profileMap.put("objectName", loginMember.getProfileRename());
+			profileMap.put("destFilePath", loginMember.getProfilePath());
+			
+			log.info("프로필 다운로드 정보={}", profileMap);
+			
+			// 다운로드 된 파일이 존재하지 않을 때 다운로드하는 조건문을 추가해야 한다.
+			gContoller.objectDownload(profileMap);
 			
 			
 			

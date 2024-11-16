@@ -5,10 +5,27 @@
  
 <mapper namespace="com.my.resumeManager.member.model.dao.MemberMapper">
 	<!-- MEMBER 클래스가 상속받은 PROFILE_IMAGE 클래스의 필드까지 매핑될 수 있도록 resultMap을 작성한다. -->
-	
-
-
-
+	<resultMap type="com.my.resumeManager.member.model.vo.Member" id="memberMap">
+		<id property="memberNo" column="MEMBER_NO"/>
+		<result property="memberId" column="MEMBER_ID"/>
+		<result property="memberPwd" column="MEMBER_PWD"/>
+		<result property="memberName" column="MEMBER_NAME"/>
+		<result property="memberAddress" column="MEMBER_ADDRESS"/>
+		<result property="memberPhone" column="MEMBER_PHONE"/>
+		<result property="memberEmail" column="MEMBER_EMAIL"/>
+		<result property="memberSocial" column="MEMBER_SOCIAL"/>
+		<result property="memberToken" column="MEMBER_TOKEN"/>
+		<result property="memberHistory" column="MEMBER_HISTORY"/>
+		<result property="memberStatus" column="MEMBER_STATUS"/>
+		<result property="memberType" column="MEMBER_TYPE"/>
+		<result property="memberEnroll" column="MEMBER_ENROLL"/>
+		<result property="memberUpdate" column="MEMBER_UPDATE"/>
+		<result property="memberGender" column="MEMBER_GENDER"/>
+		<result property="memberAge" column="MEMBER_AGE"/>
+		<result property="profileOrigin" column="PROFILE_ORIGINAL"/>
+		<result property="profileRename" column="PROFILE_RENAME"/>
+		<result property="profilePath" column="PROFILE_PATH"/>
+	</resultMap>
 
 	<!-- 회원가입 : 아이디 중복 확인 -->
 	<select id="checkId" resultType="int">
@@ -32,8 +49,8 @@
 	</insert>
 
 	<!-- 로그인 : 아이디가 일치하는 회원조회 -->
-	<select id="login" resultType="Member">
-		SELECT * FROM MEMBER WHERE MEMBER_ID = #{memberId}
+	<select id="login" resultMap="memberMap">
+		SELECT * FROM MEMBER join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_ID = #{memberId}
 	</select>
 	
 	<!-- 아이디 찾기 : 이름을 기준으로 이름과 전화번호, 회원번호 조회 -->
