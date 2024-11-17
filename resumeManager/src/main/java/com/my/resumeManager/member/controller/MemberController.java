@@ -1,5 +1,6 @@
 package com.my.resumeManager.member.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -246,22 +248,24 @@ public class MemberController {
 			throw new MemberException("로그인 후 이용해주세요.");
 		}
 		
-		
 		log.info("로그인 멤버={}", loginMember);
 		
-		
 		if (info.equals("general")) {
+			//destFilePath=C:\resumeManager_downloadFiles, objectName=1731636787493_80976.jpg
 			HashMap<String, String> profileMap = new HashMap<>();
-			profileMap.put("objectName", loginMember.getProfileRename());
-			profileMap.put("destFilePath", loginMember.getProfilePath());
-			
-			log.info("프로필 다운로드 정보={}", profileMap);
-			
-			// 다운로드 된 파일이 존재하지 않을 때 다운로드하는 조건문을 추가해야 한다.
-			gContoller.objectDownload(profileMap);
-			
-			
-			
+			if (loginMember.getProfileOrigin() != null) { //프로필이 등록된 회원인 경우
+				profileMap.put("objectName", loginMember.getProfileRename());
+				profileMap.put("destFilePath", loginMember.getProfilePath());
+				
+				log.info("프로필 다운로드 정보={}", profileMap);
+				
+				File myProfile = new File(profileMap.get("destFilePath") + "/" + profileMap.get("objectName"));
+				log.info("파일존재={}", myProfile.exists());
+				
+				if (!myProfile.exists()) { //로컬에 프로필 사진이 저장되어 있지 않음
+					gContoller.objectDownload(profileMap);
+				}
+			}
 			
 			return "member/generalInfo";
 		}
@@ -274,5 +278,28 @@ public class MemberController {
 		
 		throw new MemberException("서비스 요청에 실패하였습니다.");
 	}
+	
+	@GetMapping("members/{memberNo}/edit")
+	public String editMemberInfo(@PathVariable("memberNo") int memberNo, HttpSession session) {
+		log.info("회원 번호={}",memberNo);
+		//로그인 여부 -> 요청 회원번호와 로그인한 회원번호 일치 여부
+		
+		
+		
+		
+		
+		
+		return "member/generalEditInfo";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

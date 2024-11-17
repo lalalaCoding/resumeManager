@@ -50,7 +50,7 @@
 
 	<!-- 로그인 : 아이디가 일치하는 회원조회 -->
 	<select id="login" resultMap="memberMap">
-		SELECT * FROM MEMBER join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_ID = #{memberId}
+		SELECT * FROM MEMBER left join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_ID = #{memberId}
 	</select>
 	
 	<!-- 아이디 찾기 : 이름을 기준으로 이름과 전화번호, 회원번호 조회 -->
