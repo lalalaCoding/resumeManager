@@ -280,16 +280,28 @@ public class MemberController {
 	}
 	
 	@GetMapping("members/{memberNo}/edit")
-	public String editMemberInfo(@PathVariable("memberNo") int memberNo, HttpSession session) {
+	public String editMemberInfo(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpSession session, Model model) {
 		log.info("회원 번호={}",memberNo);
 		//로그인 여부 -> 요청 회원번호와 로그인한 회원번호 일치 여부
 		
+		if (info.equals("general")) { //회원 일반정보 수정 폼으로 이동
+			model.addAttribute("info", info);
+			return "member/generalEditInfo";
+		} else if (info.equals("pwd")) { //회원 비밀번호 수정 폼으로 이동
+			
+			
+			
+			
+			
+			return null;
+		} else {
+			throw new MemberException("잘못된 요청입니다.");
+		}
 		
 		
 		
 		
 		
-		return "member/generalEditInfo";
 	}
 	
 	

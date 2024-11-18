@@ -2,15 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="UTF-8">
-	<title>나의 일반 정보</title>
+	<title>나의 일반 정보 - 수정</title>
 	<!-- 페이지명 왼쪽에 아이콘 삽입 -->
-	<link rel="shortcut icon" href="image/icon/logo.png">
+	<link rel="shortcut icon" href="/image/icon/logo.png">
 	<!-- css -->
-	<link href="css/generalInfo.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/generalEditInfo.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 	<div th:replace="~{common/header :: header}"></div>
-	
+	[[${session.loginMember}]]
 	<br/>
 		
 	<div id="wrapper">
@@ -37,113 +37,116 @@
 			</ul>
 		</div>
 		<div><!-- 컨텐츠 출력 공간 -->
-			<table class="table table-hover align-middle">
-				<tr>
-					<td>프로필 사진</td>
-					<td>
-						<div id="profileDiv" class="form-text">
-							<!-- 프로필이 등록된 경우 -->
-							<th:block th:unless="${session.loginMember.profileRename == null}"> 
-								<img th:src="@{${session.loginMember.profileRename}}" style="width: 100%; height: 100%;"/>
-							</th:block>
-							
-							<!-- 프로필이 등록되지 않은 경우 -->
-							<th:block th:if="${session.loginMember.profileRename == null}">
-								<img th:src="${session.loginMember.memberGender.toString() == 'M' ? 'image/icon/profile_male.png' : 'image/icon/profile_female.png'}" style="width: 100%; height: 100%;"/>
-							</th:block>
-						</div>
-						<div id="profileBtns">
-							<!-- <input type="file" id="profile" name="file" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/> -->
+			<!-- <form id="editForm" method="post" th:action="members/${session.loginMember.memberNo}/edit?info=general" enctype="multipart/form-data"> -->
+			<form id="editForm" method="post" enctype="multipart/form-data">
+				<table class="table table-hover align-middle">
+					<tr>
+						<td>프로필 사진</td>
+						<td>
+							<div id="profileDiv" class="form-text">
+								<!-- 프로필이 등록된 경우 -->
+								<th:block th:unless="${session.loginMember.profileRename == null}"> 
+									<img th:src="@{${'/' + session.loginMember.profileRename}}" style="width: 100%; height: 100%;"/>
+								</th:block>
+								
+								<!-- 프로필이 등록되지 않은 경우 -->
+								<th:block th:if="${session.loginMember.profileRename == null}">
+									<img th:src="${session.loginMember.memberGender.toString() == 'M' ? '/image/icon/profile_male.png' : '/image/icon/profile_female.png'}" style="width: 100%; height: 100%;"/>
+								</th:block>
+							</div>
+							<div id="profileBtns">
+								<input type="file" id="profile" name="file" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
+								<br/>
+								<button type="button" id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>아이디</td>
+						<td>
+							<input type="text" id="memberId" name="memberId" class="form-control" size="10" th:value="${session.loginMember.memberId}" style="width:300px; display:inline-block;"/>
+							<span id="idCheckResult" class="badge rounded-pill text-bg-light">아이디 중복을 확인합니다.</span>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>이름</td>
+						<td>
+							<input type="text" id="memberName" name="memberName" class="form-control" th:value="${session.loginMember.memberName}"/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>성별</td>
+						<td>
+							<label><input type="radio" class="form-check-input" name="memberGender" value="M" th:checked="${session.loginMember.memberGender.toString() == 'M'}"> 남</label>
+							<label><input type="radio" class="form-check-input" name="memberGender" value="F" th:checked="${session.loginMember.memberGender.toString() == 'F'}"> 여</label>
+						</td>
+					</tr>
+					<tr>
+						<td>생년월일</td>
+						<td>
+							<input type="number" id="memberAge" name="memberAge" class="form-control" th:value="${session.loginMember.memberAge}"/>
+							<span id="ageCheckResult" class="badge rounded-pill text-bg-light">YYMMdd의 형식으로 입력해주세요.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>주소</td>
+						<td th:with="address = ${#strings.arraySplit(session.loginMember.memberAddress, '_')}">
+							<input type="text" class="form-control memberAddress" placeholder="우편번호" th:value="${address[0]}" readOnly/>
+							<button type="button" id="searchAddress" class="btn btn-primary">수정하기</button>
 							<br/>
-							<!-- <button id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button> -->
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>아이디</td>
-					<td>
-						<input type="text" id="memberId" name="memberId" class="form-control" size="10" th:value="${session.loginMember.memberId}" readOnly style="width:300px; display:inline-block;"/>
-						<!-- <span id="idCheckResult" class="badge rounded-pill text-bg-light">아이디 중복을 확인합니다.</span> -->
-					</td>
-				</tr>
-				
-				<tr>
-					<td>이름</td>
-					<td>
-						<input type="text" name="memberName" class="form-control" th:value="${session.loginMember.memberName}" readOnly/>
-					</td>
-				</tr>
-				
-				<tr>
-					<td>성별</td>
-					<td>
-						<label><input type="radio" class="form-check-input" name="memberGender" value="M" th:checked="${session.loginMember.memberGender.toString() == 'M'}" disabled> 남</label>
-						<label><input type="radio" class="form-check-input" name="memberGender" value="F" th:checked="${session.loginMember.memberGender.toString() == 'F'}" disabled> 여</label>
-					</td>
-				</tr>
-				<tr>
-					<td>생년월일</td>
-					<td>
-						<input type="number" id="memberAge" name="memberAge" class="form-control" th:value="${session.loginMember.memberAge}" readOnly/>
-						<!-- <span id="ageCheckResult" class="badge rounded-pill text-bg-light">YYMMdd의 형식으로 입력해주세요.</span> -->
-					</td>
-				</tr>
-				<tr>
-					<td>주소</td>
-					<td th:with="address = ${#strings.arraySplit(session.loginMember.memberAddress, '_')}">
-						<input type="text" class="form-control memberAddress" placeholder="우편번호" th:value="${address[0]}" readOnly/>
-						<!-- <button type="button" id="searchAddress" class="btn btn-primary">입력하기</button> -->
-						<br/>
-						<input type="text" class="form-control memberAddress" placeholder="기본 주소 입력" th:value="${address[1]}" readOnly/>
-						<input type="text" class="form-control memberAddress" th:value="${address.length > 2 ? address[2] : ''}" readOnly/>
-						<input type="hidden" name="memberAddress"/>
-					</td>
-				</tr>
-				<tr>
-					<td>이메일</td>
-					<td th:with="email = ${#strings.arraySplit(session.loginMember.memberEmail, '@')}">
-						<input type="text" class="form-control memberEmail" th:value="${email[0]}" readOnly/>
-						@
-						<select class="form-select memberEmail" disabled>
-							<option>-</option>
-							<option th:selected="${email[1] == 'naver.com'}">naver.com</option>
-							<option th:selected="${email[1] == 'google.com'}">google.com</option>
-							<option th:selected="${email[1] == 'hanmail.net'}">hanmail.net</option>
-						</select>
-						<input type="hidden" name="memberEmail"/>
-					</td>
-				</tr>
-				<tr>
-					<td>휴대전화</td>
-					<td>
-						<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 0, 3)}" readOnly/>
-						-
-						<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 3, 7)}" readOnly/>
-						-
-						<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 7)}" readOnly/>
-						<!-- <button type="button" id="phoneCheck" class="btn btn-primary">인증하기</button> -->
-						<input type="hidden" name="memberPhone"/>
-					</td>
-				</tr>
-				<!-- <tr>
-					<td>휴대전화 인증</td>
-					<td>
-						<input type="text" class="form-control phoneConfirm" disabled/>
-						<button type="button" class="btn btn-primary phoneConfirm" disabled>인증확인</button>
-						<span class="badge rounded-pill text-bg-light phoneConfirm">문자 인증이 필요합니다.</span>
-					</td>
-				</tr> -->
-				<tr>
-					<td>히스토리 공개</td>
-					<td>
-						<label><input type="radio" class="form-check-input" name="memberHistory" value="Y" th:checked="${session.loginMember.memberHistory.toString() == 'Y'}" disabled/>Y</label>
-						<label><input type="radio" class="form-check-input" name="memberHistory" value="N" th:checked="${session.loginMember.memberHistory.toString() == 'N'}" disabled/>N</label>
-					</td>
-				</tr>
-			</table>
+							<input type="text" class="form-control memberAddress" placeholder="기본 주소 입력" th:value="${address[1]}" readOnly/>
+							<input type="text" class="form-control memberAddress" th:value="${address.length > 2 ? address[2] : ''}"/>
+							<input type="hidden" name="memberAddress"/>
+						</td>
+					</tr>
+					<tr>
+						<td>이메일</td>
+						<td th:with="email = ${#strings.arraySplit(session.loginMember.memberEmail, '@')}">
+							<input type="text" class="form-control memberEmail" th:value="${email[0]}"/>
+							@
+							<select class="form-select memberEmail">
+								<option>-</option>
+								<option th:selected="${email[1] == 'naver.com'}">naver.com</option>
+								<option th:selected="${email[1] == 'google.com'}">google.com</option>
+								<option th:selected="${email[1] == 'hanmail.net'}">hanmail.net</option>
+							</select>
+							<input type="hidden" name="memberEmail"/>
+						</td>
+					</tr>
+					<tr>
+						<td>휴대전화</td>
+						<td>
+							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 0, 3)}" readOnly/>
+							-
+							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 3, 7)}" readOnly/>
+							-
+							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 7)}" readOnly/>
+							<button type="button" id="phoneCheck" class="btn btn-primary">인증하기</button>
+							<input type="hidden" name="memberPhone"/>
+						</td>
+					</tr>
+					<tr>
+						<td>휴대전화 인증</td>
+						<td>
+							<input type="text" class="form-control phoneConfirm" disabled/>
+							<button type="button" class="btn btn-primary phoneConfirm" disabled>인증확인</button>
+							<span class="badge rounded-pill text-bg-light phoneConfirm">문자 인증이 필요합니다.</span>
+						</td>
+					</tr>
+					<tr>
+						<td>히스토리 공개</td>
+						<td>
+							<label><input type="radio" class="form-check-input" name="memberHistory" value="Y" th:checked="${session.loginMember.memberHistory.toString() == 'Y'}"/>Y</label>
+							<label><input type="radio" class="form-check-input" name="memberHistory" value="N" th:checked="${session.loginMember.memberHistory.toString() == 'N'}"/>N</label>
+						</td>
+					</tr>
+				</table>
+			</form>
 			
 			<div class="text-center">
-				<button id="modifyBtn" class="btn btn-primary" style="width: 300px;">수정하기</button>
+				<button id="modifyBtn" class="btn btn-primary" style="width: 300px;">변경하기</button>
 				<button id="backBtn" class="btn btn-light" style="width: 300px;" onclick="history.back()">뒤로가기</button>
 			</div>
 		</div>
@@ -156,15 +159,389 @@
 	
 	<script th:inline="javascript">
 		window.onload = () => {
-			// 회원 일반정보 수정 폼 요청 (시작) -> members/{id}/info/edit (GET)
 			/* <![CDATA[ */
 			const loginMember = /*[[${session.loginMember}]]*/'로그인멤버';
 			/* ]]> */
+			
+			const infoClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-danger');
+				element.classList.add('text-bg-info');
+			}
+		
+			const dangerClass = (element) => {
+				element.classList.remove('text-bg-light');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-danger');
+			}
+			
+			const lightClass = (element) => {
+				element.classList.remove('text-bg-danger');
+				element.classList.remove('text-bg-info');
+				element.classList.add('text-bg-light');
+			}
+			
+			// 프로필 미리보기 기능 (시작)
+			const file = document.querySelector('#profile'); // 프로필 파일 등록 input 요소
+			const preview = document.querySelector('#profileDiv img'); // 미리보기 img 요소
+			
+			file.addEventListener('change', () => { // 첨부파일 변경에 대한 이벤트
+				const fileReader = new FileReader(); // FileReader 객체 생성
+				// 사용자 첨부 파일을 base 64 데이터로 변환한다. 
+				// 변환이 완료되면 FileReader객체의 load 이벤트가 동작한다. (load이벤트의 트리거라는 의미)
+				// file.files == 첨부한 파일 리스트
+				if(file.value != ''){
+					fileReader.readAsDataURL(file.files[0]); 
+				}
+				
+				fileReader.onload = function(e) {
+					preview.src = this.result; // result == 첨부 이미지를 Base64 암호화된 결과물
+					preview.style.width = '100%';
+					preview.style.width = '100%';
+				}
+			});
+			// 프로필 미리보기 기능(끝)
+			
+			// 프로필 미리보기 제거 기능(시작)
+			document.querySelector('#removeProfile').addEventListener('click', () => {
+				file.value = ''; // 첨부 파일 입력 요소를 초기화
+				preview.src = 'image/icon/profile_male.png'; // 미리보기 이미지 요소를 임시 이미지로 지정함
+			});
+			// 프로필 미리보기 제거 기능(끝)
+			
+			// 아이디 중복 확인(시작) 
+			const memberId = document.querySelector('#memberId');
+			const idCheckResult = document.querySelector('#idCheckResult');
+			let idFlag = true;
+			memberId.addEventListener('change', () => { // value 값이 변경되었고 초점을 잃었을 때 1번만 발생시키자.
+				
+				if(memberId.value.trim() == ''){ // 아이디 입력 값이 없을 때
+					lightClass(idCheckResult);
+					idCheckResult.textContent = '아이디 중복을 확인합니다.';
+					idFlag = false;
+				} else{ // 아이디 입력 값이 있을 때 -> 중복 확인 & 결과 출력
+					
+					if(memberId.value.trim() != loginMember.memberId) { //새로운 아이디가 입력되었을 때만 중복검사
+						$.ajax({
+							url: '/checkId.me',
+							data: {memberId : memberId.value},
+							success: data => {
+								if(data == 'yes'){ // 사용가능한 아이디
+									infoClass(idCheckResult);
+									idCheckResult.textContent = '사용 가능 아이디입니다.';
+									idFlag = true;
+									
+								} else{ // 사용불가능한 아이디
+									dangerClass(idCheckResult);
+									idCheckResult.textContent = '사용 불가능 아이디입니다.';
+									idFlag = false;
+								}
+							},
+							error: data => {
+								console.log(data);
+							}
+						});
+					} else { //기존의 아이디를 입력하였을 때
+						infoClass(idCheckResult);
+						idCheckResult.textContent = '사용 가능 아이디입니다.';
+						idFlag = true;
+					}
+				}
+			});
+			// 아이디 중복 확인(끝)
+			
+			// 생년월일 유효성 검사 (시작)
+			let ageFlag = true;
+			const memberAge = document.querySelector('#memberAge');
+			const ageCheckResult = document.querySelector('#ageCheckResult');
+			const ageRegex = /[0-9]{8}/g; // 숫자가 8개인 패턴
+			
+			memberAge.addEventListener('change', function() {
+				if(ageRegex.test(this.value.trim())){
+					lightClass(ageCheckResult);
+					ageFlag = true;
+					
+				} else{
+					dangerClass(ageCheckResult);
+					ageFlag = false;
+				}
+			});
+			// 생년월일 유효성 검사 (끝)
+			
+			// 주소 검색 및 입력 (시작)
+			const searchAddress = document.querySelector('#searchAddress');
+			const memberAddress = document.querySelectorAll('.memberAddress');
+			
+			searchAddress.addEventListener('click', () => {
+				new daum.Postcode({
+					oncomplete: function(data) {
+						// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+	
+						// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+						let addr = ''; // 주소 변수
+	
+						//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+						if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+							addr = data.roadAddress;
+						} else { // 사용자가 지번 주소를 선택했을 경우(J)
+							addr = data.jibunAddress;
+						}
+						
+						memberAddress[0].value = data.zonecode; // 우편번호 입력
+						memberAddress[1].value = addr; // 기본주소 입력
+						memberAddress[2].focus(); // 상세주소 입력요소로 커서가 이동
+					}
+			    }).open();
+			});
+			// 주소 검색 및 입력 (끝)
+			
+			
+			// 휴대전화 인증 요청 (시작)
+			const phoneCheck = document.querySelector('#phoneCheck');
+			const phoneConfirm = document.querySelectorAll('.phoneConfirm');
+			phoneCheck.addEventListener('click', () => {
+				const phoneNumbers = document.querySelectorAll('.phoneNumber');
+				let phoneNumber = '';
+				for(const n of phoneNumbers){
+					phoneNumber += n.value;
+				}
+				if(phoneNumber.length == 11){ // 전화번호가 11자리로서 정상이라 판단되는 경우
+					$.ajax({
+						url : '/send-one',
+						type : 'post',
+						data : {phoneNumber : phoneNumber},
+						success : data => {
+							console.log(data);
+							if(data.statusCode == '2000'){ // 문자가 정상적으로 전송된 경우 -> 1분간 인증번호를 입력될 수 있게 한다.
+								phoneConfirm[0].disabled = false;
+								phoneConfirm[1].disabled = false;
+								lightClass(phoneConfirm[2]);
+								phoneConfirm[2].textContent = '인증 번호를 1분 내에 확인해주세요.';
+								
+								setTimeout(() => {
+									if(!phoneFlag){ // 인증이 실패한 상태일 때
+										phoneConfirm[0].disabled = true;
+										phoneConfirm[1].disabled = true;
+										dangerClass(phoneConfirm[2]);
+										phoneConfirm[2].textContent = '인증 시간이 만료되었습니다.';
+									}
+								}, 1000*60); // 60초 동안만 인증 번호를 확인할 수 있도록 한다.
+							}
+						},
+						error : data => {
+							console.log(data);
+						}
+					});
+				} else{ // 전화번호가 11자리가 아니어서 비정상이라 판단되는 경우
+					alert('전화번호를 다시 입력해주세요.');
+					phoneNumbers[0].focus(); 
+				}
+				
+			});
+			// 휴대전화 인증 요청 (끝)
+			
+			// 휴대전화 인증 번호 확인 요청 (시작)
+			let phoneFlag = true;
+			phoneConfirm[1].addEventListener('click', () => {
+				$.ajax({
+					url : 'get-code',
+					type: 'post',
+					success : data => {
+						if(phoneConfirm[0].value == data){ // 인증번호를 정상적으로 입력하였을 때
+							infoClass(phoneConfirm[2]);
+							phoneConfirm[2].textContent = '인증이 확인되었습니다.';
+							phoneFlag = true;
+							
+							phoneConfirm[0].disabled = true;
+							phoneConfirm[1].disabled = true;
+							
+							// 인증을 완료했으므로 세션에서 해당 정보를 제거한다.
+							$.ajax({
+								url : 'sessionRemoveAttribute.cm',
+								type : 'post',
+								data : {name : data},
+								success: data => {
+									console.log('세션에서 인증번호 삭제함');
+								},
+								error : data => {
+									console.log('세션에서 인증번호 삭제 실패함');
+								}
+							});
+							
+						} else{ // 인증번호가 틀렸을 때
+							dangerClass(phoneConfirm[2]);
+							phoneConfirm[2].textContent = '인증 번호가 올바르지 않습니다.';
+							phoneFlag = false;
+						}
+					},
+					error : data => {
+						console.log(data);
+					}
+				});
+			});
+			// 휴대전화 인증 번호 확인 요청 (끝)
+			
+			
+			// 유효성 검사 요청 (시작)
+			const memberName = document.querySelector('#memberName');
+			const memberGender = document.getElementsByName('memberGender');
+			const addressResult = document.getElementsByName('memberAddress')[0];
+			const emailResult = document.getElementsByName('memberEmail')[0];
+			const phoneResult = document.getElementsByName('memberPhone')[0];
+			const memberHistory = document.getElementsByName('memberHistory');
+			const checkvalid = () => {
+				// 이름 유효성 검사
+				let nameFlag = false;
+				if(memberName.value.trim().length > 0){
+					nameFlag = true;
+				}
+				
+				// 성별 유효성 검사
+				let genderFlag = false;
+				for(const g of memberGender){
+					if(g.checked){
+						genderFlag = true;
+					}
+				}
+				
+				// 주소 유효성 검사 및 합병하기
+				let addressFlag = false;
+				addressResult.value = '';
+				for(let i = 0; i < memberAddress.length; i++){
+					if(i != memberAddress.length - 1){
+						addressResult.value += memberAddress[i].value + '_';
+					} else{
+						addressResult.value += memberAddress[i].value;
+					}
+				}
+				
+				if(memberAddress[0].value.trim().length > 0){
+					addressFlag = true;
+				} else{
+					addressFlag = false;
+				}
+				
+				// 이메일 유효성 검사 및 합병하기
+				let emailFlag = false;
+				const memberEmail = document.querySelectorAll('.memberEmail');
+				emailResult.value = '';
+				if(memberEmail[0].value.trim().length > 0 && memberEmail[1].value != '-'){
+					emailFlag = true;
+					emailResult.value = memberEmail[0].value.trim() + '@' + memberEmail[1].value;
+				}
+				
+				// 휴대폰 번호 합병하기 
+				phoneResult.value = '';
+				if(phoneFlag){
+					const phoneNumbers = document.querySelectorAll('.phoneNumber');
+					for(const n of phoneNumbers){
+						phoneResult.value += n.value;
+					}
+				}
+				
+				// 히스토리 유효성 검사
+				let historyFlag = false;
+				for(const g of memberHistory){
+					if(g.checked){
+						historyFlag = true;
+					}
+				}
+				
+				//console.log('idFlag=' + idFlag);
+				//console.log('nameFlag=' + nameFlag);
+				//console.log('genderFlag=' + genderFlag);
+				//console.log('ageFlag=' + ageFlag);
+				//console.log('addressFlag=' + addressFlag);
+				//console.log('emailFlag=' + emailFlag);
+				//console.log('phoneFlag=' + phoneFlag);
+				//console.log('historyFlag=' + historyFlag);
+				
+				if(idFlag && nameFlag && genderFlag && ageFlag && addressFlag && emailFlag && phoneFlag && historyFlag){
+					return true;
+				} else{
+					return false;
+				}
+			}
+			// 유효성 검사 요청 (끝)
+			
+			//수정된 항목만 추리기 (시작)
+			const changeObj = { //수정된 요소를 구분할 데이터를 담은 배열
+				"idChange" : false,
+				"nameChange" : false,
+				"genderChange" : false,
+				"ageChange" : false,
+				"addressChange" : false,
+				"emailChange" : false,
+				"phoneChange" : false,
+				"historyChange" : false
+			}
+			
+			const checkChange = () => {
+				if (memberId.value != loginMember.memberId) {
+					console.log('아이디 변경');
+					changeObj.idChange = true;
+				}
+				
+				if (memberName.value != loginMember.memberName) {
+					console.log('이름 변경');
+					changeObj.nameChange = true;
+				}
+				
+				for (const g of memberGender) {
+					if(g.checked) {
+						if(g.value != loginMember.memberGender) {
+							console.log('성별 변경');
+							changeObj.genderChange = true;
+						}
+					}
+				}
+				
+				if (memberAge.value != loginMember.memberAge) {
+					console.log('생년월일 변경');
+					changeObj.ageChange = true;
+				}
+				
+				if (addressResult.value != loginMember.memberAddress) {
+					//console.log('입력 주소 = ' + addressResult.value);
+					//console.log('DB 주소 = ' + loginMember.memberAddress);
+					console.log('주소 변경');
+					changeObj.addressChange = true;
+				}
+				
+				if (emailResult.value != loginMember.memberEmail) {
+					console.log('이메일 변경');
+					changeObj.emailChange = true;
+				}
+				
+				if (phoneResult.value != loginMember.memberPhone) {
+					console.log('전화번호 변경');
+					changeObj.phoneChange = true;
+				}
+				
+				for (const h of memberHistory) {
+					if(h.checked) {
+						if(h.value != loginMember.memberHistory) {
+							console.log('히스토리 공개 변경');
+							changeObj.historyChange = true;
+						}
+					}
+				}
+			}
+			//수정된 항목만 추리기 (끝)
+			
+			// 회원 일반정보 수정 요청 (시작) : members/{memberNo}/edit?info=general (POST)
 			const memberNo = loginMember.memberNo;
 			const modifyBtn = document.querySelector('#modifyBtn');
 			modifyBtn.addEventListener('click', () => {
-				//console.log(`members/${memberNo}/info/edit`);
-				location.href=`members/${memberNo}/info/edit`;
+				// 폼 유효성 여부 : checkvalid()
+				if(checkvalid()) {
+					console.log('유효성 통과');
+					checkChange(); //수정된 요소 조사 -> changeObj
+				} else {
+					console.log('유효성 통과 못함');
+				}
+				
+				//location.href=`members/${memberNo}/info/edit`;
 			});
 			// 회원 일반정보 수정 폼 요청 (끝)
 		}

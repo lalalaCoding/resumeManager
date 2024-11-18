@@ -156,7 +156,7 @@
 	
 	<script th:inline="javascript">
 		window.onload = () => {
-			// 회원 일반정보 수정 폼 요청 (시작) -> members/{memberNo}/edit (GET)
+			// 회원 일반정보 수정 폼 요청 (시작) -> members/{memberNo}/edit?info=general (GET)
 			/* <![CDATA[ */
 			const loginMember = /*[[${session.loginMember}]]*/'로그인멤버';
 			/* ]]> */
@@ -164,7 +164,7 @@
 			const modifyBtn = document.querySelector('#modifyBtn');
 			modifyBtn.addEventListener('click', () => {
 				//console.log(`members/${memberNo}/info/edit`);
-				location.href=`members/${memberNo}/edit`;
+				location.href=`members/${memberNo}/edit?info=general`;
 			});
 			// 회원 일반정보 수정 폼 요청 (끝)
 		}

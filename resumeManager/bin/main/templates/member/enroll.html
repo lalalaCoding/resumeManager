@@ -406,6 +406,7 @@
 		});
 		// 휴대전화 인증 번호 확인 요청 (끝)
 		
+		
 		// 유효성 검사 요청 (시작)
 		const checkvalid = () => {
 			// 이름 유효성 검사
@@ -427,6 +428,7 @@
 			// 주소 유효성 검사 및 합병하기
 			let addressFlag = false;
 			const addressResult = document.getElementsByName('memberAddress')[0];
+			addressResult.value = '';
 			for(let i = 0; i < memberAddress.length; i++){
 				if(i != memberAddress.length - 1){
 					addressResult.value += memberAddress[i].value + '_';
@@ -476,7 +478,6 @@
 			}
 		}
 		// 유효성 검사 요청 (끝)
-		
 		// 회원 가입 요청 (시작)
 		const enrollBtn = document.querySelector('#enrollBtn');
 		const submit = document.querySelector('#submit');
