@@ -36,9 +36,11 @@
 			  	</li>
 			</ul>
 		</div>
-		<div><!-- 컨텐츠 출력 공간 -->
-			<!-- <form id="editForm" method="post" th:action="members/${session.loginMember.memberNo}/edit?info=general" enctype="multipart/form-data"> -->
-			<form id="editForm" method="post" enctype="multipart/form-data">
+		<div><!-- 컨텐츠 출력 공간 --> 
+			<!-- members/{memberNo}/edit?info=general -->
+			<form id="editForm" method="post" th:action="@{/members/{memberNo}/edit(memberNo=${session.loginMember.memberNo}, info=${info})}" enctype="multipart/form-data">
+			<!-- <form id="editForm" method="post" enctype="multipart/form-data"> -->
+				<input type="hidden" name="changeObj"/>
 				<table class="table table-hover align-middle">
 					<tr>
 						<td>프로필 사진</td>
@@ -56,8 +58,9 @@
 							</div>
 							<div id="profileBtns">
 								<input type="file" id="profile" name="file" class="form-control" accept=".png, .jpg, .jpeg" aria-describedby="profileDiv"/>
-								<br/>
-								<button type="button" id="removeProfile" class="btn btn-primary" style="width: 300px;">제거하기</button>
+								<br/><br/>
+								<button type="button" id="removeProfile" class="btn btn-primary" style="width: 150px;">제거하기</button>
+								<button type="button" id="rollbackProfile" class="btn btn-primary" style="width: 150px;">되돌리기</button>
 							</div>
 						</td>
 					</tr>
@@ -199,15 +202,29 @@
 					preview.style.width = '100%';
 					preview.style.width = '100%';
 				}
+				
+				changeObj.profileChange = true;
 			});
 			// 프로필 미리보기 기능(끝)
 			
 			// 프로필 미리보기 제거 기능(시작)
 			document.querySelector('#removeProfile').addEventListener('click', () => {
 				file.value = ''; // 첨부 파일 입력 요소를 초기화
-				preview.src = 'image/icon/profile_male.png'; // 미리보기 이미지 요소를 임시 이미지로 지정함
+				preview.src = '/image/icon/profile_male.png'; // 미리보기 이미지 요소를 임시 이미지로 지정함
+				
+				changeObj.profileChange = true;
 			});
 			// 프로필 미리보기 제거 기능(끝)
+			
+			// 프로필 되돌리기 기능 (시작)
+			document.querySelector('#rollbackProfile').addEventListener('click', () => {
+				//원래 사진 경로 탐색
+				console.log(loginMember.profileRename);
+				preview.src = '/' + loginMember.profileRename;// 미리보기 이미지 요소를 기존의 이미지로 지정함
+				file.value = ''; // 첨부 파일 입력 요소를 초기화
+				changeObj.profileChange = false;
+			});
+			// 프로필 되돌리기 기능 (끝)
 			
 			// 아이디 중복 확인(시작) 
 			const memberId = document.querySelector('#memberId');
@@ -466,6 +483,7 @@
 			
 			//수정된 항목만 추리기 (시작)
 			const changeObj = { //수정된 요소를 구분할 데이터를 담은 배열
+				"profileChange" : false,
 				"idChange" : false,
 				"nameChange" : false,
 				"genderChange" : false,
@@ -537,11 +555,15 @@
 				if(checkvalid()) {
 					console.log('유효성 통과');
 					checkChange(); //수정된 요소 조사 -> changeObj
+					
+					document.getElementsByName('changeObj')[0].value = JSON.stringify(changeObj);
+					document.querySelector('#editForm').submit();
+					
 				} else {
 					console.log('유효성 통과 못함');
 				}
 				
-				//location.href=`members/${memberNo}/info/edit`;
+				
 			});
 			// 회원 일반정보 수정 폼 요청 (끝)
 		}

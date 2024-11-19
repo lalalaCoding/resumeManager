@@ -1,5 +1,6 @@
 package com.my.resumeManager.common.gcs;
 
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class GCSController {
 	private final GCSService gcsService;
 
@@ -28,6 +31,11 @@ public class GCSController {
     	gcsService.downloadObject(profileMap.get("objectName"), profileMap.get("destFilePath"));
     }
     
-    
+    public void objectDelete(String objectName) {
+    	// 프로젝트 아이디, 버킷 이름 : application.properties에 존재 -> 서비스단에서 해결
+    	// 객체 이름이 필요함
+    	log.info("삭제하려는 객체명={}", objectName);
+    	gcsService.deleteObject(objectName);
+    }
     
 }

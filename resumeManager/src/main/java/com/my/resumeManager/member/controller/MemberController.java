@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.resumeManager.common.gcs.GCSController;
 import com.my.resumeManager.common.gcs.GCSRequest;
 import com.my.resumeManager.member.model.service.MemberService;
@@ -36,7 +39,7 @@ public class MemberController {
 	private MemberService mService;
 	
 	@Autowired
-	private GCSController gContoller;
+	private GCSController gController;
 	
 	@Autowired
 	private BCryptPasswordEncoder bCrypt;
@@ -80,7 +83,7 @@ public class MemberController {
 				
 				if(imageResult > 0) { // 회원가입 성공
 					result = true;
-					gContoller.objectUpload(profile); // DB에 회원 정보 삽입이 성공했을 때만, GCS의 버킷에 업로드를 요청한다.
+					gController.objectUpload(profile); // DB에 회원 정보 삽입이 성공했을 때만, GCS의 버킷에 업로드를 요청한다.
 				} else { // 회원가입 실패
 					result = false;
 				}
@@ -263,7 +266,7 @@ public class MemberController {
 				log.info("파일존재={}", myProfile.exists());
 				
 				if (!myProfile.exists()) { //로컬에 프로필 사진이 저장되어 있지 않음
-					gContoller.objectDownload(profileMap);
+					gController.objectDownload(profileMap);
 				}
 			}
 			
@@ -280,28 +283,94 @@ public class MemberController {
 	}
 	
 	@GetMapping("members/{memberNo}/edit")
-	public String editMemberInfo(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpSession session, Model model) {
+	public String editMemberPage(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpSession session, Model model) {
 		log.info("회원 번호={}",memberNo);
 		//로그인 여부 -> 요청 회원번호와 로그인한 회원번호 일치 여부
-		
-		if (info.equals("general")) { //회원 일반정보 수정 폼으로 이동
-			model.addAttribute("info", info);
-			return "member/generalEditInfo";
-		} else if (info.equals("pwd")) { //회원 비밀번호 수정 폼으로 이동
-			
-			
-			
-			
-			
-			return null;
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember == null) { //로그인 x
+			throw new MemberException("로그인 후 이용해주세요.");
+		} else if (loginMember.getMemberNo() != memberNo) { //로그인o, 본인 조회 요청x
+			throw new MemberException("잘못된 요청입니다.");
 		} else {
+			if (info.equals("general")) { //회원 일반정보 수정 폼으로 이동
+				model.addAttribute("info", info);
+				return "member/generalEditInfo";
+			} else if (info.equals("pwd")) { //회원 비밀번호 수정 폼으로 이동
+				
+				
+				
+				return null;
+			} else {
+				throw new MemberException("잘못된 요청입니다.");
+			}
+			
+		}
+	}
+	
+	
+	//members/{memberNo}/edit?info=general
+	@PostMapping("members/{memberNo}/edit")
+	public String editMember(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpSession session, Model model,
+								@ModelAttribute Member m, @ModelAttribute GCSRequest profile, @RequestParam("changeObj") String changeObj,
+								RedirectAttributes ra) {
+		log.info("회원 수정정보={}", m);
+		log.info("프로필 정보={}", profile);
+		log.info("변경 정보={}", changeObj);
+		
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember == null) {
+			throw new MemberException("로그인 후 이용해주세요.");
+		} else if (loginMember.getMemberNo() != memberNo) {
 			throw new MemberException("잘못된 요청입니다.");
 		}
 		
+		//로그인o && 수정하려는 회원 번호 == 로그인된 회원 번호
+		//jacksondatabind : 변경 정보를 Map으로 가공
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Boolean> changeMap = null;
+		try {
+			changeMap = mapper.readValue(changeObj, new TypeReference<HashMap<String,Boolean>>(){});
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		log.info("changeMap={}", changeMap);
+		log.info("changeMap2={}", changeMap.get("profileChange"));
+		
+		if (changeMap.get("profileChange")) { //프로필 변경o : MultipartFile 객체 자체는 무조건 생성되어 넘어옴
+			//기존 프로필 정보o : gcs -> 삭제
+			log.info("프로필 유무={}", loginMember.getProfileRename());
+			if (loginMember.getProfileRename() != null) {
+				gController.objectDelete(loginMember.getProfileRename());
+			}
+			
+			
+			
+			
+			
+			
+			//제거하기와 교체하기를 구분하자.
+			System.out.println(profile.getFile());
+			MultipartFile file = profile.getFile();
+			if (!file.isEmpty()) { //프로필 교체하기 요청
+				//db -> 수정
+				
+				
+				
+				
+				
+				
+				
+			} else { //프로필 제거하기 요청
+				//기존의 프로필 정보가 존재 : db -> 삭제
+				//기존의 프로필 정보가 존재x : 아무것도 할 필요가 없음
+			}
+		} 
 		
 		
 		
-		
+		ra.addAttribute("info", "general");
+		return "redirect:/infoPage.me";
 	}
 	
 	
@@ -309,8 +378,16 @@ public class MemberController {
 	
 	
 	
+	//실험실
+	@GetMapping("srcTest")
+	public String srcTest1() {
+		return "member/generalInfo2";
+	}
 	
-	
+	@GetMapping("src/Test")
+	public String srcTest2() {
+		return "member/generalEditInfo2";
+	}
 	
 	
 	

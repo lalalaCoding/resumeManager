@@ -32,8 +32,6 @@ public class GCSService {
 //    @Autowired
 //    private Environment env; 
     
-    
-    
     public void uploadObject(GCSRequest gcsRequest) throws IOException {
 
         String keyFileName = "resumemanager-437401-375b06ed51be.json"; // 나의 json 파일 이름을 지정한다.
@@ -84,9 +82,38 @@ public class GCSService {
 	            + bucketName
 	            + " to "
 	            + destFilePath);
-	  }
+	}
     
-    
+    public void deleteObject(String objectName) {
+        // The ID of your GCP project
+        // String projectId = "your-project-id";
+
+        // The ID of your GCS bucket
+        // String bucketName = "your-unique-bucket-name";
+
+        // The ID of your GCS object
+        // String objectName = "your-object-name";
+
+        Storage storage = StorageOptions.newBuilder().setProjectId(this.projectId).build().getService(); //스토리지에 접근
+        Blob blob = storage.get(this.bucketName, objectName); //버킷과 버킷 내 오브젝트에 접근
+        if (blob == null) { //삭제 대상이되는 오브젝트가 버킷 내부에 존재하지 않는 경우
+          System.out.println("The object " + objectName + " wasn't found in " + bucketName);
+          return;
+        }
+        BlobId idWithGeneration = blob.getBlobId(); //오브젝트에 대한 id값 조회
+        // Deletes the blob specified by its id. When the generation is present and non-null it will be
+        // specified in the request.
+        // If versioning is enabled on the bucket and the generation is present in the delete request,
+        // only the version of the object with the matching generation will be deleted.
+        // If instead you want to delete the current version, the generation should be dropped by
+        // performing the following.
+        // BlobId idWithoutGeneration =
+        //    BlobId.of(idWithGeneration.getBucket(), idWithGeneration.getName());
+        // storage.delete(idWithoutGeneration);
+        storage.delete(idWithGeneration); 
+
+        System.out.println("Object " + objectName + " was permanently deleted from " + bucketName);
+      }
     
 
 }
