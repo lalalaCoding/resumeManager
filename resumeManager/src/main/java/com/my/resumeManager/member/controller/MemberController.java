@@ -339,7 +339,6 @@ public class MemberController {
 		} 
 		
 		log.info("changeMap={}", changeMap);
-		log.info("changeMap2={}", changeMap.get("profileChange"));
 		
 		if (changeMap.get("profileChange")) { //프로필 변경o : MultipartFile 객체 자체는 무조건 생성되어 넘어옴
 			//기존 프로필 정보o : gcs -> 삭제
@@ -386,12 +385,48 @@ public class MemberController {
 				log.info("프로필 유무={}", loginMember.getProfileRename());
 				if (oldProfileExist) { //기존의 프로필 정보가 존재
 					int imageResult = mService.deleteImage(memberNo); //db -> 삭제
-					deleteFile(loginMember);//로컬 폴더에서 기존 프로필 파일 삭제 (파일 저장위치와 파일 이름이 필요함)
+					//deleteFile(loginMember);//로컬 폴더에서 기존 프로필 파일 삭제 (파일 저장위치와 파일 이름이 필요함)
 					editFlag = imageResult > 0 ? true : false;
 				}
 				//기존의 프로필 정보가 존재x : 아무것도 할 필요가 없음
 			}
 		} 
+		
+		HashMap<String, Object> editMap = new HashMap<>();
+		//nameChange=true, genderChange=false, ageChange=false, addressChange=false, emailChange=false, phoneChange=false, idChange=true, historyChange=false}
+		if (changeMap.get("nameChange")) {
+			editMap.put("MEMBER_NAME", m.getMemberName());
+		}
+		if (changeMap.get("genderChange")) {
+			editMap.put("MEMBER_GENDER", m.getMemberGender());
+		}
+		if (changeMap.get("ageChange")) {
+			editMap.put("MEMBER_AGE", m.getMemberAge());
+		}
+		if (changeMap.get("addressChange")) {
+			editMap.put("MEMBER_ADDRESS", m.getMemberAddress());
+		}
+		if (changeMap.get("emailChange")) {
+			editMap.put("MEMBER_EMAIL", m.getMemberEmail());
+		}
+		if (changeMap.get("phoneChange")) {
+			editMap.put("MEMBER_PHONE", m.getMemberPhone());
+		}
+		if (changeMap.get("idChange")) {
+			editMap.put("MEMBER_ID", m.getMemberId());
+		}
+		if (changeMap.get("historyChange")) {
+			editMap.put("MEMBER_HISTORY", m.getMemberHistory());
+		}
+		
+		log.info("수정 컬럼과 값={}", editMap);
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		//세션에 있는 로그인 정보를 최신화
