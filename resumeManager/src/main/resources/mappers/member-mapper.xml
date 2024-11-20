@@ -69,10 +69,6 @@
 		SELECT * FROM MEMBER join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_NO = ${memberNo} and member_status = 'Y'
 	</select>
 	
-	
-	
-	
-	
 	<!-- 비밀번호 찾기 : 아이디를 기준으로 아이디와 전화번호, 회원번호 조회 -->
 	<select id="checkIdPhone" resultType="Member">
 		SELECT MEMBER_ID, MEMBER_PHONE, MEMBER_NO
@@ -87,9 +83,16 @@
 		WHERE MEMBER_NO = ${memberNo}
 	</update>
 	
+	<!-- 프로필 사진 교체 요청 -->
+	<update id="updateImage">
+		update profile_image
+		set profile_original = #{profileOrigin}, profile_rename = #{profileRename}
+		where member_no = ${memberNo}
+	</update>
 	
-	
-	
-	
+	<!-- 프로필 사진 삭제 요청 -->
+	<delete id="deleteImage">
+		delete from profile_image where member_no = ${memberNo}
+	</delete>
 	
 </mapper> 

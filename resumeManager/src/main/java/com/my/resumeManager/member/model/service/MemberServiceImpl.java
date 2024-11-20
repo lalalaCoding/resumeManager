@@ -52,6 +52,16 @@ public class MemberServiceImpl implements MemberService{
 	public int pwdModify(Member m) {
 		return mMapper.pwdModify(m);
 	}
+
+	@Override
+	public int updateImage(Member m) {
+		return mMapper.updateImage(m);
+	}
+
+	@Override
+	public int deleteImage(int memberNo) {
+		return mMapper.deleteImage(memberNo);
+	}
 	
 	
 	

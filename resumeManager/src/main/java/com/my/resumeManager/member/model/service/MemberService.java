@@ -22,4 +22,8 @@ public interface MemberService {
 
 	int pwdModify(Member m);
 
+	int updateImage(Member m);
+
+	int deleteImage(int memberNo);
+
 }

@@ -24,5 +24,9 @@ public interface MemberMapper {
 	ArrayList<Member> checkIdPhone(Member m);
 
 	int pwdModify(Member m);
+
+	int updateImage(Member m);
+
+	int deleteImage(int memberNo);
 	
 }
