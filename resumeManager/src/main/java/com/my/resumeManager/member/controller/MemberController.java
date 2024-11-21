@@ -296,10 +296,8 @@ public class MemberController {
 				model.addAttribute("info", info);
 				return "member/generalEditInfo";
 			} else if (info.equals("pwd")) { //회원 비밀번호 수정 폼으로 이동
-				
-				
-				
-				return null;
+				model.addAttribute("info", info);
+				return "member/modifyPwd";
 			} else {
 				throw new MemberException("잘못된 요청입니다.");
 			}
@@ -393,7 +391,6 @@ public class MemberController {
 		} 
 		
 		HashMap<String, Object> editMap = new HashMap<>();
-		//nameChange=true, genderChange=false, ageChange=false, addressChange=false, emailChange=false, phoneChange=false, idChange=true, historyChange=false}
 		editMap.put("MEMBER_NO", m.getMemberNo());
 		if (changeMap.get("nameChange")) {
 			editMap.put("MEMBER_NAME", m.getMemberName());
@@ -421,27 +418,28 @@ public class MemberController {
 		}
 		
 		log.info("수정 컬럼과 값={}", editMap);
-		int updResult = mService.updateMember(editMap);
-		editFlag = updResult > 0 ? true : false;
-		
-		
-		
-		
-		
-		
+		if (editMap.size() > 1) {
+			int updResult = mService.updateMember(editMap);
+			editFlag = updResult > 0 ? true : false;
+		}
 		
 		//세션에 있는 로그인 정보를 최신화 : 아이디를 변경한 경우(m), 변경하지 않은 경우(loginMember)
 		Member updateLoginMember;
-		if (changeMap.get("idChange")) { //아이디를 변경한 경우
-			updateLoginMember = mService.login(m);
-		} else {
-			updateLoginMember = mService.login(loginMember);
+		if (editMap.size() > 1 || changeMap.get("profileChange")) { // 수정 작업이 발생한 경우
+			if (changeMap.get("idChange")) { //아이디를 변경한 경우
+				updateLoginMember = mService.login(m);
+			} else { //아이디를 변경하지 않은 경우
+				updateLoginMember = mService.login(loginMember);
+			}
+			session.setAttribute("loginMember", updateLoginMember);
 		}
 		
-		session.setAttribute("loginMember", updateLoginMember);
-		
-		ra.addAttribute("info", "general");
-		return "redirect:/infoPage.me";
+		if (editFlag) {
+			ra.addAttribute("info", "general");
+			return "redirect:/infoPage.me";
+		} else {
+			throw new MemberException("서비스 요청 실패");
+		}
 	}
 	
 	public boolean deleteFile(Member loginMember) {

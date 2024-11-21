@@ -38,7 +38,7 @@
 						        <!-- <li><a class="dropdown-item" th:href="${session.loginMember != null ? infoPage.me?info=general">일반 정보</a></li> -->
 						        <li><a class="dropdown-item" href="epiloguePage.ep">나의 후기</a></li>
 						        <!-- <li><hr class="dropdown-divider"></li> -->
-						        <li><a class="dropdown-item" href="infoPage.me?info=pwd">비밀번호 수정</a></li>
+						        <li><a class="dropdown-item" th:href="@{/members/{memberNo}/edit(memberNo=${session.loginMember.memberNo}, info='pwd')}">비밀번호 수정</a></li>
 						        <li><a class="dropdown-item" href="chatPage.ch">나의 채팅</a></li>
 					        </ul>
 			        	</li>
