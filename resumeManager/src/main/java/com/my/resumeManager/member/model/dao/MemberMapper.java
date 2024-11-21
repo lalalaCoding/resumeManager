@@ -1,8 +1,10 @@
 package com.my.resumeManager.member.model.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.my.resumeManager.member.model.vo.Member;
 
@@ -28,5 +30,7 @@ public interface MemberMapper {
 	int updateImage(Member m);
 
 	int deleteImage(int memberNo);
+
+	int updateMember(@Param("editMap")HashMap<String, Object> editMap);
 	
 }

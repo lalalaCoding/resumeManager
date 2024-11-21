@@ -95,4 +95,17 @@
 		delete from profile_image where member_no = ${memberNo}
 	</delete>
 	
+	<!-- 회원 일반정보 수정 요청 -->
+	<update id="updateMember">
+		update member
+		<set>
+			<foreach collection="editMap" index="key" item="value" separator=", ">
+				<if test='!key.equals("MEMBER_NO")'>${key} = #{value}</if>
+			</foreach>
+		</set>
+		where member_no = ${editMap.MEMBER_NO}
+	</update>
+	
+	
+	
 </mapper> 

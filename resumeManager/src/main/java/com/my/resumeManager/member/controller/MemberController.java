@@ -325,7 +325,7 @@ public class MemberController {
 			throw new MemberException("잘못된 요청입니다.");
 		} else {
 			m.setMemberNo(memberNo);
-			m.setMemberId(loginMember.getMemberId());
+			//m.setMemberId(loginMember.getMemberId()); //여기에서 아이디를 수정하면 이후에 멤버 테이블에서 수정할 값을 찾을 수 없음
 		}
 		
 		//로그인o && 수정하려는 회원 번호 == 로그인된 회원 번호
@@ -394,6 +394,7 @@ public class MemberController {
 		
 		HashMap<String, Object> editMap = new HashMap<>();
 		//nameChange=true, genderChange=false, ageChange=false, addressChange=false, emailChange=false, phoneChange=false, idChange=true, historyChange=false}
+		editMap.put("MEMBER_NO", m.getMemberNo());
 		if (changeMap.get("nameChange")) {
 			editMap.put("MEMBER_NAME", m.getMemberName());
 		}
@@ -420,6 +421,8 @@ public class MemberController {
 		}
 		
 		log.info("수정 컬럼과 값={}", editMap);
+		int updResult = mService.updateMember(editMap);
+		editFlag = updResult > 0 ? true : false;
 		
 		
 		
@@ -427,10 +430,14 @@ public class MemberController {
 		
 		
 		
+		//세션에 있는 로그인 정보를 최신화 : 아이디를 변경한 경우(m), 변경하지 않은 경우(loginMember)
+		Member updateLoginMember;
+		if (changeMap.get("idChange")) { //아이디를 변경한 경우
+			updateLoginMember = mService.login(m);
+		} else {
+			updateLoginMember = mService.login(loginMember);
+		}
 		
-		
-		//세션에 있는 로그인 정보를 최신화
-		Member updateLoginMember = mService.login(m);
 		session.setAttribute("loginMember", updateLoginMember);
 		
 		ra.addAttribute("info", "general");

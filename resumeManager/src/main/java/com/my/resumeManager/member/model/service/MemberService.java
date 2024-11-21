@@ -1,6 +1,7 @@
 package com.my.resumeManager.member.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.my.resumeManager.member.model.vo.Member;
 
@@ -25,5 +26,7 @@ public interface MemberService {
 	int updateImage(Member m);
 
 	int deleteImage(int memberNo);
+
+	int updateMember(HashMap<String, Object> editMap);
 
 }

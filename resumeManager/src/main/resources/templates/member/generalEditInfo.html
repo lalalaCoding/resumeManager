@@ -121,11 +121,11 @@
 					<tr>
 						<td>휴대전화</td>
 						<td>
-							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 0, 3)}" readOnly/>
+							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 0, 3)}"/>
 							-
-							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 3, 7)}" readOnly/>
+							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 3, 7)}"/>
 							-
-							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 7)}" readOnly/>
+							<input type="number" class="form-control phoneNumber" min="0" th:value="${#strings.substring(session.loginMember.memberPhone, 7)}"/>
 							<button type="button" id="phoneCheck" class="btn btn-primary">인증하기</button>
 							<input type="hidden" name="memberPhone"/>
 						</td>
@@ -361,7 +361,7 @@
 			let phoneFlag = true;
 			phoneConfirm[1].addEventListener('click', () => {
 				$.ajax({
-					url : 'get-code',
+					url : '/get-code',
 					type: 'post',
 					success : data => {
 						if(phoneConfirm[0].value == data){ // 인증번호를 정상적으로 입력하였을 때
