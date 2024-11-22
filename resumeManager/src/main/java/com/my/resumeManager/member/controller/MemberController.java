@@ -309,136 +309,158 @@ public class MemberController {
 	//members/{memberNo}/edit?info=general
 	@PostMapping("members/{memberNo}/edit")
 	public String editMember(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpSession session, Model model,
-								@ModelAttribute Member m, @ModelAttribute GCSRequest profile, @RequestParam("changeObj") String changeObj,
+								@ModelAttribute Member m, @ModelAttribute GCSRequest profile, @RequestParam(value="changeObj", required=false) String changeObj,
+								@RequestParam(value="oldPwd", required=false) String oldPwd, @RequestParam(value="newPwd", required=false) String newPwd,
 								RedirectAttributes ra) {
-		log.info("회원 수정정보={}", m);
-		log.info("프로필 수정정보={}", profile);
-		log.info("변경 정보={}", changeObj);
 		
-		boolean editFlag = false; //수정 성공 여부를 판단해줄 플래그
-		Member loginMember = (Member) session.getAttribute("loginMember");
-		if (loginMember == null) {
-			throw new MemberException("로그인 후 이용해주세요.");
-		} else if (loginMember.getMemberNo() != memberNo) {
-			throw new MemberException("잘못된 요청입니다.");
-		} else {
-			m.setMemberNo(memberNo);
-			//m.setMemberId(loginMember.getMemberId()); //여기에서 아이디를 수정하면 이후에 멤버 테이블에서 수정할 값을 찾을 수 없음
-		}
+		log.info("요청 info={}", info);
 		
-		//로그인o && 수정하려는 회원 번호 == 로그인된 회원 번호
-		//jacksondatabind : 변경 정보를 Map으로 가공
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String,Boolean> changeMap = null;
-		try {
-			changeMap = mapper.readValue(changeObj, new TypeReference<HashMap<String,Boolean>>(){});
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
 		
-		log.info("changeMap={}", changeMap);
-		
-		if (changeMap.get("profileChange")) { //프로필 변경o : MultipartFile 객체 자체는 무조건 생성되어 넘어옴
-			//기존 프로필 정보o : gcs -> 삭제
-			log.info("프로필 유무={}", loginMember.getProfileRename());
-			boolean oldProfileExist = loginMember.getProfileRename() == null ? false : true;
+		if (info.equals("general")) { //일반 정보 수정 요청
+			log.info("회원 수정정보={}", m);
+			log.info("프로필 수정정보={}", profile);
+			log.info("변경 정보={}", changeObj);
 			
-			if (oldProfileExist) { //기존 프로필 정보가 존재함
-				gController.objectDelete(loginMember.getProfileRename()); //GCS에서 기존 프로필 개체 삭제
-				deleteFile(loginMember);//로컬 폴더에서 기존 프로필 파일 삭제 (파일 저장위치와 파일 이름이 필요함)
+			boolean editFlag = false; //수정 성공 여부를 판단해줄 플래그
+			Member loginMember = (Member) session.getAttribute("loginMember");
+			if (loginMember == null) {
+				throw new MemberException("로그인 후 이용해주세요.");
+			} else if (loginMember.getMemberNo() != memberNo) {
+				throw new MemberException("잘못된 요청입니다.");
+			} else {
+				m.setMemberNo(memberNo);
+				//m.setMemberId(loginMember.getMemberId()); //여기에서 아이디를 수정하면 이후에 멤버 테이블에서 수정할 값을 찾을 수 없음
 			}
 			
-			MultipartFile file = profile.getFile();
-			if (!file.isEmpty()) { //프로필 교체하기 요청
-				// GCS의 버킷에 저장할 파일 이름을 지정한다.
-				String rename = getRename(file);
-				profile.setName(rename); 
-				
-				// DB에 저장할 이미지 파일 정보를 기록한다.
-				m.setProfileOrigin(profile.getFile().getOriginalFilename()); // 원본 파일명 -> 추후에 다운로드를 제공할 때 이용가능함
-				m.setProfileRename(rename); // 가공 파일명 -> 추후에 조회를 제공할 때 버킷에서 해당 파일을 찾을 수 있는 단서가 됨
-				m.setProfilePath("C:\\resumeManager_downloadFiles"); // GCS -> 로컬에 저장한 파일을 불러올 때 사용한다.
-				
-				//기존 프로필이 존재o : 프로필 테이블 업데이트
-				//기존 프로필이 존재x : 프로필 테이블 삽입
-				int imageResult = 0;
-				if (oldProfileExist) {
-					imageResult = mService.updateImage(m); //db -> update
-				} else {
-					imageResult = mService.enrollImage(m); //db -> insert
-				}
-				
-				log.info("프로필 수정 결과={}", imageResult);
-				
-				if (imageResult > 0) {
-					try {
-						gController.objectUpload(profile); //gcs -> 삽입
-						editFlag = true;
-					} catch (IOException e) {
-						editFlag = false;
-						e.printStackTrace();
-					}
-				}
-			} else { //프로필 제거하기 요청
+			//로그인o && 수정하려는 회원 번호 == 로그인된 회원 번호
+			//jacksondatabind : 변경 정보를 Map으로 가공
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String,Boolean> changeMap = null;
+			try {
+				changeMap = mapper.readValue(changeObj, new TypeReference<HashMap<String,Boolean>>(){});
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+			
+			log.info("changeMap={}", changeMap);
+			
+			if (changeMap.get("profileChange")) { //프로필 변경o : MultipartFile 객체 자체는 무조건 생성되어 넘어옴
+				//기존 프로필 정보o : gcs -> 삭제
 				log.info("프로필 유무={}", loginMember.getProfileRename());
-				if (oldProfileExist) { //기존의 프로필 정보가 존재
-					int imageResult = mService.deleteImage(memberNo); //db -> 삭제
-					//deleteFile(loginMember);//로컬 폴더에서 기존 프로필 파일 삭제 (파일 저장위치와 파일 이름이 필요함)
-					editFlag = imageResult > 0 ? true : false;
+				boolean oldProfileExist = loginMember.getProfileRename() == null ? false : true;
+				
+				if (oldProfileExist) { //기존 프로필 정보가 존재함
+					gController.objectDelete(loginMember.getProfileRename()); //GCS에서 기존 프로필 개체 삭제
+					deleteFile(loginMember);//로컬 폴더에서 기존 프로필 파일 삭제 (파일 저장위치와 파일 이름이 필요함)
 				}
-				//기존의 프로필 정보가 존재x : 아무것도 할 필요가 없음
+				
+				MultipartFile file = profile.getFile();
+				if (!file.isEmpty()) { //프로필 교체하기 요청
+					// GCS의 버킷에 저장할 파일 이름을 지정한다.
+					String rename = getRename(file);
+					profile.setName(rename); 
+					
+					// DB에 저장할 이미지 파일 정보를 기록한다.
+					m.setProfileOrigin(profile.getFile().getOriginalFilename()); // 원본 파일명 -> 추후에 다운로드를 제공할 때 이용가능함
+					m.setProfileRename(rename); // 가공 파일명 -> 추후에 조회를 제공할 때 버킷에서 해당 파일을 찾을 수 있는 단서가 됨
+					m.setProfilePath("C:\\resumeManager_downloadFiles"); // GCS -> 로컬에 저장한 파일을 불러올 때 사용한다.
+					
+					//기존 프로필이 존재o : 프로필 테이블 업데이트
+					//기존 프로필이 존재x : 프로필 테이블 삽입
+					int imageResult = 0;
+					if (oldProfileExist) {
+						imageResult = mService.updateImage(m); //db -> update
+					} else {
+						imageResult = mService.enrollImage(m); //db -> insert
+					}
+					
+					log.info("프로필 수정 결과={}", imageResult);
+					
+					if (imageResult > 0) {
+						try {
+							gController.objectUpload(profile); //gcs -> 삽입
+							editFlag = true;
+						} catch (IOException e) {
+							editFlag = false;
+							e.printStackTrace();
+						}
+					}
+				} else { //프로필 제거하기 요청
+					log.info("프로필 유무={}", loginMember.getProfileRename());
+					if (oldProfileExist) { //기존의 프로필 정보가 존재
+						int imageResult = mService.deleteImage(memberNo); //db -> 삭제
+						//deleteFile(loginMember);//로컬 폴더에서 기존 프로필 파일 삭제 (파일 저장위치와 파일 이름이 필요함)
+						editFlag = imageResult > 0 ? true : false;
+					}
+					//기존의 프로필 정보가 존재x : 아무것도 할 필요가 없음
+				}
+			} 
+			
+			HashMap<String, Object> editMap = new HashMap<>();
+			editMap.put("MEMBER_NO", m.getMemberNo());
+			if (changeMap.get("nameChange")) {
+				editMap.put("MEMBER_NAME", m.getMemberName());
 			}
-		} 
-		
-		HashMap<String, Object> editMap = new HashMap<>();
-		editMap.put("MEMBER_NO", m.getMemberNo());
-		if (changeMap.get("nameChange")) {
-			editMap.put("MEMBER_NAME", m.getMemberName());
-		}
-		if (changeMap.get("genderChange")) {
-			editMap.put("MEMBER_GENDER", m.getMemberGender());
-		}
-		if (changeMap.get("ageChange")) {
-			editMap.put("MEMBER_AGE", m.getMemberAge());
-		}
-		if (changeMap.get("addressChange")) {
-			editMap.put("MEMBER_ADDRESS", m.getMemberAddress());
-		}
-		if (changeMap.get("emailChange")) {
-			editMap.put("MEMBER_EMAIL", m.getMemberEmail());
-		}
-		if (changeMap.get("phoneChange")) {
-			editMap.put("MEMBER_PHONE", m.getMemberPhone());
-		}
-		if (changeMap.get("idChange")) {
-			editMap.put("MEMBER_ID", m.getMemberId());
-		}
-		if (changeMap.get("historyChange")) {
-			editMap.put("MEMBER_HISTORY", m.getMemberHistory());
-		}
-		
-		log.info("수정 컬럼과 값={}", editMap);
-		if (editMap.size() > 1) {
-			int updResult = mService.updateMember(editMap);
-			editFlag = updResult > 0 ? true : false;
-		}
-		
-		//세션에 있는 로그인 정보를 최신화 : 아이디를 변경한 경우(m), 변경하지 않은 경우(loginMember)
-		Member updateLoginMember;
-		if (editMap.size() > 1 || changeMap.get("profileChange")) { // 수정 작업이 발생한 경우
-			if (changeMap.get("idChange")) { //아이디를 변경한 경우
-				updateLoginMember = mService.login(m);
-			} else { //아이디를 변경하지 않은 경우
-				updateLoginMember = mService.login(loginMember);
+			if (changeMap.get("genderChange")) {
+				editMap.put("MEMBER_GENDER", m.getMemberGender());
 			}
-			session.setAttribute("loginMember", updateLoginMember);
-		}
-		
-		if (editFlag) {
-			ra.addAttribute("info", "general");
-			return "redirect:/infoPage.me";
+			if (changeMap.get("ageChange")) {
+				editMap.put("MEMBER_AGE", m.getMemberAge());
+			}
+			if (changeMap.get("addressChange")) {
+				editMap.put("MEMBER_ADDRESS", m.getMemberAddress());
+			}
+			if (changeMap.get("emailChange")) {
+				editMap.put("MEMBER_EMAIL", m.getMemberEmail());
+			}
+			if (changeMap.get("phoneChange")) {
+				editMap.put("MEMBER_PHONE", m.getMemberPhone());
+			}
+			if (changeMap.get("idChange")) {
+				editMap.put("MEMBER_ID", m.getMemberId());
+			}
+			if (changeMap.get("historyChange")) {
+				editMap.put("MEMBER_HISTORY", m.getMemberHistory());
+			}
+			
+			log.info("수정 컬럼과 값={}", editMap);
+			if (editMap.size() > 1) {
+				int updResult = mService.updateMember(editMap);
+				editFlag = updResult > 0 ? true : false;
+			}
+			
+			//세션에 있는 로그인 정보를 최신화 : 아이디를 변경한 경우(m), 변경하지 않은 경우(loginMember)
+			Member updateLoginMember;
+			if (editMap.size() > 1 || changeMap.get("profileChange")) { // 수정 작업이 발생한 경우
+				if (changeMap.get("idChange")) { //아이디를 변경한 경우
+					updateLoginMember = mService.login(m);
+				} else { //아이디를 변경하지 않은 경우
+					updateLoginMember = mService.login(loginMember);
+				}
+				session.setAttribute("loginMember", updateLoginMember);
+			}
+			
+			if (editFlag) {
+				ra.addAttribute("info", "general");
+				return "redirect:/infoPage.me";
+			} else {
+				throw new MemberException("서비스 요청 실패");
+			}
+		} else if (info.equals("pwd")) { //비밀번호 수정 요청
+			log.info("현재 비밀번호={}", oldPwd);
+			log.info("새로운 비밀번호={}", newPwd);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			return null;
 		} else {
-			throw new MemberException("서비스 요청 실패");
+			throw new MemberException("잘못된 요청입니다.");
 		}
 	}
 	

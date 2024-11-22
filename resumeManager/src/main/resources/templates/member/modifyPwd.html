@@ -6,7 +6,9 @@
 	<!-- 페이지명 왼쪽에 아이콘 삽입 -->
 	<link rel="shortcut icon" href="/image/icon/logo.png">
 	<!-- 외부 스타일 시트 연결 -->
-	<link href="/css/find.css?after" rel="stylesheet" type="text/css"/>
+	<link href="/css/modifyPwd.css?after" rel="stylesheet" type="text/css"/>
+	<!-- Bootstrap icon -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
 	<div th:replace="~{common/header :: header}"></div>
@@ -14,77 +16,39 @@
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>
 		<div>
-			<h1>비밀번호 변경하기</h1>
+			<h3>비밀번호 변경 [[${info}]]</h3>
+			<p>* <em>다른 아이디/사이트에서 사용한 적 없는 비밀번호</em></p>
+			<p>* <em>이전에 사용한 적 없는 비밀번호</em>를 사용해주세요.</p>
 			<div>
-				<form method="post" action="find.me" id="findForm">
-					<table>
-						<tr>
-							<td>아이디</td>
-							<td>
-								<input type="text" th:name="${session.find == 'id' ? 'memberName' : 'memberId'}" class="form-control" th:placeholder="${session.find == 'id' ? '이름을 입력해주세요' : '아이디를 입력해주세요'}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>휴대전화 번호</td>
-							<td>
-								<input type="number" class="form-control phoneNumber" min="0"/>
-								-
-								<input type="number" class="form-control phoneNumber" min="0"/>
-								-
-								<input type="number" class="form-control phoneNumber" min="0"/>
-								<button type="button" id="phoneCheck" class="btn btn-primary">인증하기</button>
-								<input type="hidden" name="memberPhone"/>
-							</td>
-						</tr>
-						<tr>
-							<td>휴대전화 인증</td>
-							<td>
-								<input type="text" class="form-control phoneConfirm" disabled/>
-								<button type="button" class="btn btn-primary phoneConfirm" disabled>인증확인</button>
-								<span class="badge rounded-pill text-bg-light phoneConfirm">문자 인증이 필요합니다.</span>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="hidden" name="memberNo"/>
-								<input type="hidden" name="findInput"/> <!-- 아이디찾기인지 비밀번호 찾기인지 구분 -->
-								<button type="button" id="findBtn" class="btn btn-primary">변경하기</button>
-							</td>
-						</tr>
-					</table>
+				<!-- members/{memberNo}/edit?info=pwd -->
+				<form id="editForm" method="post" th:action="@{/members/{memberNo}/edit(memberNo=${session.loginMember.memberNo})}">
+					<input type="hidden" name="info" th:value="${info}"/>
+					<div class="pwdDiv">
+						<!-- active 클래스가 있을 때는 type이 password이고, 없을 때는 type이 text여야 한다. -->
+						<input type="password" name="oldPwd" class="form-control active" placeholder="현재 비밀번호"/>
+						<i class="bi bi-eye-slash"></i> <!-- <i class="bi bi-eye"></i> -->
+					</div>
+					
+					<div class="pwdDiv">
+						<!-- active 클래스가 있을 때는 type이 password이고, 없을 때는 type이 text여야 한다. -->
+						<input type="password" name="newPwd" class="form-control active" placeholder="새 비밀번호"/>
+						<i class="bi bi-eye-slash"></i> <!-- <i class="bi bi-eye"></i> -->
+					</div>
+					
+					<div class="pwdDiv">
+						<!-- active 클래스가 있을 때는 type이 password이고, 없을 때는 type이 text여야 한다. -->
+						<input type="password" class="form-control active" id="newPwdConfirm" placeholder="새 비밀번호 확인"/>
+						<i class="bi bi-eye-slash"></i> <!-- <i class="bi bi-eye"></i> -->
+					</div>
 				</form>
 			</div>
 			
-			<br/><br/>
-			
-			<!-- <div>
-				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-					<ol class="breadcrumb" th:if="${session.find == 'id'}">
-				    	<li class="breadcrumb-item active" aria-current="page">아이디 찾기</li>
-				    	<li class="breadcrumb-item"><a href="findPage.me?find=pwd">비밀번호 찾기</a></li>
-				    	<li class="breadcrumb-item"><a href="enrollPage.me">회원 가입</a></li>
-				  	</ol>
-				  	<ol class="breadcrumb" th:unless="${session.find == 'id'}">
-				    	<li class="breadcrumb-item"><a href="findPage.me?find=id">아이디 찾기</a></li>
-				    	<li class="breadcrumb-item active" aria-current="page">비밀번호 찾기</li>
-				    	<li class="breadcrumb-item"><a href="enrollPage.me">회원 가입</a></li>
-				  	</ol>
-				</nav>
-			</div> -->
-			
-			<!-- <br/><br/>
-			
-			<div>
-				간편 로그인
+			<br/>
+			<div class="btn_area">
+				<button type="button" class="btn btn-primary" id="changeSubmt">확인</button>
 				<br/>
-				<nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-					<ol class="breadcrumb">
-				    	<li class="breadcrumb-item"><a href="#">카카오</a></li>
-				    	<li class="breadcrumb-item"><a href="#">네이버</a></li>
-				    	<li class="breadcrumb-item"><a href="#">구글</a></li>
-				  	</ol>
-				</nav>
-			</div> -->
+				<button type="button" class="btn btn-light" onclick="history.back()">취소</button>
+			</div>
 		</div>
 		<div><!-- 오른쪽 공백 --></div>
 	</div>
@@ -93,246 +57,57 @@
 
 	<script th:inline="javascript">
 		window.onload = () => {
-			/*<![CDATA[*/
-			const find = /*[[${session.find}]]*/'find';
-			/*]]>*/
-			
-			//안내문구에 대한 클래스 이름을 수정하는 함수 작성 (시작)
-			const infoClass = (element) => {
-				element.classList.remove('text-bg-light');
-				element.classList.remove('text-bg-danger');
-				element.classList.add('text-bg-info');
-			}
-			
-			const dangerClass = (element) => {
-				element.classList.remove('text-bg-light');
-				element.classList.remove('text-bg-info');
-				element.classList.add('text-bg-danger');
-			}
-			
-			const lightClass = (element) => {
-				element.classList.remove('text-bg-danger');
-				element.classList.remove('text-bg-info');
-				element.classList.add('text-bg-light');
-			}
-			//안내문구에 대한 클래스 이름을 수정하는 함수 작성 (끝)
-			
-			const phoneCheck = document.querySelector('#phoneCheck'); // 본인 인증하기 버튼
-			const phoneNumbers = document.querySelectorAll('.phoneNumber'); // 휴대전화 번호 입력 요소'들'
-			const memberPhone = document.getElementsByName('memberPhone')[0]; // 완성된 휴대전화 번호를 저장할 요소
-			const phoneConfirms = document.querySelectorAll('.phoneConfirm'); // 휴대전화 인증 요소'들'
-			let findMember = ''; // 찾은 회원 정보를 저장할 변수 선언
-			const memberNo = document.getElementsByName('memberNo')[0]; // 결과를 출력할 회원 번호를 저장할 입력 요소
-			const findInput = document.getElementsByName('findInput')[0]; // 찾는 대상이 아이디인지, 비밀번호인지 저장
-			const findForm = document.querySelector('#findForm');
-			
-			if(find == 'id'){ // 아이디 찾기일 때의 입력 요소 체크
-				const memberName = document.getElementsByName('memberName')[0]; // 이름 입력 요소
-				
-				let inputName = '';
-				let inputPhone = '';
-				
-				// 본인 인증 요청 (시작) : 1) 이름과 휴대전화번호가 일치하는가? 2) 인증번호 발송 후 인증번호 입력이 제대로 이루어졌는가?
-				phoneCheck.addEventListener('click', () => {
-					console.log('본인 인증 요청 시작');
-					
-					inputName = memberName.value.trim();
-					for(const p of phoneNumbers){
-						inputPhone += p.value.trim();
-					}
-					
-					// 유효성 검사
-					// 이름과 휴대전화 번호가 일치하는지를 검사
-					if(inputName.length > 0 && inputPhone.length > 0){
-						$.ajax({
-							url : 'check-phone.me',
-							type : 'post',
-							data : {memberName : inputName, memberPhone : inputPhone},
-							success : data => { // 이름과 전화번호가 일치하는 회원이 존재하는 경우
-								console.log('일치한다.');
-								console.log(data);
-								
-								//인증번호 발송
-								if(data != ''){
-									findMember = data; // 이름과 전화번호가 일치하는 회원 정보를 전역변수 findMember에 저장한다.
-									
-									$.ajax({
-										url : '/send-one',
-										type : 'post',
-										data : {phoneNumber : inputPhone},
-										success : data => {
-											if(data.statusCode == '2000'){ // 문자가 정상적으로 전송된 경우 -> 1분간 인증번호를 입력될 수 있게 한다.
-												phoneConfirms[0].disabled = false;
-												phoneConfirms[1].disabled = false;
-												lightClass(phoneConfirms[2]);
-												phoneConfirms[2].textContent = '인증 번호를 1분 내에 확인해주세요.';
-												
-												setTimeout(() => {
-													if(!phoneFlag){ // 인증이 실패한 상태일 때
-														phoneConfirms[0].disabled = true;
-														phoneConfirms[1].disabled = true;
-														dangerClass(phoneConfirms[2]);
-														phoneConfirms[2].textContent = '인증 시간이 만료되었습니다.';
-													}
-												}, 1000*60); // 60초 동안만 인증 번호를 확인할 수 있도록 한다.
-											}
-										},
-										error : data => console.log(data)
-									});
-								} else{
-									alert('회원 정보가 일치하지 않습니다.');
-								}
-							},
-							error : data => {
-								console.log('불일치한다.');
-							}
-						});
-											
-					} else if(inputName.length == 0){
-						alert('이름을 입력해주세요.');
-						memberName.focus();
-					}
-				});
-				// 본인 인증 요청 (끝) : 1) 세션에 저장된 find 속성을 제거 2) 결과 페이지로 이동
-				
-			} else {//비밀번호 찾기일 떄의 입력 요소 체크
-				const memberId = document.getElementsByName('memberId')[0];
-				
-				let inputId = '';
-				let inputPhone = '';
-				
-				// 본인 인증 요청 (시작) : 1) 이름과 휴대전화번호가 일치하는가? 2) 인증번호 발송 후 인증번호 입력이 제대로 이루어졌는가?
-				
-				phoneCheck.addEventListener('click', () => {
-					console.log('본인 인증 요청 시작');
-					
-					inputId = memberId.value.trim();
-					for(const p of phoneNumbers){
-						inputPhone += p.value.trim();
-					}		
-					
-					// 유효성 검사
-					// 이름과 휴대전화 번호가 일치하는지를 검사
-					if(inputId.length > 0 && inputPhone.length > 0){
-						$.ajax({
-							url : 'check-phone.me',
-							type : 'post',
-							data : {memberId : inputId, memberPhone : inputPhone},
-							success : data => { // 이름과 전화번호가 일치하는 회원이 존재하는 경우
-								console.log('일치한다.');
-								console.log(data);
-								
-								//인증번호 발송
-								if(data != ''){
-									findMember = data; // 이름과 전화번호가 일치하는 회원 정보를 전역변수 findMember에 저장한다.
-									
-									$.ajax({
-										url : '/send-one',
-										type : 'post',
-										data : {phoneNumber : inputPhone},
-										success : data => {
-											if(data.statusCode == '2000'){ // 문자가 정상적으로 전송된 경우 -> 1분간 인증번호를 입력될 수 있게 한다.
-												phoneConfirms[0].disabled = false;
-												phoneConfirms[1].disabled = false;
-												lightClass(phoneConfirms[2]);
-												phoneConfirms[2].textContent = '인증 번호를 1분 내에 확인해주세요.';
-												
-												setTimeout(() => {
-													if(!phoneFlag){ // 인증이 실패한 상태일 때
-														phoneConfirms[0].disabled = true;
-														phoneConfirms[1].disabled = true;
-														dangerClass(phoneConfirms[2]);
-														phoneConfirms[2].textContent = '인증 시간이 만료되었습니다.';
-													}
-												}, 1000*60); // 60초 동안만 인증 번호를 확인할 수 있도록 한다.
-											}
-										},
-										error : data => console.log(data)
-									});
-								} else{
-									alert('회원 정보가 일치하지 않습니다.');
-								}
-							},
-							error : data => {
-								console.log('불일치한다.');
-							}
-						});
-											
-					} else if(inputId.length == 0){
-						alert('아이디를 입력해주세요.');
-						memberId.focus();
-					}
-				});
-				// 본인 인증 요청 (끝) : 1) 세션에 저장된 find 속성을 제거 2) 결과 페이지로 이동
-			}
-			
-			// 휴대전화 인증 번호 확인 요청 (시작)
-			let phoneFlag = false;
-			phoneConfirms[1].addEventListener('click', () => {
-				$.ajax({
-					url : 'get-code',
-					type: 'post',
-					success : data => {
-						if(phoneConfirms[0].value == data){ // 인증번호를 정상적으로 입력하였을 때
-							infoClass(phoneConfirms[2]);
-							phoneConfirms[2].textContent = '인증이 확인되었습니다.';
-							phoneFlag = true;
-							
-							phoneConfirms[0].disabled = true;
-							phoneConfirms[1].disabled = true;
-							
-							// 인증을 완료했으므로 세션에서 해당 정보를 제거한다.
-							$.ajax({
-								url : 'sessionRemoveAttribute.cm',
-								type : 'post',
-								data : {name : data},
-								success: data => {
-									console.log('세션에서 인증번호 삭제함');
-								},
-								error : data => {
-									console.log('세션에서 인증번호 삭제 실패함');
-								}
-							});
-							
-							
-						} else{ // 인증번호가 틀렸을 때
-							dangerClass(phoneConfirms[2]);
-							phoneConfirms[2].textContent = '인증 번호가 올바르지 않습니다.';
-							phoneFlag = false;
-						}
-					},
-					error : data => {
-						console.log(data);
-					}
-				});
-			});
-			// 휴대전화 인증 번호 확인 요청 (끝)
-			
-			//XXX 찾기 버튼 클릭
-			const findBtn = document.querySelector('#findBtn');
-			findBtn.addEventListener('click', () => {
-				if(phoneFlag){
-					// 세션에 저장된 find 속성을 제거
-					$.ajax({
-						url : 'sessionRemoveAttribute.cm',
-						type : 'post',
-						data : {name : find},
-						success : data => {
-							console.log('세션에서 find 속성 제거 완료');
-						},
-						error : data => {
-							console.log('세션에서 find 속성 제거 실패')
-						}
-					});
-					
-					// 결과 페이지로 이동
-					memberNo.value = findMember.memberNo;
-					findInput.value = find;
-					findForm.submit();
-				} else{
-					alert('본인 인증이 필요합니다.');
+			// 비밀번호 보이기와 감추기 토글 기능(시작) : 대상 요소가 여러개이므로 jQuery를 사용
+			const iTagList = $('.bi');
+			let temp;
+			iTagList.on('click', function() {
+				// 비밀번호 감추기 활성화(active)에 대한 토글
+				$(this).prev().toggleClass('active');
+				$(this).toggleClass('bi-eye-slash');
+				$(this).toggleClass('bi-eye');
+				if($(this).prev().prop('class').includes('active')) {
+					$(this).prev().attr('type', 'password');
+				} else {
+					$(this).prev().attr('type', 'text');
 				}
 			});
+			// 비밀번호 보이기와 감추기 토글 기능(끝)
+			
+			// 비밀번호 수정 요청(시작)
+			const changeSubmt = document.querySelector('#changeSubmt');
+			const editForm = document.querySelector('#editForm');
+			const oldPwd = document.getElementsByName('oldPwd')[0];
+			const newPwd = document.getElementsByName('newPwd')[0];
+			const newPwdConfirm = document.querySelector('#newPwdConfirm');
+			const specialRegex = /[\{\}\[\]\/?.,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/g; // 특수문자 정규표현식
+			const normalRegex = /[a-zA-Z가-힣ㄱ-ㅎ]/g; // 일반문자 정규표현식
+			
+			changeSubmt.addEventListener('click', () => {
+				//유효성 검사 : 새 비밀번호가 양식에 적합한지만 확인
+				const checkPwd = newPwd.value;
+				
+				if (oldPwd.value == '') {
+					alert('비밀번호를 입력해주세요.');
+					oldPwd.focus();
+				} else {
+					if (checkPwd == '') { //새 비밀번호 입력값이 없음.
+						alert('새 비밀번호를 입력해주세요.');
+						newPwd.focus();
+					} else { //새 비밀번호 입력값이 있음.
+						if (checkPwd.length < 8 || checkPwd.length > 20 || !checkPwd.match(specialRegex) || !checkPwd.match(normalRegex)) {
+							newPwd.value = '';
+							newPwdConfirm.value = '';
+							newPwd.focus();
+							alert('비밀번호는 8~20자의 길이로 영문 대소문자와 특수문자를 하나 이상 포함해야 합니다.');
+						} else { //모든 요소 입력값이 존재 + 새 비밀번호가 유효성을 통과 -> 새 비밀번호 확인 요소는 유효성 검사하지 않는다.
+							editForm.submit();	// 입력 값 전달	
+						}
+					}
+				}
+			
+			
+			});
+			// 비밀번호 수정 요청(끝)
 		}
 	</script>
 </body>
