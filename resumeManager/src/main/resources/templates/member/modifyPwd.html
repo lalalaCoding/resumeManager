@@ -57,6 +57,26 @@
 
 	<script th:inline="javascript">
 		window.onload = () => {
+			// msg를 전달받은 경우에 알림창 출력
+			/* <![CDATA[ */
+			const msg = /*[[${session.msg}]]*/'none';
+			/* ]]> */
+			
+			if (msg != null) {
+				alert(msg); // 메시지 알림창 출력
+				$.ajax({ //세션에서 msg 제거 요청
+					url: '/sessionRemoveAttribute.cm',
+					type: 'POST',
+					data: {name : 'msg'},
+					success: data => {
+						console.log(data);
+					},
+					error: data => {
+						console.log(data);
+					}
+				});
+			}
+			
 			// 비밀번호 보이기와 감추기 토글 기능(시작) : 대상 요소가 여러개이므로 jQuery를 사용
 			const iTagList = $('.bi');
 			let temp;
@@ -86,26 +106,34 @@
 				//유효성 검사 : 새 비밀번호가 양식에 적합한지만 확인
 				const checkPwd = newPwd.value;
 				
-				if (oldPwd.value == '') {
+				if (oldPwd.value == '') { //현재 비밀번호 입력x
 					alert('비밀번호를 입력해주세요.');
 					oldPwd.focus();
-				} else {
+				} else if (oldPwd.value == newPwd.value) { //동일한 비밀번호로 변경하려는 경우
+					alert('동일한 비밀번호로 변경할 수 없습니다.');
+					newPwd.value = '';
+					newPwdConfirm.value = '';
+					newPwd.focus();
+				} else { //현재 비밀번호 입력o && 현재 비밀번호 != 새 비밀번호
 					if (checkPwd == '') { //새 비밀번호 입력값이 없음.
 						alert('새 비밀번호를 입력해주세요.');
 						newPwd.focus();
-					} else { //새 비밀번호 입력값이 있음.
-						if (checkPwd.length < 8 || checkPwd.length > 20 || !checkPwd.match(specialRegex) || !checkPwd.match(normalRegex)) {
+					} else { //새 비밀번호 입력값o
+						if (checkPwd.length < 8 || checkPwd.length > 20 || !checkPwd.match(specialRegex) || !checkPwd.match(normalRegex)) { //새 비밀번호 : 유효성 통과x
+							alert('비밀번호는 8~20자의 길이로 영문 대소문자와 특수문자를 하나 이상 포함해야 합니다.');
 							newPwd.value = '';
 							newPwdConfirm.value = '';
 							newPwd.focus();
-							alert('비밀번호는 8~20자의 길이로 영문 대소문자와 특수문자를 하나 이상 포함해야 합니다.');
-						} else { //모든 요소 입력값이 존재 + 새 비밀번호가 유효성을 통과 -> 새 비밀번호 확인 요소는 유효성 검사하지 않는다.
+						} else if (newPwdConfirm.value != newPwd.value) { //새 비밀번호가 일치하지 않는 경우
+							alert('새 비밀번호가 일치하지 않습니다.');
+							newPwd.value = '';
+							newPwdConfirm.value = '';
+							newPwd.focus();
+						} else {
 							editForm.submit();	// 입력 값 전달	
 						}
 					}
 				}
-			
-			
 			});
 			// 비밀번호 수정 요청(끝)
 		}

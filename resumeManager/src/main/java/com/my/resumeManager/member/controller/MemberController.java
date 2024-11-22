@@ -28,6 +28,7 @@ import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.member.model.vo.MemberException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -150,7 +151,7 @@ public class MemberController {
 				session.setAttribute("loginMember", loginMember);
 				try {
 					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
-					response.getWriter().write("<script>alert('" + msg +"'); location.href='resumeHistoryPage.rh';</script>");// URL이 'http://localhost:8080/' 표현되기 위함
+					response.getWriter().write("<script>alert('" + msg +"'); location.href='/resumeHistoryPage.rh';</script>");// URL이 'http://localhost:8080/' 표현되기 위함
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -308,13 +309,14 @@ public class MemberController {
 	
 	//members/{memberNo}/edit?info=general
 	@PostMapping("members/{memberNo}/edit")
-	public String editMember(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpSession session, Model model,
-								@ModelAttribute Member m, @ModelAttribute GCSRequest profile, @RequestParam(value="changeObj", required=false) String changeObj,
+	public String editMember(@PathVariable("memberNo") int memberNo, @RequestParam("info") String info, HttpServletRequest request, HttpSession session, 
+								Model model, @ModelAttribute Member m, @ModelAttribute GCSRequest profile, 
+								@RequestParam(value="changeObj", required=false) String changeObj,
 								@RequestParam(value="oldPwd", required=false) String oldPwd, @RequestParam(value="newPwd", required=false) String newPwd,
 								RedirectAttributes ra) {
 		
 		log.info("요청 info={}", info);
-		
+		Member loginMember = (Member) session.getAttribute("loginMember");
 		
 		if (info.equals("general")) { //일반 정보 수정 요청
 			log.info("회원 수정정보={}", m);
@@ -322,7 +324,6 @@ public class MemberController {
 			log.info("변경 정보={}", changeObj);
 			
 			boolean editFlag = false; //수정 성공 여부를 판단해줄 플래그
-			Member loginMember = (Member) session.getAttribute("loginMember");
 			if (loginMember == null) {
 				throw new MemberException("로그인 후 이용해주세요.");
 			} else if (loginMember.getMemberNo() != memberNo) {
@@ -450,15 +451,40 @@ public class MemberController {
 			log.info("현재 비밀번호={}", oldPwd);
 			log.info("새로운 비밀번호={}", newPwd);
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			return null;
+			//현재 비밀번호가 일치하는지 확인
+			if (oldPwd.equals(newPwd)) { //현재 비밀번호와 새 비밀번호가 동일한 경우 : 백단에서 한번 더 검사하기
+				//비밀번호 변경 페이지로 이동 + 메시지 전달
+				ra.addAttribute("info", info);
+				session.setAttribute("msg", "동일한 비밀번호로 변경할 수 없습니다."); //리다이렉트 : 모델로는 데이터 전달 불가능
+				return "redirect:" + request.getRequestURI();
+			} else { //현재 비밀번호와 새 비밀번호가 다른 경우
+				if (bCrypt.matches(oldPwd, loginMember.getMemberPwd())) { //현재 비밀번호가 일치
+					Member editMember = new Member();
+					editMember.setMemberId(loginMember.getMemberId());
+					editMember.setMemberNo(memberNo);
+					editMember.setMemberPwd(bCrypt.encode(newPwd));
+					int updResult = mService.pwdModify(editMember);
+					
+					if(updResult > 0) { //비밀번호 수정 성공
+						//세션 갱신
+						loginMember = mService.login(editMember);
+						session.setAttribute("loginMember", loginMember);
+						//메인 페이지 + 메시지 전달
+						session.setAttribute("msg", "비밀번호가 수정 완료"); //리다이렉트 : 모델로는 데이터 전달 불가능
+						return "redirect:/";
+					} else { //비밀번호 수정 실패
+						//비밀번호 변경 페이지 이동 + 메시지 전달
+						ra.addAttribute("info", info);
+						session.setAttribute("msg", "서비스 요청에 실패하였습니다."); //리다이렉트 : 모델로는 데이터 전달 불가능
+						return "redirect:" + request.getRequestURI();
+					}
+				} else { //현재 비밀번호가 일치하지 않음
+					//비밀번호 변경 페이지 이동 + 메시지 전달
+					ra.addAttribute("info", info);
+					session.setAttribute("msg", "서비스 요청에 실패하였습니다."); //리다이렉트 : 모델로는 데이터 전달 불가능
+					return "redirect:" + request.getRequestURI();
+				}
+			}
 		} else {
 			throw new MemberException("잘못된 요청입니다.");
 		}
