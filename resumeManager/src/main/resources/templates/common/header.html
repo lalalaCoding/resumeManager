@@ -21,13 +21,14 @@
 			    <div class="collapse navbar-collapse" id="navbarSupportedContent">
 			      	<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 			        	<li class="nav-item">
-			          		<a class="nav-link active" aria-current="page" href="home.do">Home</a>
+			          		<a class="nav-link active" aria-current="page" href="/">Home</a>
 			        	</li>
 			        	<li class="nav-item">
-			          		<a class="nav-link" th:href="${session.loginMember != null ? 'resumeHistoryPage.rh' : '#'}">입사지원 이력</a>
+			          		<a class="nav-link" th:unless="${session.loginMember == null}" th:href="@{/histories/{memberNo}(memberNo=${session.loginMember.memberNo})}">입사지원 이력</a>
+			        		<a class="nav-link" th:if="${session.loginMember == null}" href="#">입사지원 이력</a>
 			        	</li>
 			        	<li class="nav-item">
-			          		<a class="nav-link" href="resumeEpliloguePage.ep">후기 게시판</a>
+			          		<a class="nav-link" th:href="resumeEpliloguePage.ep">후기 게시판</a>
 			        	</li>
 			        	<li class="nav-item dropdown">
 					        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -35,8 +36,7 @@
 					        </a>
 					        <ul class="dropdown-menu">
 					        	<th:block th:if="${session.loginMember != null}">
-							        <li><a class="dropdown-item" href="infoPage.me?info=general">일반 정보</a></li>
-							        <!-- <li><a class="dropdown-item" th:href="${session.loginMember != null ? infoPage.me?info=general">일반 정보</a></li> -->
+							        <li><a class="dropdown-item" th:href="@{/members/{memberNo}(memberNo=${session.loginMember.memberNo}, info='general')}">일반 정보</a></li>
 							        <li><a class="dropdown-item" href="epiloguePage.ep">나의 후기</a></li>
 							        <!-- <li><hr class="dropdown-divider"></li> -->
 							        <li><a class="dropdown-item" th:href="@{/members/{memberNo}/edit(memberNo=${session.loginMember.memberNo}, info='pwd')}">비밀번호 수정</a></li>
@@ -44,16 +44,12 @@
 					        	</th:block>
 					        	
 					        	<th:block th:if="${session.loginMember == null}">
-							        <li><a class="dropdown-item" href="infoPage.me?info=general">일반 정보</a></li>
-							        <!-- <li><a class="dropdown-item" th:href="${session.loginMember != null ? infoPage.me?info=general">일반 정보</a></li> -->
+							        <li><a class="dropdown-item" href="#">일반 정보</a></li>
 							        <li><a class="dropdown-item" href="epiloguePage.ep">나의 후기</a></li>
 							        <!-- <li><hr class="dropdown-divider"></li> -->
 							        <li><a class="dropdown-item" href="#">비밀번호 수정</a></li>
 							        <li><a class="dropdown-item" href="chatPage.ch">나의 채팅</a></li>
 					        	</th:block>
-					        	
-					        	
-					        	
 					        </ul>
 			        	</li>
 				        <li class="nav-item">

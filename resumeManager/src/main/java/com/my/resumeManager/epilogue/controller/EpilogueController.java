@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,18 +36,21 @@ public class EpilogueController {
 	private static int memberNo; //현재 로그인된 사용자의 회원번호 저장
 	
 	
-	@GetMapping("epiloguePage.ep") //나의 후기 관리 페이지로 이동
-	public String epiloguePage(HttpSession session, Model model,
+	@GetMapping("epilogues/{memberNo}") //나의 후기 관리 페이지로 이동
+	public String epiloguePage(@PathVariable("memberNo") int memberNo ,HttpSession session, Model model,
 								@RequestParam(value="page", defaultValue="1") int currentPage,
 								HttpServletRequest request) {
 		model.addAttribute("info", "epilogue"); //사이드 메뉴바의 효과 조정을 위한 정보
 		model.addAttribute("loc", request.getRequestURI());
 		
 		Member loginMember = (Member) session.getAttribute("loginMember");
-		if (loginMember != null) {
-			memberNo = loginMember.getMemberNo();
+		if (loginMember == null) {
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/loginPage.me";
+		} else if (memberNo != loginMember.getMemberNo()) {
+			throw new EpilogueException("서비스 요청 실패");
 		} else {
-			throw new EpilogueException("로그인 후 이용해주세요.");
+			log.info("나의 후기 조회 : 정상 접근");
 		}
 		
 		//페이지 정보
@@ -83,23 +87,24 @@ public class EpilogueController {
 		}
 		model.addAttribute("tree", tree);
 		
-		
 		return "member/epilogueInfo";
 	}
 	
 	
-	@PostMapping("insertEpilogue.ep")
+	@PostMapping("epilogues/{memberNo}/write") //epilogues/{memberNo}/write (POST)
 	@ResponseBody
-	public String insertEpilogue(@ModelAttribute Epilogue epilogue, HttpSession session) {
+	public String insertEpilogue(@PathVariable("memberNo") int memberNo, @ModelAttribute Epilogue epilogue, HttpSession session) {
 		log.info("후기 작성요청={}", epilogue);
-		//post요청이기 때문에 본인이 작성한 이력에 대한 후기 작성요청인지는 검사할 필요가 없다.
-		//바로 등록 ㄱㄱ
+		
 		Member loginMember = (Member) session.getAttribute("loginMember");
-		if (loginMember != null) {
-			memberNo = loginMember.getMemberNo();
-			epilogue.setEpilogueWriter(memberNo);
+		if (loginMember == null) {
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/loginPage.me";
+		} else if (memberNo != loginMember.getMemberNo()) {
+			throw new EpilogueException("서비스 요청 실패");
 		} else {
-			throw new EpilogueException("로그인 후 이용해주세요.");
+			log.info("후기 작성 요청 : 정상 접근");
+			epilogue.setEpilogueWriter(memberNo);
 		}
 		
 		int insertResult = eService.insertEpilogue(epilogue);

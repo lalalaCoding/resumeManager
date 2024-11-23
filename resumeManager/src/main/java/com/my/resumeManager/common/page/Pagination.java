@@ -8,6 +8,7 @@ public class Pagination {
 		int groupNum = (int) Math.ceil((double)currentPage / pageLimit);
 		int startPage = ((groupNum - 1)*pageLimit) + 1; //View에서 페이지 버튼의 시작 숫자
 		int endPage = groupNum * pageLimit; //View에서 페이지 버튼의 마지막 숫자
+		
 		if(groupNum * pageLimit > maxPage) {
 			endPage = maxPage;
 		}

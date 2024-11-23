@@ -12,10 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,19 +65,20 @@ public class ResumeHistoryController {
 	}
 	
 	
-	
-	
-	@GetMapping("resumeHistoryPage.rh")
-	public String resumeHistoryPage(HttpSession session, 
+	@GetMapping("/histories/{memberNo}") // /histories/{memberNo}
+	public String resumeHistoryPage(@PathVariable("memberNo") int memberNo ,HttpSession session, 
 			@RequestParam(value = "page", defaultValue = "1") int currentPage,
 			Model model, HttpServletRequest request) {
 		
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		log.info("로그인 체크 = {}", loginMember);
 		
-		int memberNo = 0;
-		if(loginMember != null) {
-			memberNo = loginMember.getMemberNo();
+		if (loginMember == null) {
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/loginPage.me";
+		} else if (memberNo != loginMember.getMemberNo()) {
+			throw new ResumeHistoryException("서비스 요청 실패");
+		} else {
 			//페이지 계산
 			int listCount = rService.getCountResumeHistory(memberNo);
 			PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 10);

@@ -4,9 +4,9 @@
 	<meta charset="UTF-8">
 	<title>후기 관리하기</title>
 	<!-- 페이지명 왼쪽에 아이콘 삽입 -->
-	<link rel="shortcut icon" href="image/icon/logo.png">
+	<link rel="shortcut icon" href="/image/icon/logo.png">
 	<!-- css -->
-	<link href="css/epilogueInfo.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/epilogueInfo.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 	<div th:replace="~{common/header :: header}"></div>
@@ -67,7 +67,6 @@
 					</div>
 			  	</div>
 				
-				
 				<div class="col">
 			    	<div class="card h-100" style="width: 18rem;">
 				  		<div class="card-body">
@@ -100,8 +99,8 @@
 				        </a>
 				    </li>
 				    <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
-				    	<a class="page-link" th:if="${pi.currentPage != p}" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
-				    	<a class="page-link disabled" th:unless="${pi.currentPage != p}" href="#">[[${p}]]</a>
+				    	<a class="page-link" th:if="${pi.currentPage != p && p > 0}" th:href="@{${loc}(page=${p})}">[[${p}]]ㅋㅋ</a>
+				    	<a class="page-link disabled" th:unless="${pi.currentPage != p && p < 1}" href="#">[[${p}]]</a>
 			    	</li>
 				    <li class="page-item">
 				        <a class="page-link" th:if="${pi.currentPage < pi.maxPage}" th:href="@{${loc}(page=${pi.currentPage + 1})}" aria-label="Next">
@@ -184,6 +183,11 @@
 	
 	<script th:inline="javascript">
 		window.onload = () => {
+			/* <![CDATA[ */
+			const loginMember = /*[[${session.loginMember}]]*/'로그인유저';	
+			/* ]]> */
+			const memberNo = loginMember.memberNo;
+			
 			//후기에 대한 버튼 요소에 접근
 			const readBtnList = $('.readBtn');
 			const writeBtnList = $('.writeBtn');
@@ -227,8 +231,8 @@
 				console.log('지원이력 번호 = ' + modalResumeNo.value);
 				console.log('후기 내용 = ' + modalMessageText.value);
 				
-				$.ajax({
-					url : 'insertEpilogue.ep',
+				$.ajax({ //epilogues/{memberNo}/write (POST)
+					url : `/epilogues/${memberNo}/write`,
 					type : 'POST',
 					data : {
 						resumeNo : modalResumeNo.value,
@@ -292,7 +296,7 @@
 				console.log('후기 내용 = ' + selectMessage.value);
 				
 				$.ajax({
-					url : 'updateEpilogue.ep',
+					url : '/updateEpilogue.ep',
 					type : 'POST',
 					data : {
 						resumeNo : selectResumeNo.value,
@@ -329,7 +333,7 @@
 				console.log('삭제할 번호 : ' + selectResumeNo.value);
 				
 				$.ajax({
-					url : 'deleteEpilogue.ep',
+					url : '/deleteEpilogue.ep',
 					type : 'POST',
 					data : {
 						resumeNo : selectResumeNo.value

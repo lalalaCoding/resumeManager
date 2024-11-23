@@ -77,8 +77,30 @@
 	
 	<div th:replace="~{common/footer :: footer}"></div>
 	
-	<script>
+	<script th:inline="javascript">
 		window.onload = () => {
+			// msg를 전달받은 경우에 알림창 출력
+			/* <![CDATA[ */
+			const msg = /*[[${session.msg}]]*/'none';
+			/* ]]> */
+			
+			if (msg != null) {
+				alert(msg); // 메시지 알림창 출력
+				$.ajax({ //세션에서 msg 제거 요청
+					url: '/sessionRemoveAttribute.cm',
+					type: 'POST',
+					data: {name : 'msg'},
+					success: data => {
+						console.log(data);
+					},
+					error: data => {
+						console.log(data);
+					}
+				});
+			}
+			
+			
+			
 			// 비밀번호 보이기와 감추기 토글 기능(시작)
 			const iTag = document.querySelector('.bi'); // 요소의 갯수가 하나뿐이기 때문에 querySelectorAll을 사용하진 않았음.		
 			const memberPwd = document.getElementsByName('memberPwd')[0];

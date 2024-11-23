@@ -166,7 +166,7 @@ public class MemberController {
 			return "redirect:loginPage.me";
 		}
 		
-		return "redirect:resumeHistoryPage.rh";
+		return "redirect:/epilogues/" + loginMember.getMemberNo(); //epilogues/{memberNo}
 	}
 	
 	@GetMapping("findPage.me")
@@ -234,22 +234,25 @@ public class MemberController {
 		int result = mService.pwdModify(m);
 		
 		if(result == 1) {
-			return "redirect:loginPage.me";
+			return "redirect:/loginPage.me";
 		} else {
 			throw new MemberException("서비스 요청 장애가 발생하였습니다.");
 		}
 	}
 	
-	@GetMapping("infoPage.me")
-	public String infoPage(@RequestParam("info") String info, Model model, HttpSession session) {
+	@GetMapping("members/{memberNo}")
+	public String infoPage(@PathVariable("memberNo") int memberNo ,@RequestParam("info") String info, Model model, HttpSession session) {
 		model.addAttribute("info", info); //인포 페이지에서 메뉴바의 클래스명을 제어하기 위한 정보
 		
 		Member loginMember = (Member) session.getAttribute("loginMember");
-		int memberNo = 0;
-		if (loginMember != null) {
-			memberNo = loginMember.getMemberNo();
+		if (loginMember == null) {
+			//로그인 페이지로 리다이렉트
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/loginPage.me";
+		} else if (loginMember.getMemberNo() != memberNo) { //요청 회원 번호와 로그인된 회원 번호가 다름
+			throw new MemberException("잘못된 요청입니다.");
 		} else {
-			throw new MemberException("로그인 후 이용해주세요.");
+			log.info("회원 일반정보 조회 정상 접근");
 		}
 		
 		log.info("로그인 멤버={}", loginMember);
@@ -270,17 +273,10 @@ public class MemberController {
 					gController.objectDownload(profileMap);
 				}
 			}
-			
 			return "member/generalInfo";
+		} else {
+			throw new MemberException("서비스 요청에 실패하였습니다.");
 		}
-		
-		
-		if (info.equals("pwd")) {
-			return "member/modifyPwd";
-		}
-		
-		
-		throw new MemberException("서비스 요청에 실패하였습니다.");
 	}
 	
 	@GetMapping("members/{memberNo}/edit")
