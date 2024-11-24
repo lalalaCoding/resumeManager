@@ -166,7 +166,7 @@ public class MemberController {
 			return "redirect:loginPage.me";
 		}
 		
-		return "redirect:/epilogues/" + loginMember.getMemberNo(); //epilogues/{memberNo}
+		return "redirect:/histories/" + loginMember.getMemberNo(); //histories/{memberNo}
 	}
 	
 	@GetMapping("findPage.me")
@@ -498,26 +498,5 @@ public class MemberController {
 			return true;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//실험실
-	@GetMapping("srcTest")
-	public String srcTest1() {
-		return "member/generalInfo2";
-	}
-	
-	@GetMapping("src/Test")
-	public String srcTest2() {
-		return "member/generalEditInfo2";
-	}
-	
-	
 	
 }

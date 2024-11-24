@@ -112,6 +112,7 @@
 	          </div>
 	          <div class="mb-3">
 	            <label for="selectMessage" class="col-form-label">Epilogue Message:</label>
+	            <input type="hidden" id="selectWriter" value=""/>
 	            <input type="hidden" name="resumeNo" id="selectResumeNo" value=""/>
 	            <textarea class="form-control" id="selectMessage" rows="10" style="resize:none;" readOnly></textarea>
 	          </div>
@@ -131,11 +132,13 @@
 			/* <![CDATA[ */
 			const epList = /*[[${epList}]]*/'후기목록';
 			const rhList = /*[[${rhList}]]*/'지원목록';
+			const loginMember = /*[[${session.loginMember}]]*/'로그인멤버';
 			/* ]]> */
 			const readBtnList = $('.readBtn'); //클릭 이벤트를 반복문을 이용해 지정하지 않으려고 jQuery를 이용함
 			
 			const selectCompanyName = document.querySelector('#selectCompanyName');
 			const selectResumeNo = document.querySelector('#selectResumeNo');
+			const selectWriter = document.querySelector('#selectWriter');
 			const selectMessage = document.querySelector('#selectMessage');
 			const selectClose = document.querySelector('#selectClose');
 			const selectChat = document.querySelector('#selectChat');
@@ -147,6 +150,15 @@
 				//지원 번호에 접근하기
 				const resumeNo = $(this).parent().prev().val();
 				selectResumeNo.value = resumeNo;
+				
+				//작성자 번호에 접근하기
+				for(const ep of epList) {
+					if (ep.resumeNo == resumeNo) {
+						console.log('작성자='+ep.epilogueWriter);
+						selectWriter.value = ep.epilogueWriter;
+					}
+				}
+				
 				
 				//회사명에 접근하기
 				for(const rh of rhList) {
@@ -165,7 +177,7 @@
 				$('#selectModal').modal('show');
 				
 			});
-			//후기조회 버튼 : 클릭 이벤트 (시작)
+			//후기조회 버튼 : 클릭 이벤트 (끝)
 			
 			//전체보기 검색 (시작)
 			const clearBtn = document.querySelector('#clearBtn');
@@ -191,6 +203,20 @@
 			});
 			//회사이름 검색 (끝)
 			
+			//채팅 방 조회 요청 (시작) : chats/{memberNo}/room?receiver=${receiverNo} (GET)
+			selectChat.addEventListener('click', () => {
+				const receiverNo = selectWriter.value;
+
+				if (loginMember == null) {
+					alert('로그인 후 이용해주세요.');
+				} else if (loginMember.memebrNo == receiverNo) { //자기 자신에게 채팅 요청을 막아야함
+					alert('본인과 채팅할 수 없습니다.');
+				} else {
+					console.log(selectWriter.value + '에게 채팅 요청');
+					location.href=`/chats/${loginMember.memberNo}/room?receiver=${receiverNo}`;
+				}
+			});
+			//채팅 방 조회 요청 (끝)
 		}
 	</script>
 </body>
