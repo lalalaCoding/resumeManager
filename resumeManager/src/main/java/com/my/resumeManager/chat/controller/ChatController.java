@@ -1,7 +1,7 @@
 package com.my.resumeManager.chat.controller;
 
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.my.resumeManager.chat.model.service.ChatService;
-import com.my.resumeManager.chat.model.vo.ChatMember;
+import com.my.resumeManager.chat.model.vo.ChatRoom;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.member.model.vo.MemberException;
 
@@ -54,9 +54,12 @@ public class ChatController {
 //		채팅 방이 없음 -> 채팅 방 생성 + 채팅 방 조회
 		
 		//내가 참여하고 있는 방 조회
-		ArrayList<ChatMember> list;
+		HashMap<String, Integer> visiterMap = new HashMap<>();
+		visiterMap.put("senderNo", senderNo);
+		visiterMap.put("receiverNo", receiverNo);
+		ChatRoom myRoom = cService.myChatMember(visiterMap);
 		
-		
+		log.info("myRoom={}", myRoom);
 		
 		
 		

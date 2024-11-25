@@ -4,7 +4,35 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="com.my.resumeManager.chat.model.dao.ChatMapper">
-
-
+	<!-- 서로 다른 두 회원이 참여중인 채팅 방 조회하기 -->
+	<select id="myChatMember" resultType="ChatMember">
+		select room_no
+		from chat_member
+		where room_no in (select chat_room.room_no
+		                    from chat_member
+		                            join chat_room on(join_no = CHAT_ROOM.room_no)
+		                    where ROOM_VISITER = ${visiterMap.senderNo} and ROOM_STATUS = 'Y')
+		        and room_visiter = ${visiterMap.receiverNo}
+	</select>
+	
+	<!-- 채팅방을 추가하고 추가된 채팅방 번호를 파라미터에 저장하기 -->
+	<insert id="insertChatRoom" useGeneratedKeys="true">
+		<selectKey keyProperty="roomNo" resultType="_int" order="BEFORE">
+	        SELECT SEQ_ROOM.nextval FROM DUAL
+	    </selectKey>
+	    INSERT INTO chat_room VALUES (${roomNo}, 'Y')
+	</insert>
+	
+	<!-- 채팅방에 참여 중인 회원 정보 추가하기 : 2개의 행을 추가한다. -->
+	<insert id="insertChatMember">
+		INSERT ALL
+		<foreach collection="visiterMap" index="key" item="value" separator=" ">
+			<if test="!key.equals('roomNo')">
+				INTO CHAT_MEMBER VALUES(FN_JOIN, ${visiterMap.roomNo}, ${value})
+			</if>
+		</foreach>
+		SELECT * FROM DUAL
+	</insert>
+	
 
 </mapper>
