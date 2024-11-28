@@ -37,24 +37,37 @@
 		</div>
 		
 		<div> <!-- 본문 컨텐츠 -->
-			<h3>채팅 목록</h3>
+			<h3>채팅 방</h3>
 			
 			<div style="background: lightgrey;">
 				<table class="table table-hover">
-					<tr>
-						<td>프로필 사진</td>
-						<td>
-							상대방 아이디 와 전송 시각
-							<br/>
-							최근 메시지
-						</td>
-					</tr>
-					
+					<th:block th:if="${#lists.isEmpty(myMessageList)}"> <!-- 메시지가 존재하지 않음 -->
+						<tr>
+							<td></td>
+							<td>
+								
+							</td>
+						</tr>
+					</th:block>
+					<th:block th:unless="${#lists.isEmpty(myMessageList)}"> <!-- 메시지가 존재함 -->
+						<tr>
+							<td>프로필 사진 | 아이디</td>
+							<td>
+								메시지 내용
+								<br/>
+								메시지 전송 시각
+							</td>
+						</tr>
+					</th:block>
 				</table>
+				
+				<form method="post" th:action="@{chats/{memberNo}/room(memberNo=${session.loginMember.memberNo})}" id="chatForm">
+					<!-- 채팅 내용은 VARCHAR2(300) -->
+					<textarea class="form-control" name="messageContent" id="messageContent" placeholder="대화 내용을 입력해주세요." rows="3"></textarea>
+					<button type="button" class="btn btn-warning" id="msgSubmitBtn">전송</button>				
+				</form>
 			</div>
 		</div>	
-	
-	
 	
 	
 		<div><!-- 오른쪽 공백 --></div>
@@ -62,12 +75,51 @@
 	
 	
 	<div th:replace="~{common/footer :: footer}"></div>
-	<script>
+	<script th:inline="javascript">
 		window.onload = () => {
+						
+			/* <![CDATA[ */
+			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
+			const roomNo = /*[[${myChatMember[0].roomNo}]]*/'현재채팅참여자';
+			const joinNo = /*[[${myChatMember[0].joinNo}]]*/'참여번호';
+			/* ]]> */
 			
 			
 			
+			const messageContent = document.querySelector('#messageContent');
+			const msgSubmitBtn = document.querySelector('#msgSubmitBtn');
+			const chatForm = document.querySelector('#chatForm');
 			
+			//채팅 전송 요청 : 비동기 (시작)
+			msgSubmitBtn.addEventListener('click', () => {
+				//채팅 내용 유효성 검사
+				if (messageContent.value.length == 0) {
+					alert('대화 내용을 입력해주세요.');
+					messageContent.focus();			
+				} else {
+					console.log(loginMember.memberNo); //발신자 회원번호
+					console.log(roomNo); //채팅방 번호
+						
+					
+					$.ajax({
+						url: `/chats/${loginMember.memberNo}/room`,
+						type: 'POST',
+						data: {
+							roomNo: roomNo,
+							joinNo: joinNo,
+							messageContent: messageContent.value
+						},
+						sucess: data => {
+							console.log(data);
+						},
+						error: data => {
+							console.log(data);
+						}
+					});
+					
+				}
+			});
+			//채팅 전송 요청 (끝)
 		}
 	</script>
 </body>

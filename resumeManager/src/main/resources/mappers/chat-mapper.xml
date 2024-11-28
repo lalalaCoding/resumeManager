@@ -34,5 +34,20 @@
 		SELECT * FROM DUAL
 	</insert>
 	
+	<!-- 채팅방에 참여중인 CAHT_MEMBER 행을 조회 -->
+	<select id="selectChatMemberList" resultType="ChatMember">
+		SELECT *
+		FROM CHAT_MEMBER
+		WHERE ROOM_NO = ${myRoomNo}
+	</select>
+	
+	<!-- 채팅 메시지 조회하기 -->
+	<select id="selectChatMessageList" resultType="ChatMessage">
+		SELECT *
+		FROM CHAT_MESSAGE
+		WHERE JOIN_NO IN 
+		<foreach collection="list" item="item" open="(" close=")" separator=", ">${item.joinNo}</foreach>
+		ORDER BY MESSAGE_CREATE ASC
+	</select>
 
 </mapper>

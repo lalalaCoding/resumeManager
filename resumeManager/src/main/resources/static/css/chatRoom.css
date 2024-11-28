@@ -1,3 +1,6 @@
 @charset "UTF-8";
 
 #wrapper {display:grid; grid-template-columns: 1fr 280px 1000px 1fr;}
+
+#messageContent {resize: none; width: 600px; display:inline-block;}
+#msgSubmitBtn {width:200px;}

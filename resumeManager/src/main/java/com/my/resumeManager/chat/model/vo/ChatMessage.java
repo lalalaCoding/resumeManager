@@ -12,11 +12,22 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 public class ChatMessage extends ChatMember{
 	private int messageNo;
 	private String messageContent;
 	private int messageCount;
 	private Date messageCreate;
 	private char messageStatus;
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ChatMessage [messageNo=").append(messageNo).append(", messageContent=").append(messageContent)
+				.append(", messageCount=").append(messageCount).append(", messageCreate=").append(messageCreate)
+				.append(", messageStatus=").append(messageStatus)
+				.append(", joinNo=").append(super.getJoinNo()).append("]");
+		return builder.toString();
+	}
+	
+	
+	
 }

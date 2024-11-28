@@ -1,5 +1,6 @@
 package com.my.resumeManager.chat.model.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.my.resumeManager.chat.model.dao.ChatMapper;
 import com.my.resumeManager.chat.model.vo.ChatException;
+import com.my.resumeManager.chat.model.vo.ChatMember;
+import com.my.resumeManager.chat.model.vo.ChatMessage;
 import com.my.resumeManager.chat.model.vo.ChatRoom;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +22,9 @@ public class ChatServiceImpl implements ChatService{
 	private ChatMapper cMapper;
 
 	@Override
-	public ChatRoom myChatMember(HashMap<String, Integer> visiterMap) {
+	public ArrayList<ChatMember> myChatMember(HashMap<String, Integer> visiterMap) {
+		//나의 CHAT_MEMBER 정보 + 상대방의 CHAT_MEMBER 정보를 조회해야 함
+		int myRoomNo = 0;
 		ChatRoom myRoom = cMapper.myChatMember(visiterMap);
 		log.info("myRoom={}", myRoom);
 		
@@ -32,20 +37,27 @@ public class ChatServiceImpl implements ChatService{
 				visiterMap.put("roomNo", newRoom.getRoomNo());
 				int memResult = cMapper.insertChatMember(visiterMap);
 				if (memResult == 2) {
-					
-					
-					
-					
-					
+					//채팅방 생성이 성공
+					myRoomNo = newRoom.getRoomNo();
 				} else {
 					new ChatException("서비스 요청 실패");
 				}
 			} else {
 				new ChatException("서비스 요청 실패");
 			}
+		} else {
+			myRoomNo = myRoom.getRoomNo();
 		}
 		
-		return myRoom;
+		ArrayList<ChatMember> memList = cMapper.selectChatMemberList(myRoomNo);
+		log.info("memList={}", memList);
+		
+		return memList;
+	}
+
+	@Override
+	public ArrayList<ChatMessage> myMessageList(ArrayList<ChatMember> myChatMember) {
+		return cMapper.selectChatMessageList(myChatMember);
 	}
 	
 	
