@@ -77,14 +77,11 @@
 	<div th:replace="~{common/footer :: footer}"></div>
 	<script th:inline="javascript">
 		window.onload = () => {
-						
 			/* <![CDATA[ */
 			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
 			const roomNo = /*[[${myChatMember[0].roomNo}]]*/'현재채팅참여자';
 			const joinNo = /*[[${myChatMember[0].joinNo}]]*/'참여번호';
 			/* ]]> */
-			
-			
 			
 			const messageContent = document.querySelector('#messageContent');
 			const msgSubmitBtn = document.querySelector('#msgSubmitBtn');
@@ -99,7 +96,6 @@
 				} else {
 					console.log(loginMember.memberNo); //발신자 회원번호
 					console.log(roomNo); //채팅방 번호
-						
 					
 					$.ajax({
 						url: `/chats/${loginMember.memberNo}/room`,
