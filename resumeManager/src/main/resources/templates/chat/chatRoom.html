@@ -7,6 +7,10 @@
 	<link rel="shortcut icon" href="/image/icon/logo.png">
 	<!-- css -->
 	<link href="/css/chatRoom.css" rel="stylesheet" type="text/css"/>
+	<!-- Stomp 추가 -->
+	<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
 	<div th:replace="~{common/header :: header}"></div>
@@ -116,6 +120,30 @@
 				}
 			});
 			//채팅 전송 요청 (끝)
+			
+			//웹소켓 연결 요청 (시작)
+			function connect() {
+								
+				
+				
+				
+				
+			}
+
+			var socket = new SockJS("/ws-endpoint");
+		    var stompClient = Stomp.over(socket);
+		    stompClient.connect({}, function (frame) {
+			    console.log('Connected: ' + frame);
+			    
+			    //메시지 구독하기
+			    stompClient.subscribe('/app/hello', function(message) {
+			        var content = JSON.parse(message.body);
+			        console.log('Received message:', content);
+			        // 메시지 처리 로직
+			    });
+			});
+			
+			
 		}
 	</script>
 </body>

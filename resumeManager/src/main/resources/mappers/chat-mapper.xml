@@ -49,5 +49,9 @@
 		<foreach collection="list" item="item" open="(" close=")" separator=", ">${item.joinNo}</foreach>
 		ORDER BY MESSAGE_CREATE ASC
 	</select>
-
+	
+	<!-- 나의 채팅 목록 조회하기 -->
+	
+	
+	
 </mapper>

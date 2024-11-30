@@ -213,6 +213,7 @@
 					alert('본인과 채팅할 수 없습니다.');
 				} else {
 					console.log(selectWriter.value + '에게 채팅 요청');
+									
 					location.href=`/chats/${loginMember.memberNo}/room?receiver=${receiverNo}`;
 				}
 			});

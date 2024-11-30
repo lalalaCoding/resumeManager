@@ -26,11 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
+//@RequiredArgsConstructor
 public class ChatController {
 	
 	@Autowired
 	private ChatService cService;
-	
 	
 	@GetMapping("chats/{memberNo}") //나의 채팅 목록 조회
 	public String chatListPage(@PathVariable("memberNo") int memberNo, HttpSession session, Model model) {
@@ -42,6 +42,7 @@ public class ChatController {
 			throw new MemberException("서비스 요청 실패");
 		} else {
 			//나의 채팅 목록 조회
+			//cService.myChatList(memberNo);
 			
 			
 			
@@ -92,6 +93,9 @@ public class ChatController {
 		
 		return null;
 	}
+	
+	
+	
 	
 	
 	

@@ -10,10 +10,11 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker //스프링에서 메시지 브로커 기능 활성화
 public class WebSocketBrokerConfig  implements WebSocketMessageBrokerConfigurer{ //웹소켓 메시지 브로커 설정
 
-	@Override //클라이언트가 웹소켓 연결을 초괴화할 수 있는 엔드포인트 등록
+	@Override //클라이언트가 웹소켓 연결을 초기화할 수 있는 엔드포인트 등록
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/chattings") //웹소켓 연결 시 요청을 보낼 EndPoint 지정
-					.withSockJS();  //SockJS 라이브러리 사용
+		registry.addEndpoint("/ws-endpoint") //웹소켓 연결 시 요청을 보낼 EndPoint 지정
+			.setAllowedOriginPatterns("*")
+			.withSockJS();  //SockJS 라이브러리 사용
 	}
 
 	@Override //메시지 브로커 동작을 구성
