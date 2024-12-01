@@ -39,11 +39,18 @@
 		<div> <!-- 본문 컨텐츠 -->
 			<h3>채팅 목록</h3>
 			
+			[[${myChatList}]]
+			
 			<div style="background: lightgrey;">
 				<table class="table table-hover">
-					<tr>
-						<td>프로필 사진</td>
+					<tr class="chatList" th:each="chat : ${myChatList}" th:if="${chat.roomVisiter != session.loginMember.memberNo}">
 						<td>
+							<input type="hidden" th:value="${chat.roomVisiter}"/>
+							프로필 사진
+						</td>
+						<td>
+							방번호 = [[${chat.roomNo}]]
+							<br/>
 							상대방 아이디 와 전송 시각
 							<br/>
 							최근 메시지
@@ -61,12 +68,24 @@
 	
 	
 	<div th:replace="~{common/footer :: footer}"></div>
-	<script>
+	<script th:inline="javascript">
 		window.onload = () => {
+			/* <![CDATA[ */
+			const loginMember = /*[[${session.loginMember}]]*/'로그인회원';	
+				
+			/* ]]> */
 			
+			const chatList = $('.chatList');
 			
-			
-			
+			//채팅방 조회 페이지 이동 (시작) : chats/{memberNo}/room?receiver=${receiverNo} (GET)
+			chatList.on('dblclick', (e) => {
+				//Event.currentTarget : 이벤트가 부착된 부모 요소
+				const receiverNo = e.currentTarget.children[0].children[0].value;
+				//console.log(e.currentTarget.children[0].children[0].value);
+				
+				location.href=`/chats/${loginMember.memberNo}/room?receiver=${receiverNo}`;
+			})
+			//채팅방 조회 페이지 이동 (끝)
 		}
 	</script>
 </body>

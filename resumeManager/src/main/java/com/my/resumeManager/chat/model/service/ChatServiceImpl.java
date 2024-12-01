@@ -2,6 +2,7 @@ package com.my.resumeManager.chat.model.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,10 @@ public class ChatServiceImpl implements ChatService{
 			myRoomNo = myRoom.getRoomNo();
 		}
 		
-		ArrayList<ChatMember> memList = cMapper.selectChatMemberList(myRoomNo);
+		Map<String, Object> conditionMap = new HashMap<>();
+		conditionMap.put("condition", "roomNo");
+		conditionMap.put("roomNo", myRoomNo);
+		ArrayList<ChatMember> memList = cMapper.selectChatMemberList(conditionMap);
 		log.info("memList={}", memList);
 		
 		return memList;
@@ -58,6 +62,14 @@ public class ChatServiceImpl implements ChatService{
 	@Override
 	public ArrayList<ChatMessage> myMessageList(ArrayList<ChatMember> myChatMember) {
 		return cMapper.selectChatMessageList(myChatMember);
+	}
+
+	@Override
+	public ArrayList<ChatMember> myChatMemberList(int memberNo) {
+		Map<String, Object> conditionMap = new HashMap<>();
+		conditionMap.put("condition", "memberNo");
+		conditionMap.put("memberNo", memberNo);
+		return cMapper.selectChatMemberList(conditionMap);
 	}
 	
 	

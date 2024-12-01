@@ -41,13 +41,13 @@ public class ChatController {
 		} else if (memberNo != loginMember.getMemberNo()) {
 			throw new MemberException("서비스 요청 실패");
 		} else {
-			//나의 채팅 목록 조회
-			//cService.myChatList(memberNo);
+			//나의 채팅 목록 조회 : 
+			ArrayList<ChatMember> myChatList = cService.myChatMemberList(memberNo);
+			log.info("myChatList={}", myChatList);
 			
 			
 			
-			
-			
+			model.addAttribute("myChatList", myChatList);
 			model.addAttribute("info", "chat");
 			return "chat/chatList";
 		}

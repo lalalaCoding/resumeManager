@@ -38,7 +38,15 @@
 	<select id="selectChatMemberList" resultType="ChatMember">
 		SELECT *
 		FROM CHAT_MEMBER
-		WHERE ROOM_NO = ${myRoomNo}
+		WHERE 
+		<if test="conditionMap.condition.equals('roomNo')">
+			ROOM_NO = ${conditionMap.roomNo}
+		</if>
+		<if test="conditionMap.condition.equals('memberNo')">
+			ROOM_NO in (select ROOM_NO
+		                from CHAT_MEMBER
+		                where room_visiter = ${conditionMap.memberNo})
+		</if>
 	</select>
 	
 	<!-- 채팅 메시지 조회하기 -->

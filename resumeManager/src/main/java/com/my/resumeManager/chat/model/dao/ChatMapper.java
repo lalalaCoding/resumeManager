@@ -2,6 +2,7 @@ package com.my.resumeManager.chat.model.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,7 +20,7 @@ public interface ChatMapper {
 
 	int insertChatMember(@Param("visiterMap") HashMap<String, Integer> visiterMap);
 
-	ArrayList<ChatMember> selectChatMemberList(int myRoomNo);
+	ArrayList<ChatMember> selectChatMemberList(@Param("conditionMap") Map<String, Object> conditionMap);
 
 	ArrayList<ChatMessage> selectChatMessageList(ArrayList<ChatMember> myChatMember);
 
