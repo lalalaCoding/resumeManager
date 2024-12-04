@@ -44,7 +44,7 @@
 			<h3>채팅 방</h3>
 			
 			<div style="background: lightgrey;">
-				<table class="table table-hover">
+				<table class="table table-hover" id="chatTable">
 					<th:block th:if="${#lists.isEmpty(myMessageList)}"> <!-- 메시지가 존재하지 않음 -->
 						<tr>
 							<td></td>
@@ -73,7 +73,12 @@
 			</div>
 		</div>	
 	
-	
+		<br/><br/>
+		
+		<button id="testBtn">채팅 전송 테스트</button>
+		
+		<br/><br/>
+		
 		<div><!-- 오른쪽 공백 --></div>
 	</div>
 	
@@ -83,17 +88,23 @@
 		window.onload = () => {
 			/* <![CDATA[ */
 			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
-			const roomNo = /*[[${myChatMember[0].roomNo}]]*/'현재채팅참여자';
+			const roomNo = /*[[${myChatMember[0].roomNo}]]*/'현재 참여 중인 방 번호';
 			const joinNo = /*[[${myChatMember[0].joinNo}]]*/'참여번호';
 			/* ]]> */
 			
-			console.log('roomNo:'+roomNo);
+			console.log('현재 방 번호 :' + roomNo);
 			
+			
+			let stompClient = null;
+			
+			const chatTable = document.querySelector('#chatTable');
 			const messageContent = document.querySelector('#messageContent');
 			const msgSubmitBtn = document.querySelector('#msgSubmitBtn');
 			const chatForm = document.querySelector('#chatForm');
 			
 			//채팅 전송 요청 : 비동기 (시작)
+			connect();
+			
 			msgSubmitBtn.addEventListener('click', () => {
 				//채팅 내용 유효성 검사
 				if (messageContent.value.length == 0) {
@@ -103,48 +114,91 @@
 					console.log(loginMember.memberNo); //발신자 회원번호
 					console.log(roomNo); //채팅방 번호
 					
-					$.ajax({
-						url: `/chats/${loginMember.memberNo}/room`,
-						type: 'POST',
-						data: {
-							roomNo: roomNo,
-							joinNo: joinNo,
-							messageContent: messageContent.value
-						},
-						sucess: data => {
-							console.log(data);
-						},
-						error: data => {
-							console.log(data);
-						}
-					});
+					 
+					sendChat(); //채팅 메시지를 컨트롤러에게 전달하기
+					
+					
+					
 					
 				}
 			});
 			//채팅 전송 요청 (끝)
 			
-			//웹소켓 연결 요청 (시작)
+			//웹소켓 연결 요청 함수 (시작)
 			function connect() {
-								
-				
-				
-				
-				
+				let socket = new SockJS("/ws-endpoint");
+			    stompClient = Stomp.over(socket);
+			    stompClient.connect({}, function (frame) {
+				    console.log('Connected: ' + frame);
+				    
+				    //메시지 구독하기 : /queue/방번호
+				    stompClient.subscribe(`/queue/${roomNo}`, function(message) {
+				    	console.log('메시지?')
+				        var content = JSON.parse(message.body);
+				        console.log('Received message:', content);
+				        // 메시지 처리 로직
+				        loadChat(content);
+				    });
+				});
 			}
+			//웹소켓 연결 요청 함수 (끝)
 
-			var socket = new SockJS("/ws-endpoint");
-		    var stompClient = Stomp.over(socket);
-		    stompClient.connect({}, function (frame) {
-			    console.log('Connected: ' + frame);
-			    
-			    //메시지 구독하기
-			    stompClient.subscribe('/app/hello', function(message) {
-			        var content = JSON.parse(message.body);
-			        console.log('Received message:', content);
-			        // 메시지 처리 로직
-			    });
-			});
+			//웹소켓 연결 해제 요청 함수 (시작)
+			function disconnet() {
+				if (stompClient != null) {
+					stompClient.disconnect(); //웹소켓 연결 헤제하기
+				}
+				console.log('Disconnected');
+			}
+			//웹소켓 연결 해제 요청 함수 (끝)
 			
+			//방 번호, 발신자 아이디, 발신자 번호, 참여 번호, 채팅 내용을 MessageHandlerController로 전달하는 함수 (시작)
+			function sendChat() {
+				//파라미터 체크
+				console.log(JSON.stringify({
+					'roomVisiter': loginMember.memberNo,
+					'roomVisiterId': loginMember.memberId,
+					'joinNo': joinNo,
+					'message': messageContent.value
+				}));
+				
+				stompClient.send(`/app/${roomNo}`, {},
+					JSON.stringify({
+						'roomVisiter': loginMember.memberNo,
+						'roomVisiterId': loginMember.memberId,
+						'joinNo': joinNo,
+						'messageContent': messageContent.value
+					})		
+				);
+				messageContent.value = '';
+			}
+			//방 번호, 발신자 아이디, 채팅 내용을 MessageHandlerController로 전달하는 함수 (끝)
+			
+			//전달받은 메시지 내용 처리 함수 (시작)
+			function loadChat(content) {
+				console.log('전달받은 메시지 :' + content);
+				
+				chatTable.insertAdjacentHTML(
+					'beforeend', `<tr>
+									<td>프로필 사진 | ${content.roomVisiterId}</td>
+									<td>
+										${content.messageContent}
+										<br/>
+										메시지 전송 시각
+									</td>
+								</tr>`		
+				);
+				
+				
+				
+				
+				
+			}		
+			//전달받은 메시지 내용 처리 함수 (끝)
+		    
+		   
+		    
+		    
 			
 		}
 	</script>

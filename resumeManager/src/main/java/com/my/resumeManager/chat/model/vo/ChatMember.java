@@ -14,4 +14,5 @@ import lombok.ToString;
 public class ChatMember extends ChatRoom{
 	private int joinNo;
 	private int roomVisiter;
+	private String roomVisiterId;
 }

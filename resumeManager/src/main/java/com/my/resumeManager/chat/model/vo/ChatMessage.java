@@ -24,6 +24,7 @@ public class ChatMessage extends ChatMember{
 		builder.append("ChatMessage [messageNo=").append(messageNo).append(", messageContent=").append(messageContent)
 				.append(", messageCount=").append(messageCount).append(", messageCreate=").append(messageCreate)
 				.append(", messageStatus=").append(messageStatus)
+				.append(", roomVisiterId=").append(super.getRoomVisiterId())
 				.append(", joinNo=").append(super.getJoinNo()).append("]");
 		return builder.toString();
 	}

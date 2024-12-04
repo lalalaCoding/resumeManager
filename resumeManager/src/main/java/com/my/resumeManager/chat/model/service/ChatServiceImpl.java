@@ -30,6 +30,7 @@ public class ChatServiceImpl implements ChatService{
 		log.info("myRoom={}", myRoom);
 		
 		if(myRoom == null) { //채팅방이 존재하지 않는 경우
+			log.info("방 개설 로직 실행");
 			//방을 개설 -> 해당 방번호를 가지고 참여 멤버 생성
 			ChatRoom newRoom = new ChatRoom();
 			int roomResult = cMapper.insertChatRoom(newRoom); //방을 개설하면서 생성된 방 번호가 newRoom의 필드에 설정된다.
