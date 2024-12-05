@@ -43,6 +43,12 @@
 		<div> <!-- 본문 컨텐츠 -->
 			<h3>채팅 방</h3>
 			
+			본인 사진 -> [[${session.loginMember.profileRename}]]
+			<br/>
+			상대방 사진 -> [[${receiver.profileRename}]]
+			
+			
+			
 			<div style="background: lightgrey;">
 				<table class="table table-hover" id="chatTable">
 					<th:block th:if="${#lists.isEmpty(myMessageList)}"> <!-- 메시지가 존재하지 않음 -->
@@ -86,16 +92,19 @@
 	<div th:replace="~{common/footer :: footer}"></div>
 	<script th:inline="javascript">
 		window.onload = () => {
+			//웹 소켓 연결 (시작)
+			let stompClient = null;
+			connect(); //현재 페이지 로드시에 웹소켓을 연결함
+			//웹 소켓 연결 (끝)
+			
 			/* <![CDATA[ */
 			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
+			const receiver = /*[[${receiver}]]*/'채팅 중인 상대방';
 			const roomNo = /*[[${myChatMember[0].roomNo}]]*/'현재 참여 중인 방 번호';
 			const joinNo = /*[[${myChatMember[0].joinNo}]]*/'참여번호';
 			/* ]]> */
 			
 			console.log('현재 방 번호 :' + roomNo);
-			
-			
-			let stompClient = null;
 			
 			const chatTable = document.querySelector('#chatTable');
 			const messageContent = document.querySelector('#messageContent');
@@ -103,8 +112,6 @@
 			const chatForm = document.querySelector('#chatForm');
 			
 			//채팅 전송 요청 : 비동기 (시작)
-			connect();
-			
 			msgSubmitBtn.addEventListener('click', () => {
 				//채팅 내용 유효성 검사
 				if (messageContent.value.length == 0) {
@@ -113,7 +120,6 @@
 				} else {
 					console.log(loginMember.memberNo); //발신자 회원번호
 					console.log(roomNo); //채팅방 번호
-					
 					 
 					sendChat(); //채팅 메시지를 컨트롤러에게 전달하기
 					
@@ -176,11 +182,31 @@
 			
 			//전달받은 메시지 내용 처리 함수 (시작)
 			function loadChat(content) {
-				console.log('전달받은 메시지 :' + content);
+				console.log('전송한 사람 :' + content.roomVisiterId);
+				let profileRename;
+				
+				if (content.roomVisiterId == loginMember.memberId) {
+					if (loginMember.profileRename != null) { //프로필 이미지가 존재하는 회원
+						profileRename = '/' + loginMember.profileRename;
+					} else { //프로필 이미지가 존재하지 않는 회원
+						if (loginMember.memberGender == 'M') profileRename = '/image/icon/profile_male.png';
+						else profileRename = '/image/icon/profile_female.png';
+					}
+				} else if (content.roomVisiterId == receiver.memberId) {
+					if (receiver.profileRename != null) { //프로필 이미지가 존재하는 회원
+						profileRename = '/' + receiver.profileRename;
+					} else { //프로필 이미지가 존재하지 않는 회원
+						if (receiver.memberGender == 'M') profileRename = '/image/icon/profile_male.png';
+						else profileRename = '/image/icon/profile_female.png';
+					}
+				}
+				
+				console.log('보낸이의 이미지 =' + profileRename);
+				
 				
 				chatTable.insertAdjacentHTML(
 					'beforeend', `<tr>
-									<td>프로필 사진 | ${content.roomVisiterId}</td>
+									<td>사진 | ${content.roomVisiterId}</td>
 									<td>
 										${content.messageContent}
 										<br/>
@@ -201,6 +227,11 @@
 		    
 			
 		}
+		//웹 소켓 연결 해제 (시작)
+		window.BeforeUnloadEvent = () => { //해당 페이지를 떠나려고 할 때 이벤트가 발생한다.
+			disconnet(); 
+		}
+		//웹 소켓 연결 해제 (끝)
 	</script>
 </body>
 </html>

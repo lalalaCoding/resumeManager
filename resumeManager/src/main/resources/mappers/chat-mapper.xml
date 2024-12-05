@@ -10,7 +10,7 @@
 		from chat_member
 		where room_no in (select chat_room.room_no
 		                    from chat_member
-		                            join chat_room on(join_no = CHAT_ROOM.room_no)
+		                            join chat_room on(chat_member.room_no = CHAT_ROOM.room_no)
 		                    where ROOM_VISITER = ${visiterMap.senderNo} and ROOM_STATUS = 'Y')
 		        and room_visiter = ${visiterMap.receiverNo}
 	</select>

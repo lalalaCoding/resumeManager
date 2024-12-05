@@ -66,7 +66,7 @@
 	</select> -->
 	
 	<select id="selectMemberNo" resultType="Member">
-		SELECT * FROM MEMBER join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_NO = ${memberNo} and member_status = 'Y'
+		SELECT * FROM MEMBER left join PROFILE_IMAGE using(MEMBER_NO) WHERE MEMBER_NO = ${memberNo} and member_status = 'Y'
 	</select>
 	
 	<!-- 비밀번호 찾기 : 아이디를 기준으로 아이디와 전화번호, 회원번호 조회 -->
