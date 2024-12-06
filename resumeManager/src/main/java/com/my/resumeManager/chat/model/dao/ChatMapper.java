@@ -24,6 +24,8 @@ public interface ChatMapper {
 
 	ArrayList<ChatMessage> selectChatMessageList(ArrayList<ChatMember> myChatMember);
 
+	int insertChatMessage(ChatMessage chat);
+
 	
 	
 	

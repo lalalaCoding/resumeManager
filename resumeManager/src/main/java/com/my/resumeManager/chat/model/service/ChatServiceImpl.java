@@ -72,6 +72,11 @@ public class ChatServiceImpl implements ChatService{
 		conditionMap.put("memberNo", memberNo);
 		return cMapper.selectChatMemberList(conditionMap);
 	}
+
+	@Override
+	public int saveChatMessage(ChatMessage chat) {
+		return cMapper.insertChatMessage(chat);
+	}
 	
 	
 	

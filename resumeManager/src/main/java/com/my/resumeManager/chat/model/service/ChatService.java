@@ -14,4 +14,6 @@ public interface ChatService {
 
 	ArrayList<ChatMember> myChatMemberList(int memberNo);
 
+	int saveChatMessage(ChatMessage chat);
+
 }

@@ -58,8 +58,11 @@
 		ORDER BY MESSAGE_CREATE ASC
 	</select>
 	
-	<!-- 나의 채팅 목록 조회하기 -->
-	
+	<!-- 채팅 메시지 저장하기 -->
+	<insert id="insertChatMessage">
+		insert into chat_message
+		values(seq_message.nextval, #{messageContent}, 0, default, 'Y', ${joinNo})
+	</insert>
 	
 	
 </mapper>

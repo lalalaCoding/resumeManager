@@ -4,3 +4,12 @@
 
 #messageContent {resize: none; width: 600px; display:inline-block;}
 #msgSubmitBtn {width:200px;}
+
+/*
+	채팅 방 관련 스타일
+*/
+.chatProfile { width: 100px; height: 100px; }
+.myChatTd { text-align: right;}
+.yourChatTd { text-aligh: left;}
+.yourProfileTd { width:120px;}
+.chatIdSpan {}

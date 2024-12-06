@@ -56,6 +56,11 @@ public class ChatController {
 			ArrayList<ChatMember> myChatList = cService.myChatMemberList(memberNo);
 			log.info("myChatList={}", myChatList);
 			
+			//나의 채팅 대화내역 조회 :
+			
+			
+			
+			
 			
 			
 			model.addAttribute("myChatList", myChatList);
@@ -85,7 +90,7 @@ public class ChatController {
 		if (myChatMember.size() > 2) { //한 채팅방에 참여중인 회원이 3명 이상이 조회된 경우
 			throw new ChatException("서비스 요청 실패");
 		}
-		log.info("myChatMember={}", myChatMember); //myRoom=[ChatMember(joinNo=21, roomVisiter=10), ChatMember(joinNo=22, roomVisiter=1)]
+		log.info("myChatMember={}", myChatMember); //[ChatMember(joinNo=21, roomVisiter=10), ChatMember(joinNo=22, roomVisiter=1)]
 		
 		//수신자 회원정보 조회하기
 		Member receiver = mService.selectMemberNo(receiverNo);
@@ -105,9 +110,24 @@ public class ChatController {
 		ArrayList<ChatMessage> myMessageList = cService.myMessageList(myChatMember);
 		log.info("myMessageList={}", myMessageList);
 		
+		//참여번호 정리하기
+		int senderJoinNo = 0;
+		int receiverJoinNo = 0;
+		for (ChatMember m : myChatMember) {
+			if (m.getRoomVisiter() == sender.getMemberNo()) {
+				senderJoinNo = m.getJoinNo();
+			} else if (m.getRoomVisiter() == receiver.getMemberNo()) {
+				receiverJoinNo = m.getJoinNo();
+			} else {
+				throw new ChatException("참여 번호를 알 수 없습니다.");
+			}
+		}
+		
 		model.addAttribute("myChatMember", myChatMember);
 		model.addAttribute("receiver", receiver);
 		model.addAttribute("myMessageList", myMessageList);
+		model.addAttribute("senderJoinNo", senderJoinNo);
+		model.addAttribute("receiverJoinNo", receiverJoinNo);
 		model.addAttribute("info", "chat");
 		return "chat/chatRoom";
 	}

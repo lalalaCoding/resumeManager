@@ -42,32 +42,49 @@
 		
 		<div> <!-- 본문 컨텐츠 -->
 			<h3>채팅 방</h3>
-			
-			본인 사진 -> [[${session.loginMember.profileRename}]]
-			<br/>
-			상대방 사진 -> [[${receiver.profileRename}]]
-			
-			
-			
-			<div style="background: lightgrey;">
-				<table class="table table-hover" id="chatTable">
+			<div style="background: lightyellow;">
+				<table class="table table-borderless table-sm align-middle table-secondary" id="chatTable">
 					<th:block th:if="${#lists.isEmpty(myMessageList)}"> <!-- 메시지가 존재하지 않음 -->
 						<tr>
 							<td></td>
 							<td>
-								
+								대화 내용이 없습니다. 채팅을 시작해보세요!
 							</td>
+							<td></td>
 						</tr>
 					</th:block>
-					<th:block th:unless="${#lists.isEmpty(myMessageList)}"> <!-- 메시지가 존재함 -->
-						<tr>
-							<td>프로필 사진 | 아이디</td>
-							<td>
-								메시지 내용
-								<br/>
-								메시지 전송 시각
-							</td>
-						</tr>
+					
+					<th:block th:unless="${#lists.isEmpty(myMessageList)}" th:each="message : ${myMessageList}"> <!-- 메시지가 존재함 -->
+						<th:block th:if="${message.joinNo == senderJoinNo}"> <!-- 내가 보낸 메시지인 경우 -->
+							<tr>
+								<td></td>
+								<td></td>
+								<td class="myChatTd">
+									<span class="chatTimeSpan" th:text="${#dates.format(message.messageCreate, 'MM-dd:HH:mm')}"></span>
+									<span class="chatMessageSpan">[[${message.messageContent}]]</span>
+								</td>
+							</tr>
+						</th:block>
+							
+						<th:block th:unless="${message.joinNo == senderJoinNo}"> <!-- 상대방이 보낸 메시지인 경우 -->
+							<tr>
+								<td rowspan="2" class="yourProfileTd">
+									 <img th:unless="${receiver.profileRename == null}" th:src="'/' + ${receiver.profileRename}" class="chatProfile"/>
+									 <img th:if="${receiver.profileRename == null}" th:src="${receiver.memberGender.toString() == 'M' ? '/image/icon/profile_male.png' : '/image/icon/profile_female.png'}" class="chatProfile"/>
+								</td>
+								<td>
+									<span class="chatIdSpan">[[${receiver.memberId}]]</span>
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td class="yourChatTd">
+									<span class="chatMessageSpan">[[${message.messageContent}]]</span>
+									<span class="chatTimeSpan" th:text="${#dates.format(message.messageCreate, 'MM-dd:HH:mm')}"></span>
+							  	</td>
+						  		<td></td>
+							</tr>
+						</th:block>
 					</th:block>
 				</table>
 				
@@ -78,12 +95,6 @@
 				</form>
 			</div>
 		</div>	
-	
-		<br/><br/>
-		
-		<button id="testBtn">채팅 전송 테스트</button>
-		
-		<br/><br/>
 		
 		<div><!-- 오른쪽 공백 --></div>
 	</div>
@@ -92,6 +103,18 @@
 	<div th:replace="~{common/footer :: footer}"></div>
 	<script th:inline="javascript">
 		window.onload = () => {
+			//현재 시각을 '월-일 시:분' 으로 표현하는 함수 (시작) 
+			const getDateFormat = () => {
+				let now = new Date();
+				let month = ('0' + (now.getMonth() + 1)).slice(-2);
+				let day = ('0' + now.getDate()).slice(-2);
+				let hours = ('0' + now.getHours()).slice(-2);
+				let minutes = ('0' + now.getMinutes()).slice(-2);
+				
+				return `${month}-${day} ${hours}:${minutes}`;
+			}
+			//현재 시각을 '월-일 시:분' 으로 표현하는 함수 (끝)
+			
 			//웹 소켓 연결 (시작)
 			let stompClient = null;
 			connect(); //현재 페이지 로드시에 웹소켓을 연결함
@@ -101,10 +124,11 @@
 			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
 			const receiver = /*[[${receiver}]]*/'채팅 중인 상대방';
 			const roomNo = /*[[${myChatMember[0].roomNo}]]*/'현재 참여 중인 방 번호';
-			const joinNo = /*[[${myChatMember[0].joinNo}]]*/'참여번호';
+			const joinNo = /*[[${senderJoinNo}]]*/'참여번호';
 			/* ]]> */
 			
 			console.log('현재 방 번호 :' + roomNo);
+			console.log('나의 참여 번호 : ' + joinNo);
 			
 			const chatTable = document.querySelector('#chatTable');
 			const messageContent = document.querySelector('#messageContent');
@@ -122,9 +146,6 @@
 					console.log(roomNo); //채팅방 번호
 					 
 					sendChat(); //채팅 메시지를 컨트롤러에게 전달하기
-					
-					
-					
 					
 				}
 			});
@@ -182,43 +203,47 @@
 			
 			//전달받은 메시지 내용 처리 함수 (시작)
 			function loadChat(content) {
-				console.log('전송한 사람 :' + content.roomVisiterId);
 				let profileRename;
 				
-				if (content.roomVisiterId == loginMember.memberId) {
-					if (loginMember.profileRename != null) { //프로필 이미지가 존재하는 회원
-						profileRename = '/' + loginMember.profileRename;
-					} else { //프로필 이미지가 존재하지 않는 회원
-						if (loginMember.memberGender == 'M') profileRename = '/image/icon/profile_male.png';
-						else profileRename = '/image/icon/profile_female.png';
-					}
-				} else if (content.roomVisiterId == receiver.memberId) {
+				if (content.roomVisiterId == loginMember.memberId) { //본인이 보낸 메시지 출력
+					chatTable.insertAdjacentHTML(
+							'beforeend', `<tr>
+											<td></td>
+											<td></td>
+											<td class="myChatTd">
+												<span class="chatTimeSpan">${getDateFormat()}</span>
+												<span class="chatMessageSpan">${content.messageContent}</span>
+											</td>
+										  </tr>`		
+						);
+					
+				} else if (content.roomVisiterId == receiver.memberId) { //상대방이 보낸 메시지 출력
 					if (receiver.profileRename != null) { //프로필 이미지가 존재하는 회원
 						profileRename = '/' + receiver.profileRename;
 					} else { //프로필 이미지가 존재하지 않는 회원
 						if (receiver.memberGender == 'M') profileRename = '/image/icon/profile_male.png';
 						else profileRename = '/image/icon/profile_female.png';
 					}
+				
+					chatTable.insertAdjacentHTML(
+							'beforeend', `<tr>
+											<td rowspan="2" class="yourProfileTd">
+												 <img src=${profileRename} class="chatProfile"/>
+											</td>
+											<td>
+												<span class="chatIdSpan">${content.roomVisiterId}</span>
+											</td>
+											<td></td>
+										  </tr>
+										  <tr>
+										  	<td class="yourChatTd">
+										  	<span class="chatMessageSpan">${content.messageContent}</span>
+										  		<span class="chatTimeSpan">${getDateFormat()}</span>
+										  	</td>
+									  		<td></td>
+										  </tr>`		
+						);
 				}
-				
-				console.log('보낸이의 이미지 =' + profileRename);
-				
-				
-				chatTable.insertAdjacentHTML(
-					'beforeend', `<tr>
-									<td>사진 | ${content.roomVisiterId}</td>
-									<td>
-										${content.messageContent}
-										<br/>
-										메시지 전송 시각
-									</td>
-								</tr>`		
-				);
-				
-				
-				
-				
-				
 			}		
 			//전달받은 메시지 내용 처리 함수 (끝)
 		    
@@ -226,7 +251,8 @@
 		    
 		    
 			
-		}
+		} //window.onload 의 끝
+		
 		//웹 소켓 연결 해제 (시작)
 		window.BeforeUnloadEvent = () => { //해당 페이지를 떠나려고 할 때 이벤트가 발생한다.
 			disconnet(); 
