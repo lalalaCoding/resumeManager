@@ -29,9 +29,6 @@ public class GCSService {
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
     
-//    @Autowired
-//    private Environment env; 
-    
     public void uploadObject(GCSRequest gcsRequest) throws IOException {
 
         String keyFileName = "resumemanager-437401-375b06ed51be.json"; // 나의 json 파일 이름을 지정한다.

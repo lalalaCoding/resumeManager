@@ -50,7 +50,7 @@
 	</select>
 	
 	<!-- 채팅 메시지 조회하기 -->
-	<select id="selectChatMessageList" resultType="ChatMessage">
+	<select id="selectAllChatMessageList" resultType="ChatMessage">
 		SELECT *
 		FROM CHAT_MESSAGE
 		WHERE JOIN_NO IN 
@@ -58,11 +58,35 @@
 		ORDER BY MESSAGE_CREATE ASC
 	</select>
 	
+	<!-- 최근 메시지 조회하기 -->
+	<select id="selectChatMessageList" resultType="ChatMessage">
+		SELECT *
+		FROM (  SELECT *
+		        FROM CHAT_MESSAGE
+		                JOIN CHAT_MEMBER USING(JOIN_NO)
+		        WHERE MESSAGE_STATUS = 'Y' AND ROOM_NO IN 
+		        <foreach collection="myRoomNoSet" item="item" open="(" close=")" separator=", ">${item}</foreach>
+		        ORDER BY MESSAGE_CREATE DESC)
+		WHERE (MESSAGE_CREATE, ROOM_NO) = (SELECT MAX(MESSAGE_CREATE), ROOM_NO
+		                        FROM CHAT_MESSAGE
+		                                JOIN CHAT_MEMBER USING(JOIN_NO)
+		                        WHERE MESSAGE_STATUS = 'Y' AND ROOM_NO IN (21)
+		                        GROUP BY ROOM_NO)
+	</select>
+	
+	
+	
+	
+	
 	<!-- 채팅 메시지 저장하기 -->
 	<insert id="insertChatMessage">
 		insert into chat_message
 		values(seq_message.nextval, #{messageContent}, 0, default, 'Y', ${joinNo})
 	</insert>
+	
+	
+	
+	
 	
 	
 </mapper>

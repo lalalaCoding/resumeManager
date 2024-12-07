@@ -4,17 +4,17 @@ package com.my.resumeManager.chat.controller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.my.resumeManager.chat.model.service.ChatService;
 import com.my.resumeManager.chat.model.vo.ChatException;
@@ -57,13 +57,30 @@ public class ChatController {
 			log.info("myChatList={}", myChatList);
 			
 			//나의 채팅 대화내역 조회 :
+			Set<Integer> myRoomNoSet = new HashSet<>(); //중복을 제거한 방 번호
+			for (ChatMember cm : myChatList) {
+				myRoomNoSet.add(cm.getRoomNo());
+			}
+			ArrayList<ChatMessage> myRecentChatMessageList = cService.myRecentChatMessageList(myRoomNoSet);
+			log.info("myRecentChatMessageList={}", myRecentChatMessageList);
+			
+			//채팅방 별로 상대방 조회 : 키(방 번호), 밸류(상대방 회원정보)
+			Map<Integer, Member> myReceiverMap = new HashMap<>();
+			for (ChatMember cm : myChatList) {
+				if (loginMember.getMemberNo() != cm.getRoomVisiter()) {
+					Member receiver = mService.selectMemberNo(cm.getRoomVisiter());
+					log.info("receiver={}", receiver);
+					myReceiverMap.put(cm.getRoomNo(), receiver);
+					profileLocalDownload(loginMember, receiver); //프로필 이미지 다운로드
+				}
+			}
 			
 			
 			
 			
-			
-			
+			model.addAttribute("myRecentChatMessageList", myRecentChatMessageList);
 			model.addAttribute("myChatList", myChatList);
+			model.addAttribute("myReceiverMap", myReceiverMap);
 			model.addAttribute("info", "chat");
 			return "chat/chatList";
 		}
@@ -139,6 +156,7 @@ public class ChatController {
 		ArrayList<Member> chatVisiters = new ArrayList<>(List.of(sender, receiver)); //ArrayList의 선언과 초기화를 동시에 함
 		
 		for (Member m : chatVisiters) {
+			log.info("m={}",m);
 			if (m.getProfileOrigin() != null) { //프로필이 등록된 회원인 경우
 				HashMap<String, String> profileMap = new HashMap<>();
 				profileMap.put("objectName", m.getProfileRename());
@@ -163,22 +181,6 @@ public class ChatController {
 		return numberFlag == 2 ? true : false;
 	}
 	
-	
-	
-	
-	@PostMapping("chats/{memberNo}/room") //채팅 전송 요청 처리
-	@ResponseBody
-	public String sendChatting(@PathVariable("memberNo") int senderNo, @ModelAttribute("ChatMessage") ChatMessage msg, HttpSession session) {
-		//[messageNo=0, messageContent=123, messageCount=0, messageCreate=null, messageStatus=
-		log.info("msg={}", msg);
-		
-		
-		
-		
-		
-		
-		return null;
-	}
 	
 	
 	

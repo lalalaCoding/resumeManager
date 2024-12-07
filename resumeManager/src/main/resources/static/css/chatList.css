@@ -1,3 +1,10 @@
 @charset "UTF-8";
 
 #wrapper {display:grid; grid-template-columns: 1fr 280px 1000px 1fr;}
+
+
+/*
+	채팅 목록 관련 스타일
+*/
+.chatProfile { width: 100px; height: 100px; }
+.yourProfileTd { width:120px;}

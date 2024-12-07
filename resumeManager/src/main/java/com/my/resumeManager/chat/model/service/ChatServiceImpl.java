@@ -3,6 +3,7 @@ package com.my.resumeManager.chat.model.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class ChatServiceImpl implements ChatService{
 
 	@Override
 	public ArrayList<ChatMessage> myMessageList(ArrayList<ChatMember> myChatMember) {
-		return cMapper.selectChatMessageList(myChatMember);
+		return cMapper.selectAllChatMessageList(myChatMember);
 	}
 
 	@Override
@@ -76,6 +77,29 @@ public class ChatServiceImpl implements ChatService{
 	@Override
 	public int saveChatMessage(ChatMessage chat) {
 		return cMapper.insertChatMessage(chat);
+	}
+
+	@Override
+	public ArrayList<ChatMessage> myRecentChatMessageList(Set<Integer> myRoomNoSet) {
+		//최근 메시지가 없는 경우 : 기본 메시지를 등록해주자!
+		ArrayList<ChatMessage> recentList = cMapper.selectChatMessageList(myRoomNoSet);
+		log.info("myRoomNoSet={}",myRoomNoSet);
+		log.info("recentList={}",recentList);
+		
+		for (ChatMessage cm : recentList) {
+			myRoomNoSet.remove(cm.getRoomNo()); //최근 메시지가 존재하는 방 번호를 제외시킨다.
+		}
+		
+		log.info("myRoomNoSet={}",myRoomNoSet);
+		
+		for (Integer roomNo : myRoomNoSet) {
+			ChatMessage defaultChatMessage = new ChatMessage();
+			defaultChatMessage.setRoomNo((int) roomNo);
+			defaultChatMessage.setMessageContent("대화 내역이 없습니다.");
+			recentList.add(defaultChatMessage);
+		}
+		
+		return recentList;
 	}
 	
 	

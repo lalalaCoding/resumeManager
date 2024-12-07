@@ -79,7 +79,7 @@
 							</tr>
 							<tr>
 								<td class="yourChatTd">
-									<span class="chatMessageSpan">[[${message.messageContent}]]</span>
+									<span class="chatMessageSpan" th:text="${message.messageContent}"></span>
 									<span class="chatTimeSpan" th:text="${#dates.format(message.messageCreate, 'MM-dd:HH:mm')}"></span>
 							  	</td>
 						  		<td></td>
