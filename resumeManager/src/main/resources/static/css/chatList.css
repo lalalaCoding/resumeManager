@@ -8,3 +8,6 @@
 */
 .chatProfile { width: 100px; height: 100px; }
 .yourProfileTd { width:120px;}
+.recentChatInfoDiv {display:grid; grid-template-columns: 100px 1fr 100px;}
+.recentChatInfoDiv div:last-child {text-align: right;}
+.recentChatContentDiv {text-align: right;}

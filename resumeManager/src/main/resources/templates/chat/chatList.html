@@ -39,7 +39,6 @@
 		<div> <!-- 본문 컨텐츠 -->
 			<h3>채팅 목록</h3>
 			
-			[[${myChatList}]]
 			
 			<div style="background: lightgrey;">
 				<table class="table table-hover">
@@ -52,10 +51,21 @@
 							</th:block>
 						</td>
 						<td th:each="message : ${myRecentChatMessageList}" th:if="${chat.roomNo == message.roomNo}">
-							<span class="chatIdSpan" th:each="receiver: ${myReceiverMap}" th:if="${chat.roomNo == receiver.key}">[[${receiver.value.memberId}]]</span>
-							<span class="chatTimeSpan" th:text="${#dates.format(message.messageCreate, 'MM-dd:HH:mm')}"></span>
-							<br/>
-							<span class="chatMessageSpan">[[${message.messageContent}]]</span>
+							<div class="recentChatInfoDiv">
+								<div>
+									<span class="chatIdSpan" th:each="receiver: ${myReceiverMap}" th:if="${chat.roomNo == receiver.key}">[[${receiver.value.memberId}]]</span>
+								</div>
+								<div><!-- 중간공백 --></div>
+								<div>
+									<span class="chatTimeSpan" th:text="${#dates.format(message.messageCreate, 'MM-dd:HH:mm')}"></span>
+								</div>
+							</div>
+
+							<br/><br/>
+							
+							<div class="recentChatContentDiv" style="text-align: right;">
+								<span class="chatMessageSpan">[[${message.messageContent}]]</span>
+							</div>
 						</td>
 					</tr>
 					

@@ -26,10 +26,8 @@ public class MessageHandlerController { //메시지 핸들러 (가공 목적)
 	@MessageMapping("/{roomNo}") //요청 메시지의 destination 헤더 경로
 	@SendTo("/queue/{roomNo}") //반환값을 메시지로 전달할 경로 지정
 	public void chat(@DestinationVariable("roomNo") int roomNo, ChatMessage chat) {
-		log.info("greeting!!");
 		log.info("roomNo={}", roomNo);
 		log.info("ChatMessage={}", chat);
-		
 		
 		//채팅 내용 저장 요청
 		//messageNo=0, messageContent=123, messageCount=0, messageCreate=null, messageStatus= ,, roomVisiterId=test010, joinNo=21
