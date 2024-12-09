@@ -124,7 +124,7 @@ public class MemberController {
 		return millisecond + "_" + random + fileType; // "현재시각에 대한 밀리초_랜덤숫자.확장자"
 	}
 	
-	@GetMapping("loginPage.me")
+	@GetMapping("login")
 	public String loginPage(@RequestParam(value="msg", required=false) String msg, HttpServletResponse response) {
 		if(msg != null) {
 			try {
@@ -167,6 +167,22 @@ public class MemberController {
 		}
 		
 		return "redirect:/histories/" + loginMember.getMemberNo(); //histories/{memberNo}
+	}
+	
+	@PostMapping("/logout")
+	public String logout(@RequestParam("memberNo") int memberNo, HttpSession session) {
+		log.info("memberNo={}",memberNo);
+		
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if(loginMember == null) {
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/login";
+		} else if (loginMember.getMemberNo() != memberNo) {
+			throw new MemberException("본인만 이용가능한 서비스입니다.");
+		} else {
+			session.invalidate(); //세션 초기화
+			return "redirect:/";
+		}
 	}
 	
 	@GetMapping("findPage.me")
@@ -498,5 +514,34 @@ public class MemberController {
 			return true;
 		}
 	}
+	
+	@GetMapping("/members/{memberNo}/quit") //회원 탈퇴 폼 요청
+	public String quitForm(@PathVariable("memberNo") int memberNo, HttpSession session) {
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember == null) {
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/login";
+		} else if (loginMember.getMemberNo() != memberNo) {
+			throw new MemberException("잘못된 접근입니다.");
+		} else { //정상 접근
+			return "member/quit";
+		}
+	}
+
+	@PostMapping("/members/{memberNo}/validation")
+	@ResponseBody
+	public String validation(@PathVariable("memberNo") int memberNo, @RequestParam("memberId") String memberId, @RequestParam("memberPwd") String memberPwd) {
+		log.info("memberId={}", memberId);
+		log.info("memberPwd={}", memberPwd);
+		
+		
+		
+		
+		
+		
+		return "작업중";
+	}
+	
+	
 	
 }
