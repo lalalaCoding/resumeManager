@@ -5,7 +5,7 @@
 
 /* 입력 요소의 크기 조정하기 */
 .form-control:not(.pwdDiv input){display:inline-block !important;}
-.form-control{width:300px !important;}
+.form-control{width:300px !important; display:inline-block !important;}
 
 /* 비밀번호 요소와 눈알 아이콘의 위치 조정 */
 .pwdDiv{

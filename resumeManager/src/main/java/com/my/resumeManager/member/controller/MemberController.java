@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -530,17 +531,48 @@ public class MemberController {
 
 	@PostMapping("/members/{memberNo}/validation")
 	@ResponseBody
-	public String validation(@PathVariable("memberNo") int memberNo, @RequestParam("memberId") String memberId, @RequestParam("memberPwd") String memberPwd) {
+	public String validation(@PathVariable("memberNo") int memberNo, @RequestParam("memberId") String memberId, @RequestParam("memberPwd") String memberPwd,
+								HttpSession session) {
 		log.info("memberId={}", memberId);
 		log.info("memberPwd={}", memberPwd);
+		boolean idCheck = false;
+		boolean pwdCheck = false;
 		
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember == null) { //로그인x
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/login";
+		} else if (loginMember.getMemberNo() != memberNo) { //로그인된 회원 번호와 탈퇴할 회원 번호가 다름
+			throw new MemberException("요청을 처리할 수 없습니다.");
+		} else { //아이디, 비밀번호
+			if (loginMember.getMemberId().equals(memberId)) idCheck = true;
+			if (bCrypt.matches(memberPwd, loginMember.getMemberPwd())) pwdCheck = true;
+		}
 		
+		log.info("idCheck={}", idCheck);
+		log.info("pwdCheck={}", pwdCheck);
 		
+		//JSON 형식으로 응답 : 뷰에서 JSON으로 응답받기를 원하고 있기 때문
+		JSONObject obj = new JSONObject();
+		obj.put("idCheck", idCheck);
+		obj.put("pwdCheck", pwdCheck);
 		
-		
-		
-		return "작업중";
+		return obj.toString();
 	}
+	
+	@PostMapping("/members/{memberNo}/quit")
+	public String quit(@PathVariable("memberNo") int memberNo) {
+		log.info("탈퇴 회원 번호={}", memberNo);
+		
+		
+		
+		
+		
+		
+		
+		return null;
+	}
+	
 	
 	
 	
