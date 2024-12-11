@@ -29,4 +29,6 @@ public interface MemberService {
 
 	int updateMember(HashMap<String, Object> editMap);
 
+	int quitMember(int memberNo);
+
 }

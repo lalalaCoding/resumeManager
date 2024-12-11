@@ -68,6 +68,11 @@ public class MemberServiceImpl implements MemberService{
 	public int updateMember(HashMap<String, Object> editMap) {
 		return mMapper.updateMember(editMap);
 	}
+
+	@Override
+	public int quitMember(int memberNo) {
+		return mMapper.deleteMember(memberNo);
+	}
 	
 	
 	

@@ -32,5 +32,7 @@ public interface MemberMapper {
 	int deleteImage(int memberNo);
 
 	int updateMember(@Param("editMap")HashMap<String, Object> editMap);
+
+	int deleteMember(int memberNo);
 	
 }

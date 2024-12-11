@@ -561,17 +561,18 @@ public class MemberController {
 	}
 	
 	@PostMapping("/members/{memberNo}/quit")
-	public String quit(@PathVariable("memberNo") int memberNo) {
+	public String quit(@PathVariable("memberNo") int memberNo, HttpSession session) {
 		log.info("탈퇴 회원 번호={}", memberNo);
+		int result = mService.quitMember(memberNo);
 		
-		
-		
-		
-		
-		
-		
-		return null;
+		if (result > 0) { //탈퇴 요청 성공
+			return "redirect:/logout";
+		} else { //탈퇴 요청 실패
+			throw new MemberException("서비스 요청 실패");
+		}
 	}
+	
+	
 	
 	
 	

@@ -106,6 +106,14 @@
 		where member_no = ${editMap.MEMBER_NO}
 	</update>
 	
+	<!-- 회원 탈퇴 -->
+	<update id="deleteMember">
+		update member
+		set member_status = 'N'
+		where member_no = ${memberNo}
+	</update>
+	
+	
 	
 	
 </mapper> 

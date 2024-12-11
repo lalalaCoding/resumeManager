@@ -67,6 +67,11 @@
 		<div><!-- 오른쪽 공백 --></div>
 	</div>
 	
+	<br/>
+	<button class="btn btn-success" id="test">비동기 테스트</button>
+	<br/>
+	
+	
 	<div th:replace="~{common/footer :: footer}"></div>	
 	
 	<script th:inline="javascript">
@@ -195,36 +200,52 @@
 			// 휴대전화 인증 번호 확인 요청 (끝)
 			
 			//탈퇴 요청 이벤트 (시작)
+			const vailidation = () => {
+				return new Promise((resolve, reject) => {
+					$.ajax({ //유효성 확인 : members/{memberNo}/validation (POST)
+						url: `/members/${loginMember.memberNo}/validation`,
+						type: 'POST',
+						dataType: 'json',
+						data: {
+							memberId: memberId.value,
+							memberPwd: memberPwd.value
+						},
+						success: data => {
+							console.log(data);
+							if(data.idCheck && data.pwdCheck && phoneFlag) { //유효성 통과
+								resolve(true);
+							} else { //유효성 통과X
+								resolve(false);
+							}
+						},
+						error: data => reject('error')
+					});
+				});
+			}
+			
 			const memberId = document.querySelector('#memberId');
 			const memberPwd = document.querySelector('#memberPwd');
 			const quitBtn = document.querySelector('#quitBtn');
+			
 			quitBtn.addEventListener('click', () => {
-				//유효성 확인 : members/{memberNo}/validation (POST)
-				$.ajax({
-					url: `/members/${loginMember.memberNo}/validation`,
-					type: 'POST',
-					dataType: 'json',
-					data: {
-						memberId: memberId.value,
-						memberPwd: memberPwd.value
-					},
-					success: data => {
-						console.log(data);
-						if(data.idCheck && data.pwdCheck && phoneFlag) { //유효성 통과
-							document.querySelector('#quitForm').submit();
-						} else { //유효성 통과X
-							alert('입력 정보를 다시 확인해주세요.');
+				vailidation()
+					.then(result => { //비동기 작업 성공
+						console.log('result:' + result);
+						if(result) { //유효성 통과
+							if(confirm('정말 탈퇴하시겠습니까?')) document.querySelector('#quitForm').submit();
+						} else { //유효성 통과못함
+							alert('다시 입력해주세요.');
 							memberId.value = '';
 							memberPwd.value = '';
 							memberId.focus();
 						}
-					},
-					error: data => console.log(data)
-				}); 
+					})
+					.catch(error => { //비동기 작업 실패
+						console.error(error);
+						alert('잠시 후 다시 시도해주세요.');
+					});
 			});
 			//탈퇴 요청 이벤트 (끝)
-			
-			
 		}
 	</script>
 </body>
