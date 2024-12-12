@@ -5,6 +5,8 @@
 	<title>입사 지원 이력 페이지</title>
 	<!-- 페이지명 왼쪽에 아이콘 삽입 -->
 	<link rel="shortcut icon" href="/image/icon/logo.png">
+	<!-- css -->
+	<link rel="stylesheet" href="/css/resumeHistory.css" type="text/css"/>
 	<!-- charJS CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<!-- BootStrap -->
@@ -19,8 +21,8 @@
 	<div id="wrapper">
 		<div><!-- 왼쪽 공백 --></div>
 		
-		<div>
-			<div> <!-- 지원 이력 시각화 div -->
+		<div id="contentDiv">
+			<div id="upperContentDiv"> <!-- 지원 이력 시각화 div -->
 				<div> <!-- 시각화 기준 지정 -->
 					<h1>나의 목표</h1>
 					<form>
@@ -36,17 +38,19 @@
 					</form>
 				</div>
 				
-				<div> <!-- 데이터 시각화 -->
-					<div style="width: 300px; height: 300px;">
+				<div id="graphDiv"> <!-- 데이터 시각화 -->
+					<div style="position: relative; height:40vh; width:40vw;">
 						<canvas id="piChart"><!-- 지원 직군에 대한 원형 그래프 --></canvas>
 					</div>
-					<div style="width: 300px; height: 300px;">
+					<div style="position: relative; height:40vh; width:60vw;">
 						<canvas id="barChart"><!-- 지원 추이에 대한 막대 그래프 --></canvas>
 					</div>
 				</div>
 			</div>		
-		
-			<div> <!-- 지원 이력 출력 div -->
+			
+			<br/>
+			
+			<div id="lowerContentDiv"> <!-- 지원 이력 출력 div -->
 				<form id="searchForm" method="get" action="searchResumeHistory.rh">
 					<span>회사명</span>
 					<input type="text" placeHolder="회사명" class="searchFormat" name="companyName"/>
@@ -56,7 +60,7 @@
 					<input type="text" placeHolder="스킬명 또는 경험" class="searchFormat" name="infoName"/>
 					<button type="button" class="btn btn-light" id="searchBtn">검색하기</button>
 					<button type="button" class="btn btn-light" id="selectAllBtn" onclick="location.href='resumeHistoryPage.rh'">전체보기</button>
-					<button type="button" class="btn btn-light" id="insertBtn" onclick="location.href='insertResumeHistoryPage.rh'">등록하기</button>
+					<button type="button" class="btn btn-light" id="insertBtn">등록하기</button>
 				</form>
 							
 				<button type="button" class="btn btn-danger" id="delBtn">삭제</button>
@@ -157,25 +161,34 @@
 	<div th:replace="~{common/footer :: footer}"></div>	
 	<script th:inline="javascript">
 		window.onload = () => {
+			/* <![CDATA[ */
+			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
+			const comList = /*[[${comList}]]*/'직군통계'
+			/* ]]> */
+			
+			//지원 직군 통계 추출 : 전체 이력 정보에 대한 통계를 전달받아야함
+			let siCount, smCount, solutionCount, serviceCount, startupCount;
+			for (const com of comList) {
+				switch (com.typeName) {
+				case 'SI' : siCount = com.typeCount; break;
+				case 'SM' : smCount = com.typeCount; break;
+				case 'SOLUTION' : solutionCount = com.typeCount; break;
+				case 'SERVICE' : serviceCount = com.typeCount; break;
+				case 'START UP' : startupCount = com.typeCount; break;
+				}
+			}
+			
 			// 지원 직군에 대한 원형 그래프 (시작)
 			const ctx = document.getElementById('piChart');
 			
 			new Chart(ctx, {
 			  type: 'pie',
 			  data: {
-				  labels: [
-			  	    'SI',
-				    'SM',
-				    'SOLUTION'
-				  ],
+				  labels: ['SI', 'SM', 'SOLUTION', 'SERVICE', 'START UP'],
 				  datasets: [{
-			    	label: 'My First Dataset',
-				    data: [300, 50, 100],
-				    backgroundColor: [
-				      'rgb(255, 99, 132)',
-				      'rgb(54, 162, 235)',
-				      'rgb(255, 205, 86)'
-				    ],
+			    	label: 'My CompanyType Name',
+				    data: [siCount, smCount, solutionCount, serviceCount, startupCount],
+				    backgroundColor: ['pink', 'gold', 'yellow', 'lightgreen', 'skyblue'],
 				    hoverOffset: 4,
 				    options: {
 				    	responsive: false, // 동적으로 사이즈 변경 X
@@ -186,6 +199,16 @@
 			});
 			// 지원 직군에 대한 원형 그래프 (끝)
 			
+			//날짜 : 오늘로부터 7일간 날짜를 
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			//지원 추이에 대한 막대 그래프 (시작)
 			const ctx2 = document.getElementById('barChart');
 			
@@ -194,24 +217,31 @@
 				   data: {
 				       datasets: [{
 				           label: 'Bar Dataset',
-				           data: [10, 20, 30, 40],
+				           data: [10, 20, 30, 40, 50, 60, 70],
 				           // this dataset is drawn below
 				           order: 2
 				       }, {
 				           label: 'Line Dataset',
-				           data: [10, 10, 10, 10],
+				           data: [10, 10, 10, 10, 10, 10, 10],
 				           type: 'line',
 				           // this dataset is drawn on top
 				           order: 1
 				       }],
-				       labels: ['January', 'February', 'March', 'April']
+				       labels: ['6일전', '5일전', '4일전', '3일 전', '2일전', '12-11', '오늘']
 				   }
-				   
 				});
 			//지원 추이에 대한 막대 그래프 (끝)
-
-			//검색 조건 유효성 검사 (시작)
 			
+			//지원 이력 작성 이벤트 (시작) : /histories/{memberNo}/write (GET)
+			const insertBtn = document.querySelector('#insertBtn');
+			insertBtn.addEventListener('click', () => {
+				location.href=`/histories/${loginMember.memberNo}/write`;
+			});
+			//지원 이력 작성 이벤트(끝)
+			
+			
+			
+			//검색 조건 유효성 검사 (시작)
 			const searchFormatVaild = () => {
 				let searchFlag = false;
 				const searchFormatList = document.querySelectorAll('.searchFormat');
@@ -253,7 +283,7 @@
 			//전체보기 (시작)
 			const selectAllBtn = $('#selectAllBtn');
 			selectAllBtn.on('click', () => {
-				location.href='resumeHistoryPage.rh';
+				location.href='/resumeHistoryPage.rh';
 			});
 			//전체보기 (끝)
 			
@@ -267,7 +297,7 @@
 				const loc = /*[[${loc}]]*/'loc';
 				/*]]>*/
 				
-				location.href='updateResumeHistoryPage.rh?resumeNo=' + resumeNo + '&loc=' + loc;
+				location.href='/updateResumeHistoryPage.rh?resumeNo=' + resumeNo + '&loc=' + loc;
 			});
 			//수정하기 (끝)
 
@@ -294,15 +324,15 @@
 					console.log(JSON.stringify(delResumeNoArray));
 					
 					$.ajax({
-						url: 'deleteResumeHistory.rh',
+						url: '/deleteResumeHistory.rh',
 						type: 'POST',
 						data: {delResumeNoArray: delResumeNoArray},
 						success: data => {
 							if(data == 'success') {
-								location.href='resumeHistoryPage.rh';
+								location.href='/resumeHistoryPage.rh';
 								
 							} else {
-								location.href='resumeHistoryErrorPage.rh?msg=del';
+								location.href='/resumeHistoryErrorPage.rh?msg=del';
 							}
 						},
 						error: data => {

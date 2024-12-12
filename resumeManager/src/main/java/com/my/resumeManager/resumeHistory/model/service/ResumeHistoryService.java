@@ -1,5 +1,6 @@
 package com.my.resumeManager.resumeHistory.model.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -42,6 +43,11 @@ public interface ResumeHistoryService {
 
 	int deleteResumeCondition(ArrayList<ResumeCondition> delConList);
 	
-	int deleteAllResumeHistory(HashMap<String, Object> delMap); 
+	int deleteAllResumeHistory(HashMap<String, Object> delMap);
+
+	ArrayList<CompanyType> myCompanyTypeCount(int memberNo);
+
+	ArrayList<HashMap<Date, Integer>> myWeekHistoryCount(HashMap<String, Object> condition);
+
 
 }

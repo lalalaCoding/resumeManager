@@ -195,6 +195,26 @@
  	</update>
  	
  	
+ 	<!-- 지원 이력 통계 : 지원한 회사 직군 -->
+ 	<select id="companyTypeCount">
+	 	select /*+ INDEX(RESUME_HISTORY IDX_HISTORY_VAILD_WRITER)*/C.type_name, count(C.type_name) as type_count
+		from RESUME_HISTORY R
+		        join COMPANY_TYPE C on(R.company_type_no = C.type_no)
+		where R.RESUME_VAILD = 'Y' and R.resume_writer = ${memberNo}
+		group by C.type_name
+ 	</select>
+ 	
+ 	<!-- 지원 이력 통계 : 일주일간 지원 이력 건수 -->
+ 	<select id="historyCount" resultType="hashmap">
+ 		<![CDATA[
+	 		select resume_date, count(resume_date) as history_count
+			from RESUME_HISTORY
+			where RESUME_VAILD = 'Y' and resume_writer = 1
+			        and resume_date >= to_date('20241019') - 6
+			        and resume_date <= to_date('20241025')
+			group by resume_date
+		]]>
+ 	</select>
  	
  	
  </mapper>

@@ -14,4 +14,5 @@ import lombok.ToString;
 public class CompanyType {
 	private int typeNo;
 	private String typeName;
+	private int typeCount;
 }

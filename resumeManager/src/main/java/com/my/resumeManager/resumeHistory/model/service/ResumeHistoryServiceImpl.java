@@ -1,5 +1,6 @@
 package com.my.resumeManager.resumeHistory.model.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -103,6 +104,33 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 	@Override
 	public int deleteAllResumeHistory(HashMap<String, Object> delMap) {
 		return rMapper.deleteAllResumeHistory(delMap);
+	}
+
+	@Override
+	public ArrayList<CompanyType> myCompanyTypeCount(int memberNo) {
+		ArrayList<CompanyType> comList = rMapper.companyTypeCount(memberNo);
+		//직군 이름 : SI, SM, SOLUTION, SERVICE, START UP
+		String[] companyNameArr = {"SI", "SM", "SOLUTION", "SERVICE", "START UP"};
+		
+		if (comList.size() < 5) {
+			for (String typeName : companyNameArr) {
+				boolean flag = false;
+				for (CompanyType ct : comList) {
+					if (ct.getTypeName().equals(typeName)) flag = true;
+				}
+				if (!flag) {
+					CompanyType addCompanyType = new CompanyType(0, typeName, 0);
+					comList.add(addCompanyType);
+				}
+			}
+		} 
+		
+		return comList;
+	}
+
+	@Override
+	public ArrayList<HashMap<Date, Integer>> myWeekHistoryCount(HashMap<String, Object> condition) {
+		return rMapper.historyCount(condition);
 	}
 	
 	

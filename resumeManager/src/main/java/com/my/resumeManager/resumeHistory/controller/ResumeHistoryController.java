@@ -83,27 +83,37 @@ public class ResumeHistoryController {
 			int listCount = rService.getCountResumeHistory(memberNo);
 			PageInfo pi = Pagination.getPageInfo(currentPage, listCount, 5, 10);
 			log.info("pi={}", pi);
+			
 			//페이지 처리된 '지원 이력' 조회
 			ArrayList<ResumeHistory> rhList = rService.selectAllResumeHistory(memberNo, pi);
 			log.info("지원 이력={}", rhList);
+			
 			//지원 이력 -> '지원 조건' 조회 : 페이징 처리 된 지원 이력 번호는 최대 10개이므로 IN 연산자로 SQL을 작성함
 			ArrayList<ResumeCondition> conList = null;
 			if (!rhList.isEmpty()) {
 				conList = rService.selectAllResumeCondition(rhList); 
 			}
 			log.info("자격 조건={}", conList);
+			
+			//지원 통계
+			ArrayList<CompanyType> comList = rService.myCompanyTypeCount(memberNo);
+			log.info("직군 통계={}", comList);
+			
+			
+			
 			//데이터 전달
 			model.addAttribute("pi", pi);
 			model.addAttribute("loc", request.getRequestURI());
 			model.addAttribute("rhList", rhList);
 			model.addAttribute("conList", conList);
+			model.addAttribute("comList", comList);
 		}
 		
 		return "resume/resumeHistory";
 	}
 	
-	@GetMapping("insertResumeHistoryPage.rh")
-	public String insertResumeHistoryPage(Model model) {
+	@GetMapping("/histories/{memberNo}/write")
+	public String insertResumeHistoryPage(@PathVariable("memberNo") int memberNo, Model model) {
 		// 최저 시급 계산하여 전달
 		model.addAttribute("yearSalary", yearSalary);
 		return "resume/insertResumeHistory";
