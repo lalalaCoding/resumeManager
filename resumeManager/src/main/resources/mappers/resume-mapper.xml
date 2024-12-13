@@ -209,9 +209,9 @@
  		<![CDATA[
 	 		select resume_date, count(resume_date) as history_count
 			from RESUME_HISTORY
-			where RESUME_VAILD = 'Y' and resume_writer = 1
-			        and resume_date >= to_date('20241019') - 6
-			        and resume_date <= to_date('20241025')
+			where RESUME_VAILD = 'Y' and resume_writer = ${condition.memberNo}
+			        and resume_date >= #{condition.beginDay}
+			        and resume_date <= #{condition.endDay}
 			group by resume_date
 		]]>
  	</select>

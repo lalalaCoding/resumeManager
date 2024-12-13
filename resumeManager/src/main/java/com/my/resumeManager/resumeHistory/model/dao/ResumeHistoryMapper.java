@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
@@ -50,7 +51,8 @@ public interface ResumeHistoryMapper {
 	int deleteAllResumeHistory(@Param("delMap") HashMap<String, Object> delMap);
 
 	ArrayList<CompanyType> companyTypeCount(int memberNo);
-
+	
+	@MapKey("resume_date")
 	ArrayList<HashMap<Date, Integer>> historyCount(@Param("condition") HashMap<String, Object> condition);
 
 }

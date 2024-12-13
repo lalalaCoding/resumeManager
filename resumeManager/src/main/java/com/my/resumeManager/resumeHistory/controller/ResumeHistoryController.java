@@ -1,6 +1,7 @@
 package com.my.resumeManager.resumeHistory.controller;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -96,10 +97,19 @@ public class ResumeHistoryController {
 			log.info("자격 조건={}", conList);
 			
 			//지원 통계
-			ArrayList<CompanyType> comList = rService.myCompanyTypeCount(memberNo);
+			ArrayList<CompanyType> comList = rService.myCompanyTypeCount(memberNo); //직군 통계 조회
 			log.info("직군 통계={}", comList);
 			
+			Calendar cal = Calendar.getInstance();
+			Date endDay = new Date(cal.getTimeInMillis());
+			cal.add(Calendar.DATE, -6);
+			Date beginDay = new Date(cal.getTimeInMillis());
 			
+			HashMap<String, Object> condition = new HashMap<>();
+			condition.put("memberNo", memberNo);
+			condition.put("endDay", endDay);
+			condition.put("beginDay", beginDay);
+			ArrayList<HashMap<Date, Integer>> weekList = rService.myWeekHistoryCount(condition); //지원 건수 통계 조회
 			
 			//데이터 전달
 			model.addAttribute("pi", pi);
@@ -107,6 +117,7 @@ public class ResumeHistoryController {
 			model.addAttribute("rhList", rhList);
 			model.addAttribute("conList", conList);
 			model.addAttribute("comList", comList);
+			model.addAttribute("weekList", weekList);
 		}
 		
 		return "resume/resumeHistory";
@@ -119,7 +130,7 @@ public class ResumeHistoryController {
 		return "resume/insertResumeHistory";
 	}
 	
-	@GetMapping("insertResumeHistory.rh")
+	@PostMapping("/histories/{memberNo}/write")
 	public String insertResumeHistory(@ModelAttribute ResumeHistory resumeHistory,
 										HttpSession session,
 										@RequestParam(value="deadline", defaultValue="always") String deadline,
@@ -176,7 +187,7 @@ public class ResumeHistoryController {
 			throw new ResumeHistoryException("서비스 요청 실패");
 		}
 		
-		return "redirect:resumeHistoryPage.rh";
+		return "redirect:/histories/"+loginMember.getMemberNo();
 	}
 	
 	private CompanyType getCompanyType(String companyTypeName) {

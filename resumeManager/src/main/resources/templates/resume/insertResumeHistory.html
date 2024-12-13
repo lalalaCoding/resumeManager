@@ -13,7 +13,7 @@
 		<div><!-- 왼쪽 공백 --></div>
 	
 		<div>
-			<form method="get" action="insertResumeHistory.rh" id="insertForm">
+			<form method="post" th:action="@{/histories/{memberNo}/write(memberNo=${session.loginMember.memberNo})}" id="insertForm">
 				<table class="table table-hover">
 					<tr>
 						<td>지원 일자(필수)</td>

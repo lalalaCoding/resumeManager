@@ -1,6 +1,7 @@
 package com.my.resumeManager.resumeHistory.controller;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -35,10 +36,16 @@ public class ResumeHistoryControllerTest {
 	public void 일주일_지원건수_조회() {
 		//given
 		int memberNo = 1;
-		Date today = new Date(2024-1900, 9, 26); // 2024-10-26
+		
+		Calendar cal = Calendar.getInstance();
+		Date endDay = new Date(cal.getTimeInMillis());
+		cal.add(Calendar.DATE, -6);
+		Date beginDay = new Date(cal.getTimeInMillis());
+		
 		HashMap<String, Object> condition = new HashMap<>();
 		condition.put("memberNo", memberNo);
-		condition.put("date", today);
+		condition.put("endDay", endDay);
+		condition.put("beginDay", beginDay);
 		
 		//when
 		ArrayList<HashMap<Date, Integer>> weekList = rService.myWeekHistoryCount(condition);
@@ -47,7 +54,33 @@ public class ResumeHistoryControllerTest {
 		Assertions.assertThat(weekList).isNotEmpty();
 	}
 	
-	
+	@Test
+	public void 이번달_지원누적건수_조회() {
+		//given
+		int memberNo = 1;
+		
+		Calendar cal = Calendar.getInstance();
+		Date endDay = new Date(cal.getTimeInMillis()); //오늘 날짜
+		
+		Calendar cal2 = Calendar.getInstance();
+		int year = cal2.get(Calendar.YEAR);
+		int month = cal2.get(Calendar.MONTH);
+		
+		cal2.set(year, month, 1);
+		Date beginDay = new Date(cal2.getTimeInMillis()); //이번달 첫 날짜
+		
+		System.out.println(beginDay);
+		
+		//when
+		
+		
+		
+		//then
+		Assertions.assertThat(beginDay.toString()).isEqualTo("2024-12-01");
+		
+		
+		
+	}
 	
 	
 	
