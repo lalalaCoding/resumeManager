@@ -44,11 +44,13 @@
 					</div>
 					<div style="position: relative; height:40vh; width:60vw;">
 						<canvas id="barChart"><!-- 지원 추이에 대한 막대 그래프 --></canvas>
+						<button class="btn btn-primary" id="agoWeekBtn">&lt;</button>
+						<button class="btn btn-primary" id="nextWeekBtn">&gt;</button>
 					</div>
 				</div>
 			</div>		
 			
-			<br/>
+			<br/><br/>
 			
 			<div id="lowerContentDiv"> <!-- 지원 이력 출력 div -->
 				<form id="searchForm" method="get" action="searchResumeHistory.rh">
@@ -163,9 +165,13 @@
 		window.onload = () => {
 			/* <![CDATA[ */
 			const loginMember = /*[[${session.loginMember}]]*/'로그인 회원';
-			const comList = /*[[${comList}]]*/'직군통계'
-			const weekList = /*[[${weekList}]]*/'주간 이력 건수 통계'
+			const comList = /*[[${comList}]]*/'직군통계';
+			const weekList = /*[[${weekList}]]*/'주간 이력 건수 통계';
+			const monthList = /*[[${monthList}]]*/'월간 이력 누적건수 통계';
 			/* ]]> */
+			
+			let weekCount = 0;
+			
 			
 			//지원 직군 통계 추출 : 전체 이력 정보에 대한 통계를 전달받아야함
 			let siCount, smCount, solutionCount, serviceCount, startupCount;
@@ -199,8 +205,8 @@
 				}
 			});
 			// 지원 직군에 대한 원형 그래프 (끝)
-			console.log(weekList);
 			
+			// 주간 지원 건수 가공 (시작)
 			const getDateFormat = date => { //yyyy-mm-dd 포맷으로 날짜 반환받기
 				const year = date.getFullYear();
 				const month = ('0' + (date.getMonth() + 1)).slice(-2);
@@ -214,7 +220,7 @@
 			}
 						
 			const today = new Date();
-			const result = []; //지원 이력 결과를 저장할 배열
+			const week_result = []; //지원 이력 결과를 저장할 배열
 			
 			const week = []; //최근 일주일 날짜를 포매팅하여 저장할 배열
 			for (let i = 6; i >= 0; i--) {
@@ -227,15 +233,30 @@
 					for (const w of weekList) {
 						if (w.RESUME_DATE.split('T')[0] == d) {
 							flag = true;
-							result.push(w.HISTORY_COUNT);
+							week_result.push(w.HISTORY_COUNT);
 						}
 					}
 				}
-				if (!flag) result.push(0);
+				if (!flag) week_result.push(0);
 			}
+			// 주간 지원 건수 가공 (끝)
 			
-			console.log(result);
+			// 월간 누적지원 건수 가공(시작)
+			const month_result = [];
 			
+			for (const d of week) {
+				let flag = false;
+				if (monthList.length != 0) {
+					for (const m of monthList) {
+						if (m.RESUME_DATE.split('T')[0] == d) {
+							flag = true;
+							month_result.push(m.SUM);
+						}
+					}
+				}
+				if (!flag) month_result.push(0);
+			}
+			// 월간 누적지원 건수 가공(끝)
 			
 			
 			//지원 추이에 대한 막대 그래프 (시작)
@@ -246,12 +267,12 @@
 				   data: {
 				       datasets: [{
 				           label: '최근 지원(건)',
-				           data: result,
+				           data: week_result,
 				           // this dataset is drawn below
 				           order: 2
 				       }, {
 				           label: '이번 달 지원(건)',
-				           data: [10, 10, 10, 10, 10, 10, 10],
+				           data: month_result,
 				           type: 'line',
 				           // this dataset is drawn on top
 				           order: 1
@@ -261,14 +282,44 @@
 				});
 			//지원 추이에 대한 막대 그래프 (끝)
 			
+			//지난 주 지원 건수 통계 요청(시작) : /histories/{memberNo}/count (GET)
+			const agoWeekBtn = document.querySelector('#agoWeekBtn');
+			agoWeekBtn.addEventListener('click', () => {
+				weekCount--;
+				$.ajax({
+					url: `/histories/${loginMember.memberNo}/count`,
+					type: 'get',
+					datatype: 'json',
+					data: {weekCount : weekCount},
+					success: data => {
+						console.log(data);
+					},
+					error: data => console.log(data)
+				});
+			});
+			
+			
+			
+			//지난 주 지원 건수 통계 요청(끝)
+			
+			//다음 주 지원 건수 통계 요청(시작)
+			const nextWeekBtn = document.querySelector('#nextWeekBtn');
+			nextWeekBtn.addEventListener('click', () => {
+				if (weekCount == 0) {
+					alert('미래시 ㄴㄴ');
+				}
+				
+				weekCount++;
+			});
+			//다음 주 지원 건수 통계 요청(끝)
+			
+			
 			//지원 이력 작성 이벤트 (시작) : /histories/{memberNo}/write (GET)
 			const insertBtn = document.querySelector('#insertBtn');
 			insertBtn.addEventListener('click', () => {
 				location.href=`/histories/${loginMember.memberNo}/write`;
 			});
 			//지원 이력 작성 이벤트(끝)
-			
-			
 			
 			//검색 조건 유효성 검사 (시작)
 			const searchFormatVaild = () => {

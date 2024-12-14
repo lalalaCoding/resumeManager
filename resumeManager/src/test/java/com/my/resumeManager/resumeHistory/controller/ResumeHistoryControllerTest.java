@@ -69,20 +69,46 @@ public class ResumeHistoryControllerTest {
 		cal2.set(year, month, 1);
 		Date beginDay = new Date(cal2.getTimeInMillis()); //이번달 첫 날짜
 		
-		System.out.println(beginDay);
+		HashMap<String, Object> condition = new HashMap<>();
+		condition.put("memberNo", memberNo);
+		condition.put("endDay", endDay);
+		condition.put("beginDay", beginDay);
 		
-		//when
-		
-		
+		//when : [{RESUME_DATE=2024-12-13 00:00:00.0, SUM=1}]
+		ArrayList<HashMap<Date, Integer>> monthList = rService.accumulateHistoryCount(condition); 
 		
 		//then
 		Assertions.assertThat(beginDay.toString()).isEqualTo("2024-12-01");
+		Assertions.assertThat(monthList).isNotNull();
+	}
+	
+	@Test
+	public void 지난주_지원건수_조회() {
+		int weekCount = -2;
+		int memberNo = 1;
+		
+		Calendar cal = Calendar.getInstance(); //오늘
+		cal.add(Calendar.DATE, weekCount*7);
+		Date endDay = new Date(cal.getTimeInMillis());
+		
+		cal.add(Calendar.DATE, -6);
+		Date beginDay = new Date(cal.getTimeInMillis());
+		
+		HashMap<String, Object> condition = new HashMap<>();
+		condition.put("memberNo", memberNo);
+		condition.put("endDay", endDay);
+		condition.put("beginDay", beginDay);
+		
+		//when
+//		ArrayList<HashMap<Date, Integer>> weekList = rService.myWeekHistoryCount(condition);
+		
+		//then
+//		Assertions.assertThat(weekList).isNotEmpty();
+		
 		
 		
 		
 	}
-	
-	
 	
 	
 }

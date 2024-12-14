@@ -132,6 +132,11 @@ public class ResumeHistoryServiceImpl implements ResumeHistoryService {
 	public ArrayList<HashMap<Date, Integer>> myWeekHistoryCount(HashMap<String, Object> condition) {
 		return rMapper.historyCount(condition);
 	}
+
+	@Override
+	public ArrayList<HashMap<Date, Integer>> accumulateHistoryCount(HashMap<String, Object> condition) {
+		return rMapper.accumulateHistoryCount(condition);
+	}
 	
 	
 }

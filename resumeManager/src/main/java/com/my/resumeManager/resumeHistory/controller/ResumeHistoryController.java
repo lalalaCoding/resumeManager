@@ -1,7 +1,6 @@
 package com.my.resumeManager.resumeHistory.controller;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -24,6 +23,7 @@ import com.my.resumeManager.common.openAPI.OpenAPIController;
 import com.my.resumeManager.common.page.PageInfo;
 import com.my.resumeManager.common.page.Pagination;
 import com.my.resumeManager.member.model.vo.Member;
+import com.my.resumeManager.member.model.vo.MemberException;
 import com.my.resumeManager.resumeHistory.model.service.ResumeHistoryService;
 import com.my.resumeManager.resumeHistory.model.vo.CompanyType;
 import com.my.resumeManager.resumeHistory.model.vo.ConditionInfo;
@@ -111,6 +111,26 @@ public class ResumeHistoryController {
 			condition.put("beginDay", beginDay);
 			ArrayList<HashMap<Date, Integer>> weekList = rService.myWeekHistoryCount(condition); //지원 건수 통계 조회
 			
+			Calendar cal2 = Calendar.getInstance();
+			Date endDay2 = new Date(cal2.getTimeInMillis()); //오늘 날짜
+			
+			Calendar cal3 = Calendar.getInstance();
+			int year = cal3.get(Calendar.YEAR);
+			int month = cal3.get(Calendar.MONTH);
+			
+			cal3.set(year, month, 1);
+			Date beginDay2 = new Date(cal3.getTimeInMillis()); //이번달 첫 날짜
+			
+			HashMap<String, Object> monthCondition = new HashMap<>();
+			monthCondition.put("memberNo", memberNo);
+			monthCondition.put("endDay", endDay2);
+			monthCondition.put("beginDay", beginDay2);
+			log.info("monthCondition={}",monthCondition);
+			
+			//[{RESUME_DATE=2024-12-13 00:00:00.0, SUM=1}]
+			ArrayList<HashMap<Date, Integer>> monthList = rService.accumulateHistoryCount(monthCondition); 
+			log.info("monthList의 길이={}", monthList.size());
+			
 			//데이터 전달
 			model.addAttribute("pi", pi);
 			model.addAttribute("loc", request.getRequestURI());
@@ -118,10 +138,37 @@ public class ResumeHistoryController {
 			model.addAttribute("conList", conList);
 			model.addAttribute("comList", comList);
 			model.addAttribute("weekList", weekList);
+			model.addAttribute("monthList", monthList);
 		}
 		
 		return "resume/resumeHistory";
 	}
+	
+	@GetMapping("/histories/{memberNo}/count")
+	@ResponseBody
+	public String getHistoryCount(@PathVariable("memberNo") int memberNo, HttpSession session) {
+		Member loginMember = (Member) session.getAttribute("loginMember");
+		if (loginMember == null) {
+			session.setAttribute("msg", "로그인 후 이용해주세요.");
+			return "redirect:/login";
+		} else if (loginMember.getMemberNo() != memberNo) {
+			throw new MemberException("잘못된 접근입니다.");
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		return "gg";
+	}
+	
+	
+	
 	
 	@GetMapping("/histories/{memberNo}/write")
 	public String insertResumeHistoryPage(@PathVariable("memberNo") int memberNo, Model model) {

@@ -49,5 +49,7 @@ public interface ResumeHistoryService {
 
 	ArrayList<HashMap<Date, Integer>> myWeekHistoryCount(HashMap<String, Object> condition);
 
+	ArrayList<HashMap<Date, Integer>> accumulateHistoryCount(HashMap<String, Object> condition);
+
 
 }

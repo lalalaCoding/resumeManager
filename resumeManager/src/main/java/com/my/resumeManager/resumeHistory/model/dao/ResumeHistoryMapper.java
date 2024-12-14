@@ -55,4 +55,6 @@ public interface ResumeHistoryMapper {
 	@MapKey("resume_date")
 	ArrayList<HashMap<Date, Integer>> historyCount(@Param("condition") HashMap<String, Object> condition);
 
+	ArrayList<HashMap<Date, Integer>> accumulateHistoryCount(@Param("condition") HashMap<String, Object> condition);
+
 }

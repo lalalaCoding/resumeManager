@@ -216,5 +216,20 @@
 		]]>
  	</select>
  	
+ 	<!-- 지원 이력 통계 : 월별 누적 지원 이력 건수 -->
+ 	<select id="accumulateHistoryCount" resultType="hashmap">
+ 		<![CDATA[
+ 			select resume_date, sum(history_count) over (order by RESUME_DATE) as sum
+			from (select resume_date, count(resume_date) as history_count
+			        from RESUME_HISTORY
+			        where RESUME_VAILD = 'Y' and resume_writer = ${condition.memberNo}
+			                and resume_date >= #{condition.beginDay}
+			                and resume_date <= #{condition.endDay}
+			        group by resume_date)
+	        order by resume_date desc
+ 		]]>
+ 	</select>
+ 	
+ 	
  	
  </mapper>
