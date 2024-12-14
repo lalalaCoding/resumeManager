@@ -18,11 +18,12 @@
 		<div><!-- 왼쪽 공백 --></div>
 		<div>
 			<div>
-				<form method="post" action="login.me" id="loginForm">
+				<form method="post" action="/login" id="loginForm">
 					<table>
 						<tr>
 							<td>아이디</td>
 							<td>
+								<input type="checkbox" name="remember-me" id="autoFlag" style="display:none;"/>
 								<input type="text" name="memberId" class="form-control" placeholder="아이디를 입력해주세요"/>
 							</td>
 						</tr>
@@ -36,12 +37,13 @@
 								</div>
 							</td>
 						</tr>
-						<tr>
-							<td>
-								<button type="button" id="loginBtn" class="btn btn-primary">로그인</button>
-							</td>
-						</tr>
 					</table>
+					
+					<button type="button" id="loginBtn" class="btn btn-primary">로그인</button>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" id="autoLogin"/>
+						<label for="autoLogin" class="form-check-label">자동 로그인</label>
+					</div>
 				</form>
 			</div>
 			
@@ -99,8 +101,6 @@
 				});
 			}
 			
-			
-			
 			// 비밀번호 보이기와 감추기 토글 기능(시작)
 			const iTag = document.querySelector('.bi'); // 요소의 갯수가 하나뿐이기 때문에 querySelectorAll을 사용하진 않았음.		
 			const memberPwd = document.getElementsByName('memberPwd')[0];
@@ -118,16 +118,29 @@
 			});
 			// 비밀번호 보이기와 감추기 토글 기능(끝)
 			
+			//자동 로그인 알림 (시작)
+			const autoLogin = document.querySelector('#autoLogin');
+			autoLogin.addEventListener('click', () => {
+				if (autoLogin.checked) {
+					if (!confirm('자동 로그인 하시겠습니까?')) {
+						autoLogin.checked = false;	
+					}
+				}				
+			});		
+			//자동 로그인 알림 (끝)
+			
+			
 			// 로그인 요청 (시작)
 			const loginForm = document.querySelector('#loginForm');
 			const loginBtn = document.querySelector('#loginBtn');
+			const autoFlag = document.querySelector('#autoFlag');
 			const memberId = document.getElementsByName('memberId')[0];
 			loginBtn.addEventListener('click', () => {
-				
 				const inputId = memberId.value.trim();
 				const inputPwd = memberPwd.value.trim();
 				
 				if(inputId.length > 0 && inputPwd.length > 0){ // 아이디와 비밀번호에 실제 입력값이 존재하는 경우
+					autoFlag.checked = autoLogin.checked ? true : false;
 					loginForm.submit();
 				} else if(inputId.length == 0){ // 아이디가 공백인 경우
 					alert('아이디를 입력해주세요.');

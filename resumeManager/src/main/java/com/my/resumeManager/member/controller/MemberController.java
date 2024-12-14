@@ -139,7 +139,7 @@ public class MemberController {
 		return "member/login";
 	}
 	
-	@PostMapping("login.me")
+	@PostMapping("login")
 	public String login(@ModelAttribute Member m, HttpSession session, RedirectAttributes ra, HttpServletResponse response) {
 		// id가 일치하는 회원을 조회
 		Member loginMember = mService.login(m);
@@ -148,25 +148,24 @@ public class MemberController {
 		
 		if(loginMember != null) {
 			if(bCrypt.matches(m.getMemberPwd(), loginMember.getMemberPwd())) { // 비밀번호 일치
-				msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
+//				msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
 				session.setAttribute("loginMember", loginMember);
-				try {
-					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
-					response.getWriter().write("<script>alert('" + msg +"'); location.href='/resumeHistoryPage.rh';</script>");// URL이 'http://localhost:8080/' 표현되기 위함
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+//				try {
+//					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
+//					response.getWriter().write("<script>alert('" + msg +"');</script>");// URL이 'http://localhost:8080/' 표현되기 위함
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
 			} else {
 				msg = "회원 정보가 일치하지 않습니다.";
 				ra.addAttribute("msg", msg);
-				return "redirect:loginPage.me";
+				return "redirect:/login";
 			}
 		} else {
 			msg = "회원 정보가 일치하지 않습니다.";
 			ra.addAttribute("msg", msg);
-			return "redirect:loginPage.me";
+			return "redirect:/login";
 		}
-		
 		return "redirect:/histories/" + loginMember.getMemberNo(); //histories/{memberNo}
 	}
 	
