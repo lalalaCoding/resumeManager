@@ -23,7 +23,7 @@
 						<tr>
 							<td>아이디</td>
 							<td>
-								<input type="checkbox" name="remember-me" id="autoFlag" style="display:none;"/>
+								<input type="hidden" name="remember-me" id="remember-me"/>
 								<input type="text" name="memberId" class="form-control" placeholder="아이디를 입력해주세요"/>
 							</td>
 						</tr>
@@ -133,14 +133,15 @@
 			// 로그인 요청 (시작)
 			const loginForm = document.querySelector('#loginForm');
 			const loginBtn = document.querySelector('#loginBtn');
-			const autoFlag = document.querySelector('#autoFlag');
+			const remember = document.getElementsByName('remember-me')[0];
 			const memberId = document.getElementsByName('memberId')[0];
 			loginBtn.addEventListener('click', () => {
 				const inputId = memberId.value.trim();
 				const inputPwd = memberPwd.value.trim();
 				
 				if(inputId.length > 0 && inputPwd.length > 0){ // 아이디와 비밀번호에 실제 입력값이 존재하는 경우
-					autoFlag.checked = autoLogin.checked ? true : false;
+					remember.value = autoLogin.checked ? 'on' : 'off';
+					console.log(remember.checked);
 					loginForm.submit();
 				} else if(inputId.length == 0){ // 아이디가 공백인 경우
 					alert('아이디를 입력해주세요.');

@@ -8,8 +8,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import jakarta.annotation.security.PermitAll;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class WebSecurityConfig {
 	
 	@Bean

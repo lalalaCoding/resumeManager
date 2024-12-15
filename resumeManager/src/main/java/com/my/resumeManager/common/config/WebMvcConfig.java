@@ -1,8 +1,11 @@
 package com.my.resumeManager.common.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.my.resumeManager.common.interceptor.AutoLoginInterceptor;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer{
@@ -11,4 +14,18 @@ public class WebMvcConfig implements WebMvcConfigurer{
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/**").addResourceLocations("file:///C:/resumeManager_downloadFiles/", "classpath:static/");
 	}
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		//자동 로그인 인터셉터
+		registry.addInterceptor(new AutoLoginInterceptor())
+				.addPathPatterns("/*")
+				.excludePathPatterns("/queue", "/topic", "/app", "ws-endpoint");
+		
+		
+		
+		WebMvcConfigurer.super.addInterceptors(registry);
+	}
+	
+	
 }

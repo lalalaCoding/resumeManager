@@ -29,6 +29,7 @@ import com.my.resumeManager.member.model.service.MemberService;
 import com.my.resumeManager.member.model.vo.Member;
 import com.my.resumeManager.member.model.vo.MemberException;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -140,7 +141,12 @@ public class MemberController {
 	}
 	
 	@PostMapping("login")
-	public String login(@ModelAttribute Member m, HttpSession session, RedirectAttributes ra, HttpServletResponse response) {
+	public String login(@ModelAttribute Member m, HttpSession session, RedirectAttributes ra, HttpServletResponse response
+							,@RequestParam("remember-me") String remember) {
+		
+		
+		
+		
 		// id가 일치하는 회원을 조회
 		Member loginMember = mService.login(m);
 		log.info("loginMember={}", loginMember);
@@ -148,8 +154,34 @@ public class MemberController {
 		
 		if(loginMember != null) {
 			if(bCrypt.matches(m.getMemberPwd(), loginMember.getMemberPwd())) { // 비밀번호 일치
-//				msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
+				
+				//자동 로그인 : 쿠키 생성
+				if (remember.equals("on")) {
+					Cookie cookie = new Cookie("remember-me", loginMember.getMemberNo() + "");
+					
+					cookie.setMaxAge(60 * 60); //1시간 유효기간
+					cookie.setPath("/"); // 모든 경로에서 접근 가능
+					cookie.setDomain("localhost"); // 쿠키를 사용할 도메인 설정
+					cookie.setHttpOnly(true); //자바스크립트에서 쿠키에 접근 불가능
+					response.addCookie(cookie);
+					
+//					Cookie id_cookie = new Cookie("remember-id", loginMember.getMemberId());
+//					Cookie pwd_cookie = new Cookie("remember-pwd", loginMember.getMemberPwd());
+//					Cookie[] remember_cookie = {id_cookie, pwd_cookie};
+//					for (Cookie c : remember_cookie) {
+//						c.setMaxAge(60 * 60); //1시간 유효기간
+//						c.setPath("/"); // 모든 경로에서 접근 가능
+//						c.setDomain("localhost"); // 쿠키를 사용할 도메인 설정
+//						c.setHttpOnly(true); //자바스크립트에서 쿠키에 접근 불가능
+//					}
+//					for (Cookie c : remember_cookie) {
+//						response.addCookie(c);
+//					}
+				
+				}
+				
 				session.setAttribute("loginMember", loginMember);
+//				msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
 //				try {
 //					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
 //					response.getWriter().write("<script>alert('" + msg +"');</script>");// URL이 'http://localhost:8080/' 표현되기 위함
