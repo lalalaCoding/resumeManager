@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -144,9 +145,6 @@ public class MemberController {
 	public String login(@ModelAttribute Member m, HttpSession session, RedirectAttributes ra, HttpServletResponse response
 							,@RequestParam("remember-me") String remember) {
 		
-		
-		
-		
 		// id가 일치하는 회원을 조회
 		Member loginMember = mService.login(m);
 		log.info("loginMember={}", loginMember);
@@ -157,37 +155,9 @@ public class MemberController {
 				
 				//자동 로그인 : 쿠키 생성
 				if (remember.equals("on")) {
-					Cookie cookie = new Cookie("remember-me", loginMember.getMemberNo() + "");
-					
-					cookie.setMaxAge(60 * 60); //1시간 유효기간
-					cookie.setPath("/"); // 모든 경로에서 접근 가능
-					cookie.setDomain("localhost"); // 쿠키를 사용할 도메인 설정
-					cookie.setHttpOnly(true); //자바스크립트에서 쿠키에 접근 불가능
-					response.addCookie(cookie);
-					
-//					Cookie id_cookie = new Cookie("remember-id", loginMember.getMemberId());
-//					Cookie pwd_cookie = new Cookie("remember-pwd", loginMember.getMemberPwd());
-//					Cookie[] remember_cookie = {id_cookie, pwd_cookie};
-//					for (Cookie c : remember_cookie) {
-//						c.setMaxAge(60 * 60); //1시간 유효기간
-//						c.setPath("/"); // 모든 경로에서 접근 가능
-//						c.setDomain("localhost"); // 쿠키를 사용할 도메인 설정
-//						c.setHttpOnly(true); //자바스크립트에서 쿠키에 접근 불가능
-//					}
-//					for (Cookie c : remember_cookie) {
-//						response.addCookie(c);
-//					}
-				
+					createCookie("remember-me", loginMember.getMemberNo() + "", response); //쿠키 생성 메서드
 				}
-				
 				session.setAttribute("loginMember", loginMember);
-//				msg = loginMember.getMemberName() + "님, 로그인에 성공하였습니다.";
-//				try {
-//					response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
-//					response.getWriter().write("<script>alert('" + msg +"');</script>");// URL이 'http://localhost:8080/' 표현되기 위함
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
 			} else {
 				msg = "회원 정보가 일치하지 않습니다.";
 				ra.addAttribute("msg", msg);
@@ -201,21 +171,44 @@ public class MemberController {
 		return "redirect:/histories/" + loginMember.getMemberNo(); //histories/{memberNo}
 	}
 	
+	public static void createCookie(String cookieName, String cookieValue, HttpServletResponse response) {
+		Cookie cookie = new Cookie(cookieName, cookieValue);
+		
+		cookie.setMaxAge(60 * 60); //1시간 유효기간
+		cookie.setPath("/"); // 모든 경로에서 접근 가능
+		cookie.setDomain("localhost"); // 쿠키를 사용할 도메인 설정
+		cookie.setHttpOnly(true); //자바스크립트에서 쿠키에 접근 불가능
+		response.addCookie(cookie);
+	}
+	
+	
+	
 	@PostMapping("/logout")
-	public String logout(@RequestParam("memberNo") int memberNo, HttpSession session) {
+	public String logout(@RequestParam("memberNo") int memberNo, HttpSession session, @CookieValue(name = "remember-me", required=false) String rememberNo
+							, HttpServletResponse response) {
 		log.info("memberNo={}",memberNo);
 		
 		Member loginMember = (Member) session.getAttribute("loginMember");
-		if(loginMember == null) {
-			session.setAttribute("msg", "로그인 후 이용해주세요.");
-			return "redirect:/login";
-		} else if (loginMember.getMemberNo() != memberNo) {
+		if (loginMember.getMemberNo() != memberNo) {
 			throw new MemberException("본인만 이용가능한 서비스입니다.");
 		} else {
 			session.invalidate(); //세션 초기화
+			
+			if (rememberNo != null) {
+				deleteCookie("remember-me", rememberNo, response);//쿠키 삭제 요청
+			}
+			
 			return "redirect:/";
 		}
 	}
+	
+	public static void deleteCookie(String cookieName, String cookieValue, HttpServletResponse response) {
+		Cookie cookie = new Cookie(cookieName, null);
+		cookie.setMaxAge(0);
+		cookie.setPath("/");
+		response.addCookie(cookie);
+	}
+	
 	
 	@GetMapping("findPage.me")
 	public String findPage(@RequestParam("find") String find, HttpSession session) {

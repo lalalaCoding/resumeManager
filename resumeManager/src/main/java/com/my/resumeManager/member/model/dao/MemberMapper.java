@@ -34,5 +34,7 @@ public interface MemberMapper {
 	int updateMember(@Param("editMap")HashMap<String, Object> editMap);
 
 	int deleteMember(int memberNo);
+
+	Member selectOneMember(@Param("condition") HashMap<String, Object> condition);
 	
 }
