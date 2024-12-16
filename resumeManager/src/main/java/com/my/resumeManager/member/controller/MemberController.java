@@ -131,6 +131,7 @@ public class MemberController {
 	public String loginPage(@RequestParam(value="msg", required=false) String msg, HttpServletResponse response) {
 		if(msg != null) {
 			try {
+				
 				response.setContentType("text/html; charset=UTF-8"); // 유니코드 문자 집합을 UTF-8 방식으로 인코딩하도록 지정함
 				response.getWriter().write("<script>alert('" + msg +"');</script>");
 			} catch(Exception e) {

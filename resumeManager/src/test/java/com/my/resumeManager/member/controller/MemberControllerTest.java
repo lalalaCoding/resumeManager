@@ -52,12 +52,5 @@ public class MemberControllerTest {
 		Assertions.assertThat(result).isEqualTo(1);
 	}
 	
-	@Test
-	public void 자동로그인() {
-		String autoFlag = "on";
-		
-		
-		
-	}
 	
 }
