@@ -38,6 +38,8 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket' //웹소켓 의존성 주입
 	implementation 'org.springframework.boot:spring-boot-starter-aop' //AOP
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'  //액츄에이터
+	implementation 'io.micrometer:micrometer-registry-prometheus' //프로메테우스
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -55,12 +57,6 @@ dependencies {
 	// 구글 클라우드 라이브러리 추가
 	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
-	
-	
-	
-	
-	
-	
 }
 
 tasks.named('test') {

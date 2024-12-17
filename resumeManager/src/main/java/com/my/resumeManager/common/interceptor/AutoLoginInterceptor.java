@@ -29,24 +29,27 @@ public class AutoLoginInterceptor implements HandlerInterceptor{
 			throws Exception {
 		
 		log.info("Hello AutoLoginInterceptor");
-		log.info("MemberMapper={}", mMapper);
 		
 		boolean cookieExist = false;
 		Member loginMember = null;
 		HttpSession session = request.getSession();
 		
 		Cookie[] myCookies = request.getCookies();
-		for (Cookie c : myCookies) {
-			if (c.getName().equals("remember-me")) {
-				HashMap<String, Object> condition = new HashMap<>();
-				condition.put("rememberFlag", true);
-				condition.put("memberNo", Integer.parseInt(c.getValue()));
-				log.info("login cookieName={}", c.getName());
-				log.info("login cookieValue={}", c.getValue());
-				cookieExist = true;
-				loginMember = mMapper.selectOneMember(condition);
-				break;
+		if (myCookies != null) {
+			for (Cookie c : myCookies) {
+				if (c.getName().equals("remember-me")) {
+					HashMap<String, Object> condition = new HashMap<>();
+					condition.put("rememberFlag", true);
+					condition.put("memberNo", Integer.parseInt(c.getValue()));
+					log.info("login cookieName={}", c.getName());
+					log.info("login cookieValue={}", c.getValue());
+					cookieExist = true;
+					loginMember = mMapper.selectOneMember(condition);
+					break;
+				}
 			}
+		} else {
+			return true;
 		}
 		
 		if (cookieExist) {
