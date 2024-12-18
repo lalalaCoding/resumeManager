@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.my.resumeManager.board.model.dao.BoardMapper">
+	
+	<!-- 게시판 : 컨텐츠 전체 개수 -->
+	<select id="selectBoardCount" resultType="_int">
+		select count(*)
+		from board
+		where board_status = 'Y' <if test="boardType != null">and board_type = #{boardType}</if>
+	</select>
+
+	<!-- 게시판 : 페이징 처리 -->
+	<select id="selectBoardList" resultType="BoardForm">
+		select *
+		from board
+		where board_status = 'Y' <if test="boardType != null">and board_type = #{boardType}</if>
+		order by board_no desc
+	</select>
+
+
+
+
+</mapper>

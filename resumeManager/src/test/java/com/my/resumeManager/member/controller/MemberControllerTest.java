@@ -17,6 +17,22 @@ public class MemberControllerTest {
 	@Autowired MemberService mService;
 	
 	@Test
+	public void 비밀번호_인코딩() {
+		//given
+		String pwd = "admin";
+		
+		//when
+		String encode = bCrypt.encode(pwd);
+		System.out.println(encode);
+		//then
+		
+	}
+	
+	
+	
+	
+	
+	@Test
 	public void 회원탈퇴_유효성검사() {
 		//given
 		Member loginMember = mService.selectMemberNo(22);

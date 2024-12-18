@@ -28,12 +28,12 @@ public class WebMvcConfig implements WebMvcConfigurer{
 		//자동 로그인 인터셉터
 		registry.addInterceptor(autoLoginInterceptor)
 				.addPathPatterns("/*")
-				.excludePathPatterns("/queue", "/topic", "/app", "ws-endpoint", "/logout", "/actuator/**");
+				.excludePathPatterns("/queue", "/topic", "/app", "ws-endpoint", "/logout", "/actuator/**", "/board/notice");
 		
 		//로그인 여부 인터셉터
 		registry.addInterceptor(loginCheckInterceptor)
 				.addPathPatterns("/*")
-				.excludePathPatterns("/login", "/", "/actuator/**");
+				.excludePathPatterns("/login", "/", "/actuator/**", "/board/notice");
 		
 		
 		WebMvcConfigurer.super.addInterceptors(registry);
